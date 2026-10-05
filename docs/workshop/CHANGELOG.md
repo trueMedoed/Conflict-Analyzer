@@ -10,7 +10,9 @@
 • Added README, a development checklist, repository ignore rules and project guidelines.
 • Added draft Workshop descriptions in English and Russian.
 • Defined planned analysis of AI groups, supply points, starting bases and vehicle spawn points.
-• World analysis and report export are not implemented yet.
+• Added a World Editor source diagnostic plugin and checked JSON extraction from the Workbench log.
+• Verified source inventory and world coordinates on HQC Everon in game / Workbench 1.8.0.13.
+• Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
 
@@ -18,4 +20,6 @@
 • Добавлены README, план разработки, правила исключений Git и памятка проекта.
 • Подготовлены черновики описаний Workshop на английском и русском языках.
 • Запланирован анализ групп ИИ, точек с припасами, стартовых баз и точек появления машин.
-• Анализ мира и экспорт отчёта пока не реализованы.
+• Добавлены плагин диагностики source в World Editor и проверяемая сборка JSON из журнала Workbench.
+• Инвентаризация источников и мировые координаты проверены на HQC Everon в игре / Workbench 1.8.0.13.
+• Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

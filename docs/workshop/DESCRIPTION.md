@@ -1,19 +1,19 @@
 # Conflict Analyzer — Workshop draft (English)
 
-Internal note: unpublished draft. The analysis and export features below are planned, not implemented. Summary and Description blocks use plain text for copying into Workshop. Update the English and Russian versions together after verification.
+Internal note: unpublished draft. Source diagnostics are implemented; the complete gameplay report is still planned. Summary and Description blocks use plain text for copying into Workshop. Update the English and Russian versions together after verification.
 
 ## Summary
 
-Planned Workbench helper for understanding a Conflict scenario: see which AI groups, supply sources, starting bases and vehicle spawn points are configured in its world. Analysis features are not available in this initial scaffold.
+Workbench helper for investigating a Conflict world. The first prototype exports partial source diagnostics; complete AI, supply, starting base and vehicle reports are still in development.
 
 ## Description
 
-Conflict Analyzer is planned to help scenario authors collect a readable overview of a Conflict world without maintaining all the tables by hand.
+Conflict Analyzer helps scenario authors investigate the configuration of a Conflict world. It is being developed into a tool for collecting readable reports without maintaining all the tables by hand.
 
 Current status
-• Initial addon project and development documentation only.
-• No world analysis command or report export is implemented yet.
-• This draft does not describe a released or verified analysis tool.
+• A World Editor diagnostic command reads selected source entities, component fields, layers, prefab references and world positions into partial JSON.
+• Tested on CTI_Campaign_HQC_Eden.ent in Arma Reforger / Workbench 1.8.0.13.
+• Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
@@ -22,15 +22,16 @@ Planned features
 • Vehicle spawn points, locations, allowed vehicle options and available spawn or respawn settings.
 • A readable report with data sources and warnings for incomplete information.
 
-Planned use
+Current diagnostic use
 1. Open the addon project in Arma Reforger Workbench.
-2. Select a Conflict world after the analysis command has been implemented.
-3. Export a report to a separate output directory.
+2. Open a saved Conflict world in World Editor.
+3. Run Export world source diagnostics under [ME] Conflict Analyzer / Diagnostics. The repository also documents a verified CLI route through the Workbench log.
 
-The planned root menu category is [ME] Conflict Analyzer. No command is currently provided.
+Diagnostics read the current editor state and do not save the source world. File export uses a separate directory; direct FileIO export still needs an interactive check.
 
 Limitations
 • Reading only the .ent file is not sufficient: related layers, parent worlds, prefabs and configuration resources must be resolved.
 • Configured candidates and maximum possible counts do not guarantee what will spawn in a particular game session.
 • Values depend on the world and game version. Missing resources must be reported as unknown rather than zero.
+• Object-valued configurations and faction catalogs are not resolved by this diagnostic prototype. Found components are not gameplay totals or soldier counts.
 • Runtime diagnostics and an in-game interface are outside the initial proposed scope.
