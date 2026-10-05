@@ -7,9 +7,9 @@
 Этот каталог хранится в Git. Первый проверенный снимок **1.8.0.13 / CTI_Campaign_HQC_Eden / r0001** имеет статус **partial**:
 
 - [Манифест версии](1.8.0.13/manifest.json).
-- [Метаданные мира](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/world.json) и [нормализованные данные](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/data.json).
-- [Припасы — охват раздела](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies.md).
-- [Базы-источники припасов — Harbors](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md): 18 точек, количество пополнения за цикл и интервал в минутах.
+- [Метаданные мира](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0001/world.json) и [нормализованные данные](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0001/data.json).
+- [Припасы — охват раздела](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0001/Supplies.md).
+- [Базы-источники припасов — Harbors](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0001/Supplies/Harbors.md): 18 точек, количество пополнения за цикл и интервал в минутах.
 
 Вторая проверенная ревизия **r0002 / schemaVersion 2** подготовлена отдельной целевой командой Workbench:
 
@@ -18,7 +18,7 @@
 
 Широкий дамп для второй ревизии не требуется; записи находятся в JSON своей таблицы, общий `data.json` служит индексом. Склады и вместимость, игровые названия локаций, ИИ, стартовые базы и машины ещё не нормализованы и обозначены `not_analyzed`.
 
-Временная подготовка результатов выполняется в игнорируемом `exports/`. Опубликованные снимки сохраняются: `r0001` находится в корне сценария, исправленные или расширенные снимки — в `revisions/r0002/` и далее. Манифест версии перечисляет ревизии явно.
+Временная подготовка результатов выполняется в игнорируемом `exports/`. Опубликованные снимки сохраняются: `r0001` сохранён в `revisions/r0001/` после обновления актуальной корневой таблицы по просьбе пользователя; исправленные или расширенные снимки — в `revisions/r0002/` и далее. Манифест версии перечисляет ревизии явно.
 
 Правила метаданных, идентификаторов и сравнения: [docs/DATA_LAYOUT.md](../docs/DATA_LAYOUT.md).
 
@@ -26,3 +26,5 @@
 
 - [Хранилища и состав](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/Supplies/StorageCapacity.md) и [канонический JSON](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/Supplies/StorageCapacity.json): 2 хранилища, 5 физических контейнеров, 4000 припасов; виртуальные представления исключены из суммы.
 - [Метаданные](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/world.json) и [индекс разделов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/data.json). Доход баз и остальные разделы в этой ревизии не пересобирались; статус `partial`.
+
+Четвёртая ревизия **r0004** добавляет вместимость в [актуальный Harbors](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md): 18 точек, у 15 — определённая вместимость вложенных контейнеров, у StPierre / Lamentin / Meaux — unknown. [Каноническая таблица](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.md) и [полный состав контейнеров](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/StorageCapacity.md) сохранены с JSON рядом. 49 физических контейнеров дают известный подытог 40500 припасов; это не полный подтверждённый итог всех баз. Исходные четыре файла r0001 сохранены без изменения содержания в `revisions/r0001/`.

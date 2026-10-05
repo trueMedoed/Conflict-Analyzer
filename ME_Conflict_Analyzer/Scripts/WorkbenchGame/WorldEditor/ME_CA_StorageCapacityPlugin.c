@@ -55,12 +55,49 @@ class ME_CA_StorageCapacityReport
 	ref array<ref ME_CA_StorageResource> resources = {};
 }
 
-[WorkbenchPluginAttribute(name: "Inspect source base storage capacity", description: "Read configured containers and their hierarchy below one source base; default: SP_A_EveronAirport.", wbModules: { "WorldEditor" }, category: "[ME] Conflict Analyzer/Reports")]
+class ME_CA_StorageCapacitySection
+{
+	string baseName;
+	string baseSourceId;
+	int recordCount;
+	int coordinateMismatchCount;
+	ref array<string> warnings = {};
+	ref array<ref ME_CA_StorageNode> nodes = {};
+	ref array<ref ME_CA_StorageResource> resources = {};
+}
+
+class ME_CA_StorageCapacityBatchReport
+{
+	int schemaVersion = 2;
+	string kind = "source-bases-storage-capacity";
+	string analyzerVersion = "storage-capacity-batch-0.1";
+	string status = "partial";
+	string selection = "all-source-base-descendant-resource-containers";
+	string worldPath;
+	string gameVersion;
+	string generatedAtUTC;
+	string outputPath;
+	int subsceneCount;
+	int editorEntityCountBefore;
+	int editorEntityCountAfter;
+	int visitedSourceCount;
+	int baseCount;
+	int recordCount;
+	int coordinateMismatchCount;
+	bool editorEntityCountUnchanged;
+	ref array<ref ME_CA_ReportSubscene> subscenes = {};
+	ref array<string> warnings = {};
+	ref array<ref ME_CA_StorageCapacitySection> bases = {};
+}
+
+[WorkbenchPluginAttribute(name: "Inspect source base storage capacity", description: "Read configured containers below a named source base, or all source bases with -ME_CA_AllSourceBases=1.", wbModules: { "WorldEditor" }, category: "[ME] Conflict Analyzer/Reports")]
 class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 {
 	protected string m_BaseName;
 	protected IEntitySource m_BaseSource;
 	protected int m_BaseMatches;
+	protected bool m_AllBases;
+	protected ref array<IEntitySource> m_BaseSources = {};
 	protected ref map<string, bool> m_NodeIds = new map<string, bool>();
 	protected ref ME_CA_StorageCapacityReport m_Capacity;
 
@@ -68,11 +105,14 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 	{
 		m_BaseName = "SP_A_EveronAirport";
 		WorldEditor editor = Workbench.GetModule(WorldEditor);
+		string allBases;
+		m_AllBases = editor.GetCmdLine("-ME_CA_AllSourceBases", allBases) && allBases == "1";
 		string requested;
 		if (editor.GetCmdLine("-ME_CA_BaseName", requested) && !requested.IsEmpty())
 			m_BaseName = requested;
 		m_BaseSource = null;
 		m_BaseMatches = 0;
+		m_BaseSources.Clear();
 		m_NodeIds.Clear();
 		m_Report.analyzerVersion = "storage-capacity-0.1";
 		m_Report.warnings.Clear();
@@ -88,7 +128,7 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 			m_Report.warnings.Insert("Source hierarchy depth limit reached.");
 			return;
 		}
-		if (source.GetName() == m_BaseName)
+		if (m_AllBases || source.GetName() == m_BaseName)
 		{
 			for (int index = 0; index < source.GetComponentCount(); index++)
 			{
@@ -97,6 +137,7 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 				{
 					m_BaseMatches++;
 					m_BaseSource = source;
+					m_BaseSources.Insert(source);
 					break;
 				}
 			}
@@ -182,15 +223,12 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 		return "ME_CA_StorageCapacity";
 	}
 
-	override protected bool WriteReport(JsonSaveContext context)
+	protected ME_CA_StorageCapacityReport BuildSelectedReport()
 	{
-		if (m_BaseMatches != 1 || !m_BaseSource)
-		{
-			Fail("source_base_name_missing_or_ambiguous");
-			return false;
-		}
+		m_NodeIds.Clear();
+		int mismatchesBefore = m_Report.coordinateMismatchCount;
 		m_Capacity = new ME_CA_StorageCapacityReport();
-		m_Capacity.baseName = m_BaseName;
+		m_Capacity.baseName = m_BaseSource.GetName();
 		m_Capacity.baseSourceId = m_BaseSource.GetID().ToString();
 		m_Capacity.worldPath = m_Report.worldPath;
 		m_Capacity.gameVersion = m_Report.gameVersion;
@@ -207,7 +245,7 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 		m_Capacity.warnings.Insert("Prefab references identify owners, not exact inherited field definitions; editor IDs are provisional.");
 		AddNode(m_BaseSource);
 		InspectStorage(m_BaseSource, 0);
-		m_Capacity.coordinateMismatchCount = m_Report.coordinateMismatchCount;
+		m_Capacity.coordinateMismatchCount = m_Report.coordinateMismatchCount - mismatchesBefore;
 		m_Capacity.recordCount = m_Capacity.resources.Count();
 		m_Report.diagnosticEntityCount = m_Capacity.recordCount;
 		for (int sceneIndex = 0; sceneIndex < m_Capacity.subsceneCount; sceneIndex++)
@@ -217,6 +255,63 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 			scene.name = m_Api.GetWorld().GetSubSceneName(sceneIndex);
 			m_Capacity.subscenes.Insert(scene);
 		}
-		return context.WriteValue("", m_Capacity);
+		return m_Capacity;
+	}
+
+	override protected bool WriteReport(JsonSaveContext context)
+	{
+		if (!m_AllBases)
+		{
+			if (m_BaseMatches != 1 || !m_BaseSource)
+			{
+				Fail("source_base_name_missing_or_ambiguous");
+				return false;
+			}
+			return context.WriteValue("", BuildSelectedReport());
+		}
+		if (m_BaseSources.IsEmpty())
+		{
+			Fail("no_source_bases_found");
+			return false;
+		}
+		ME_CA_StorageCapacityBatchReport batch = new ME_CA_StorageCapacityBatchReport();
+		batch.worldPath = m_Report.worldPath;
+		batch.gameVersion = m_Report.gameVersion;
+		batch.generatedAtUTC = m_Report.generatedAtUTC;
+		batch.outputPath = m_Report.outputPath;
+		batch.subsceneCount = m_Report.subsceneCount;
+		batch.editorEntityCountBefore = m_Report.editorEntityCountBefore;
+		batch.editorEntityCountAfter = m_Report.editorEntityCountAfter;
+		batch.editorEntityCountUnchanged = m_Report.editorEntityCountUnchanged;
+		batch.visitedSourceCount = m_Report.visitedSourceCount;
+		batch.warnings.Copy(m_Report.warnings);
+		foreach (IEntitySource baseSource : m_BaseSources)
+		{
+			m_BaseSource = baseSource;
+			ME_CA_StorageCapacityReport selected = BuildSelectedReport();
+			ME_CA_StorageCapacitySection section = new ME_CA_StorageCapacitySection();
+			section.baseName = selected.baseName;
+			section.baseSourceId = selected.baseSourceId;
+			section.recordCount = selected.recordCount;
+			section.coordinateMismatchCount = selected.coordinateMismatchCount;
+			foreach (ME_CA_StorageNode node : selected.nodes)
+				section.nodes.Insert(node);
+			foreach (ME_CA_StorageResource resource : selected.resources)
+				section.resources.Insert(resource);
+			section.warnings.Copy(selected.warnings);
+			batch.bases.Insert(section);
+			batch.recordCount += section.recordCount;
+		}
+		batch.baseCount = batch.bases.Count();
+		batch.coordinateMismatchCount = m_Report.coordinateMismatchCount;
+		m_Report.diagnosticEntityCount = batch.recordCount;
+		for (int index = 0; index < batch.subsceneCount; index++)
+		{
+			ME_CA_ReportSubscene scene = new ME_CA_ReportSubscene();
+			scene.index = index;
+			scene.name = m_Api.GetWorld().GetSubSceneName(index);
+			batch.subscenes.Insert(scene);
+		}
+		return context.WriteValue("", batch);
 	}
 }

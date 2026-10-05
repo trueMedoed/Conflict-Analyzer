@@ -48,6 +48,4 @@
 
 Если вложенных физических контейнеров не найдено, вместимость базы показывается как `unknown`: это не доказательство отсутствия связанных хранилищ. Source ID и ближайший prefab сохраняются; точный ресурс определения унаследованных полей пока unknown.
 
-Источники: [Harbors.json](../revisions/r0004/Supplies/Harbors.json), [состав хранилищ и контейнеров](../revisions/r0004/Supplies/StorageCapacity.md), [StorageCapacity.json](../revisions/r0004/Supplies/StorageCapacity.json), [метаданные](../revisions/r0004/world.json).
-
-Предыдущая таблица: [исходный r0001](../revisions/r0001/Supplies/Harbors.md).
+Источники: [Harbors.json](Harbors.json), [состав хранилищ и контейнеров](StorageCapacity.md), [StorageCapacity.json](StorageCapacity.json), [метаданные](../world.json).

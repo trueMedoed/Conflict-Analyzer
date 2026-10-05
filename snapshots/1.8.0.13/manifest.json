@@ -29,10 +29,10 @@
       "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0001",
       "revisionId": "r0001",
       "status": "partial",
-      "world": "worlds/CTI_Campaign_HQC_Eden/world.json",
-      "data": "worlds/CTI_Campaign_HQC_Eden/data.json",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0001/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0001/data.json",
       "reports": [
-        "worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md"
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0001/Supplies/Harbors.md"
       ],
       "sourceBaseCount": 18,
       "schemaVersion": 1,
@@ -78,10 +78,34 @@
       ],
       "scope": "configured_physical_storage_below_SP_A_EveronAirport",
       "analyzedBaseCount": 1
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0004",
+      "revisionId": "r0004",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "storage-capacity-batch-0.1",
+      "normalizerVersion": "all-source-capacity-0.1",
+      "capturedAtUTC": "2026-10-05T17:35:25Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/StorageCapacity.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/StorageCapacity.md"
+      ],
+      "sourceBaseCount": 18,
+      "knownCapacityBaseCount": 15,
+      "unknownCapacityBaseCount": 3,
+      "physicalContainerCount": 49
     }
   ],
   "warnings": [
-    "Archived partial revisions cover source-base income and configured physical storage of one selected base; other sections remain incomplete.",
+    "Archived partial revisions cover source-base income and configured descendant storage of all source bases; detached storage ownership and other sections remain incomplete.",
     "Configured dependencies are not a complete inventory of loaded addons.",
     "World resource GUID and release channel are unknown; cross-version identity matching remains unverified."
   ],

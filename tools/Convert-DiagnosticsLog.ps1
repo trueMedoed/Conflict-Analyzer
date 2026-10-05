@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity')][string]$ReportKind = 'Diagnostics'
+    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -28,7 +28,15 @@ if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
     $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
     throw 'Report metadata or editor entity counts are inconsistent.'
 }
-if ($ReportKind -eq 'StorageCapacity') {
+if ($ReportKind -eq 'StorageCapacityBatch') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'source-bases-storage-capacity' -or
+        $report.selection -ne 'all-source-base-descendant-resource-containers' -or
+        $report.bases.Count -ne $report.baseCount -or $report.baseCount -le 0 -or
+        ($report.bases | Measure-Object -Property recordCount -Sum).Sum -ne $report.recordCount) {
+        throw 'Batch storage-capacity report metadata or counts are inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} elseif ($ReportKind -eq 'StorageCapacity') {
     if ($report.schemaVersion -ne 2 -or $report.kind -ne 'source-base-storage-capacity' -or
         $report.selection -ne 'source-base-descendant-resource-containers' -or
         !$report.baseName -or !$report.baseSourceId -or $report.resources.Count -ne $report.recordCount -or
