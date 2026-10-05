@@ -13,6 +13,7 @@
 • Added a World Editor source diagnostic plugin and checked JSON extraction from the Workbench log.
 • Verified source inventory and world coordinates on HQC Everon in game / Workbench 1.8.0.13.
 • Added a partial versioned snapshot and generated Harbors report for 18 supply source bases, preserving raw seconds and displaying intervals in minutes.
+• Added a targeted source-base export and schemaVersion 2 revision with separate Harbors.json and a shared section index; broad diagnostics remain a separate command.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -24,4 +25,5 @@
 • Добавлены плагин диагностики source в World Editor и проверяемая сборка JSON из журнала Workbench.
 • Инвентаризация источников и мировые координаты проверены на HQC Everon в игре / Workbench 1.8.0.13.
 • Добавлены частичный снимок по версии игры и генерируемый отчёт Harbors для 18 баз-источников припасов; исходные секунды сохранены, интервал отображается в минутах.
+• Добавлены целевой экспорт баз-источников и ревизия schemaVersion 2 с отдельным Harbors.json и общим индексом разделов; широкая диагностика остаётся отдельной командой.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

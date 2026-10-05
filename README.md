@@ -2,7 +2,7 @@
 
 Мод-помощник для исследования миров Conflict в Arma Reforger. Планируется автоматически собирать таблицы групп ИИ, источников припасов, стартовых баз и точек появления машин по аналогии с `how-does-this-work/Arma-Reforger/Conflict/Constants`.
 
-**Статус: диагностический прототип Workbench и первый частичный снимок.** Команда читает editor source открытого мира и выгружает частичный JSON с полями компонентов, слоями, prefab и координатами. Проверен установленный `CTI_Campaign_HQC_Eden.ent` версии **1.8.0.13**. Из диагностики собрана [таблица 18 баз-источников припасов](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md) с количеством пополнения за цикл и интервалом в минутах. Полный анализ четырёх разделов, разрешение каталогов групп и сравнение версий ещё не готовы. План находится в [TODO.md](TODO.md).
+**Статус: целевой экспорт баз-источников и отдельная диагностика Workbench.** Проверен установленный `CTI_Campaign_HQC_Eden.ent` версии **1.8.0.13**. Новая команда отбирает только `SCR_CampaignSourceBaseComponent` и четыре нужных поля; [ревизия r0002](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0002/Supplies/Harbors.md) содержит отдельный `Harbors.json` и таблицу 18 источников с пополнением за цикл и интервалом в минутах. Полный анализ четырёх разделов, разрешение каталогов групп и сравнение версий ещё не готовы. План находится в [TODO.md](TODO.md).
 
 Первый эксперимент нашёл **299 точек ИИ**, **181 ambient-точку машин**, **18 баз-источников припасов** и **8 кандидатов HQ**. Это настройки источников, а не число появившихся бойцов, машин или выбранных штабов. Подробности — [отчёт эксперимента](docs/experiments/HQC_Eden_1.8.0.13.md), запуск — [диагностика source](docs/SOURCE_DIAGNOSTICS.md).
 
@@ -29,6 +29,7 @@ Conflict Analyzer/
     DATA_LAYOUT.md
     EXPORT_ALGORITHM.md
     SOURCE_DIAGNOSTICS.md
+    SUPPLY_SOURCES.md
     VALIDATION.md
     experiments/
       HQC_Eden_1.8.0.13.md
@@ -41,9 +42,11 @@ Conflict Analyzer/
     resourceDatabase.rdb
     Scripts/WorkbenchGame/WorldEditor/
       ME_CA_WorldDiagnosticsPlugin.c
+      ME_CA_SupplySourcesPlugin.c
   tools/
     Convert-DiagnosticsLog.ps1
     Convert-SupplySources.ps1
+    New-SupplySourcesReport.ps1
   snapshots/
     README.md
     1.8.0.13/
@@ -53,6 +56,12 @@ Conflict Analyzer/
         data.json
         Supplies.md
         Supplies/Harbors.md
+        revisions/r0002/
+          world.json
+          data.json
+          Supplies.md
+          Supplies/Harbors.json
+          Supplies/Harbors.md
   changes/
     README.md
 ```
@@ -72,7 +81,7 @@ Conflict Analyzer/
 
 `tools/Convert-SupplySources.ps1` преобразует нативную диагностику в частичный `data.json` и строит Markdown из сохранённого JSON. Он отказывается писать в существующий каталог. Подготовка выполняется в `exports/`, перенос проверенной ревизии в архив и обновление манифеста пока ручные. Исходные секунды сохраняются, минуты вычисляются делением на 60. Сравнение снимков ещё не реализовано. Подробности и команда запуска — [docs/DATA_LAYOUT.md](docs/DATA_LAYOUT.md), [архив снимков](snapshots/README.md) и [каталог сравнений](changes/README.md).
 
-Для дальнейшей реализации утверждён [алгоритм отбора и экспорта](docs/EXPORT_ALGORITHM.md): читать сценарий и его зависимости, включая Eden, сохранять только нужные объекты и поля, сразу распределять данные по JSON рядом с таблицами. Широкая диагностика остаётся отдельным режимом. Этот переход ещё не реализован; первый опубликованный снимок сохраняется в прежнем формате.
+В **r0002** реализован первый раздел [алгоритма экспорта](docs/EXPORT_ALGORITHM.md): базам-источникам соответствует `Supplies/Harbors.json`, Markdown строится из него, `data.json` содержит только индекс разделов. Нативный JSON целевой команды занимает **16 420 байт** и содержит 18 записей вместо 3 153 в широкой диагностике. Он сохраняет исходный мир каждой subscene, включая Eden; другие компоненты и поля не выгружаются. Подготовка ревизии выполняется `tools/New-SupplySourcesReport.ps1` без обязательного широкого дампа. Команда и пример запуска — [docs/SUPPLY_SOURCES.md](docs/SUPPLY_SOURCES.md). Перенос в архив и обновление манифеста пока ручные; `r0001` остаётся в прежнем формате.
 
 ## Открытие в Workbench
 

@@ -1,8 +1,9 @@
-<# Extract a complete native diagnostic report; reject truncated or mixed runs. #>
+<# Extract a complete native report; reject truncated or mixed runs. #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
-    [Parameter(Mandatory = $true)][string]$OutputPath
+    [Parameter(Mandatory = $true)][string]$OutputPath,
+    [ValidateSet('Diagnostics', 'SupplySources')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -10,7 +11,7 @@ $begin = @($lines | Where-Object { $_ -match '\[ME_CA_JSON_BEGIN\] characters=(\
 $end = @($lines | Where-Object { $_ -match '\[ME_CA_JSON_END\]\s*$' })
 $success = @($lines | Where-Object { $_ -match '\[ME_CA\] status=SUCCESS .*output=console-log\s*$' })
 if ($begin.Count -ne 1 -or $end.Count -ne 1 -or $success.Count -ne 1) {
-    throw 'Expected one complete, successful JSON diagnostic run in the log.'
+    throw 'Expected one complete, successful native JSON run in the log.'
 }
 $null = $begin[0] -match 'characters=(\d+)'
 $expectedLength = [int]$Matches[1]
@@ -23,10 +24,22 @@ if ($json.Length -ne $expectedLength) {
     throw "Incomplete JSON: expected $expectedLength characters, received $($json.Length)."
 }
 $report = $json | ConvertFrom-Json -ErrorAction Stop
-if ($report.schemaVersion -ne 1 -or $report.kind -ne 'editor-source-diagnostics' -or
-    !$report.worldPath -or $report.entities.Count -ne $report.diagnosticEntityCount -or
-    !$report.editorEntityCountUnchanged) {
-    throw 'Diagnostic report metadata or entity counts are inconsistent.'
+if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
+    $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
+    throw 'Report metadata or editor entity counts are inconsistent.'
+}
+if ($ReportKind -eq 'SupplySources') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'supply-source-bases' -or
+        $report.selection -ne 'SCR_CampaignSourceBaseComponent' -or $report.records.Count -ne $report.recordCount) {
+        throw 'Supply-source report metadata or record count is inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} else {
+    if ($report.schemaVersion -ne 1 -or $report.kind -ne 'editor-source-diagnostics' -or
+        $report.entities.Count -ne $report.diagnosticEntityCount) {
+        throw 'Diagnostic report metadata or entity counts are inconsistent.'
+    }
+    $recordCount = $report.diagnosticEntityCount
 }
 $absoluteOutput = [IO.Path]::GetFullPath($OutputPath)
 # CreateNew refuses to overwrite an existing export, including a concurrent one.
@@ -38,6 +51,7 @@ try { $writer.Write($json) } finally { $writer.Dispose() }
     GameVersion = $report.gameVersion
     WorldPath = $report.worldPath
     VisitedSources = $report.visitedSourceCount
-    DiagnosticEntities = $report.diagnosticEntityCount
+    RecordCount = $recordCount
+    Kind = $report.kind
     CoordinateMismatches = $report.coordinateMismatchCount
 }

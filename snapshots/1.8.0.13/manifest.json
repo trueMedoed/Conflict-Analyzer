@@ -1,19 +1,25 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "gameVersion": "1.8.0.13",
   "gameChannel": null,
   "gameChannelStatus": "unknown",
   "workbenchVersion": "1.8.0.13",
-  "diagnosticAnalyzerVersion": "source-diagnostics-0.1",
-  "normalizerVersion": "supply-sources-0.1",
-  "capturedAtUTC": "2026-10-05T11:18:05Z",
   "status": "partial",
   "addons": {
     "inventoryStatus": "partial",
     "configuredProjectDependencies": [
-      { "id": "ME_Conflict_Analyzer", "guid": "7778354B6C3C4B09" },
-      { "id": "ArmaReforger", "guid": "58D0FB3206B6F859" },
-      { "id": "core", "guid": "5614BBCCBB55ED1C" }
+      {
+        "id": "ME_Conflict_Analyzer",
+        "guid": "7778354B6C3C4B09"
+      },
+      {
+        "id": "ArmaReforger",
+        "guid": "58D0FB3206B6F859"
+      },
+      {
+        "id": "core",
+        "guid": "5614BBCCBB55ED1C"
+      }
     ],
     "completeLoadedInventory": null
   },
@@ -25,7 +31,32 @@
       "status": "partial",
       "world": "worlds/CTI_Campaign_HQC_Eden/world.json",
       "data": "worlds/CTI_Campaign_HQC_Eden/data.json",
-      "reports": ["worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md"],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md"
+      ],
+      "sourceBaseCount": 18,
+      "schemaVersion": 1,
+      "analyzerVersion": "source-diagnostics-0.1",
+      "normalizerVersion": "supply-sources-0.1",
+      "capturedAtUTC": "2026-10-05T11:18:05Z"
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0002",
+      "revisionId": "r0002",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "supply-source-bases-0.1",
+      "normalizerVersion": "supply-sources-0.2",
+      "capturedAtUTC": "2026-10-05T16:49:34Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0002/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0002/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0002/Supplies/Harbors.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0002/Supplies/Harbors.md"
+      ],
       "sourceBaseCount": 18
     }
   ],
@@ -33,5 +64,6 @@
     "Only source-base income and interval settings have been normalized.",
     "Configured dependencies are not a complete inventory of loaded addons.",
     "World resource GUID and release channel are unknown; cross-version identity matching remains unverified."
-  ]
+  ],
+  "firstCapturedAtUTC": "2026-10-05T11:18:05Z"
 }

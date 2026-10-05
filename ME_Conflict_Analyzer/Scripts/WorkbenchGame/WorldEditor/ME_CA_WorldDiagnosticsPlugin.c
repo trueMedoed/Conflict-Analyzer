@@ -120,6 +120,7 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 		m_Report.warnings.Insert("This is a diagnostic inventory, not a complete gameplay report.");
 		m_Report.warnings.Insert("Source IDs are editor identifiers; cross-session stability must be checked before using them as comparison keys.");
 		m_Report.warnings.Insert("Object-valued fields are listed but not recursively exported in this prototype.");
+		ConfigureReport();
 		m_Visited.Clear();
 		m_Records.Clear();
 		PrintFormat("[ME_CA] status=SCANNING world=%1 sources=%2 subscenes=%3", m_Report.worldPath, m_Report.editorEntityCountBefore, m_Report.subsceneCount);
@@ -153,7 +154,7 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 		if (editor.GetCmdLine("-ME_CA_LogJson", logJson) && logJson == "1")
 		{
 			m_Report.outputPath = "console-log";
-			if (!context.WriteValue("", m_Report))
+			if (!WriteReport(context))
 				Fail("json_serialization_failed");
 			else
 			{
@@ -178,7 +179,7 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 			return;
 		}
 		m_Report.outputPath = output;
-		if (!context.WriteValue("", m_Report) || !context.SaveToFile(output))
+		if (!WriteReport(context) || !context.SaveToFile(output))
 			Fail("json_export_failed");
 		else
 			PrintSuccess();
@@ -229,6 +230,24 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 	protected bool IsRelevant(string className)
 	{
 		return className.StartsWith("SCR_Campaign") || className.StartsWith("SCR_Ambient") || className.StartsWith("SCR_Resource") || className == "SCR_FactionAffiliationComponent" || className == "SCR_GameModeCampaign" || className == "SCR_AIGroup" || className == "SCR_CacheManagerComponent";
+	}
+
+	// Targeted reports reuse traversal and coordinate validation, not the broad DTO.
+	protected void ConfigureReport() {}
+
+	protected bool WriteReport(JsonSaveContext context)
+	{
+		return context.WriteValue("", m_Report);
+	}
+
+	protected bool ShouldReadField(BaseContainer container, string fieldName)
+	{
+		return true;
+	}
+
+	protected string GetExportStem()
+	{
+		return "ME_CA_WorldDiagnostics";
 	}
 
 	protected ME_CA_DiagnosticEntity Describe(IEntitySource source)
@@ -321,6 +340,8 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 		for (int index = 0; index < container.GetNumVars(); index++)
 		{
 			string fieldName = container.GetVarName(index);
+			if (!ShouldReadField(container, fieldName))
+				continue;
 			// Source event callbacks are strings in the editor schema, not configuration.
 			if (IEntitySource.Cast(container))
 			{
@@ -428,7 +449,7 @@ class ME_CA_WorldDiagnosticsPlugin : WorldEditorPlugin
 		int index = 1;
 		while (index <= 10000)
 		{
-			output = string.Format("%1/ME_CA_WorldDiagnostics_%2.json", folder, index);
+			output = string.Format("%1/%2_%3.json", folder, GetExportStem(), index);
 			if (!FileIO.FileExists(output))
 				return true;
 			index++;
