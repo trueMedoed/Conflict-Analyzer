@@ -1,0 +1,222 @@
+//! Configured storage composition below one explicitly named source base.
+class ME_CA_StorageNode
+{
+	string sourceId;
+	string parentSourceId;
+	string name;
+	ResourceName prefab;
+	int subscene;
+	string layer;
+	string positionStatus;
+	ref array<float> worldPositionMeters = {};
+}
+
+class ME_CA_StorageResource
+{
+	string sourceId;
+	int componentIndex;
+	string componentClass;
+	string containersStatus;
+	bool containersDirectOverride;
+	ref array<ref ME_CA_DiagnosticField> fields = {};
+	ref array<ref ME_CA_StorageContainer> containers = {};
+}
+
+class ME_CA_StorageContainer
+{
+	int index;
+	string className;
+	ref array<ref ME_CA_DiagnosticField> fields = {};
+}
+
+class ME_CA_StorageCapacityReport
+{
+	int schemaVersion = 2;
+	string kind = "source-base-storage-capacity";
+	string analyzerVersion = "storage-capacity-0.1";
+	string status = "partial";
+	string selection = "source-base-descendant-resource-containers";
+	string baseName;
+	string baseSourceId;
+	string worldPath;
+	string gameVersion;
+	string generatedAtUTC;
+	string outputPath;
+	int subsceneCount;
+	int editorEntityCountBefore;
+	int editorEntityCountAfter;
+	int visitedSourceCount;
+	int recordCount;
+	int coordinateMismatchCount;
+	bool editorEntityCountUnchanged;
+	ref array<ref ME_CA_ReportSubscene> subscenes = {};
+	ref array<string> warnings = {};
+	ref array<ref ME_CA_StorageNode> nodes = {};
+	ref array<ref ME_CA_StorageResource> resources = {};
+}
+
+[WorkbenchPluginAttribute(name: "Inspect source base storage capacity", description: "Read configured containers and their hierarchy below one source base; default: SP_A_EveronAirport.", wbModules: { "WorldEditor" }, category: "[ME] Conflict Analyzer/Reports")]
+class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
+{
+	protected string m_BaseName;
+	protected IEntitySource m_BaseSource;
+	protected int m_BaseMatches;
+	protected ref map<string, bool> m_NodeIds = new map<string, bool>();
+	protected ref ME_CA_StorageCapacityReport m_Capacity;
+
+	override protected void ConfigureReport()
+	{
+		m_BaseName = "SP_A_EveronAirport";
+		WorldEditor editor = Workbench.GetModule(WorldEditor);
+		string requested;
+		if (editor.GetCmdLine("-ME_CA_BaseName", requested) && !requested.IsEmpty())
+			m_BaseName = requested;
+		m_BaseSource = null;
+		m_BaseMatches = 0;
+		m_NodeIds.Clear();
+		m_Report.analyzerVersion = "storage-capacity-0.1";
+		m_Report.warnings.Clear();
+	}
+
+	override protected void Visit(IEntitySource source, int depth)
+	{
+		if (!source || m_Visited.Contains(source))
+			return;
+		m_Visited.Insert(source, true);
+		if (depth > 256)
+		{
+			m_Report.warnings.Insert("Source hierarchy depth limit reached.");
+			return;
+		}
+		if (source.GetName() == m_BaseName)
+		{
+			for (int index = 0; index < source.GetComponentCount(); index++)
+			{
+				IEntityComponentSource component = source.GetComponent(index);
+				if (component && component.GetClassName() == "SCR_CampaignSourceBaseComponent")
+				{
+					m_BaseMatches++;
+					m_BaseSource = source;
+					break;
+				}
+			}
+		}
+		for (int child = 0; child < source.GetNumChildren(); child++)
+			Visit(IEntitySource.Cast(source.GetChild(child)), depth + 1);
+	}
+
+	override protected bool ShouldReadField(BaseContainer container, string fieldName)
+	{
+		if (container.GetClassName() == "SCR_ResourceComponent")
+			return fieldName == "Enabled" || fieldName == "m_aDisabledResourceTypes";
+		return fieldName == "m_eResourceType" || fieldName == "m_eStorageType" || fieldName == "m_fResourceValueMax" || fieldName == "m_fResourceValueCurrent";
+	}
+
+	protected void AddNode(IEntitySource source)
+	{
+		string id = source.GetID().ToString();
+		if (m_NodeIds.Contains(id))
+			return;
+		IEntitySource parent = IEntitySource.Cast(source.GetParent());
+		if (source != m_BaseSource && parent)
+			AddNode(parent);
+		ME_CA_DiagnosticEntity entity = Describe(source);
+		ME_CA_StorageNode node = new ME_CA_StorageNode();
+		node.sourceId = entity.sourceId;
+		node.parentSourceId = entity.parentSourceId;
+		node.name = entity.name;
+		node.prefab = entity.prefab;
+		node.subscene = entity.subscene;
+		node.layer = entity.layer;
+		node.positionStatus = entity.positionStatus;
+		node.worldPositionMeters.Copy(entity.worldPosition);
+		m_Capacity.nodes.Insert(node);
+		m_NodeIds.Insert(id, true);
+	}
+
+	protected void InspectStorage(IEntitySource source, int depth)
+	{
+		if (!source || depth > 256)
+		{
+			m_Capacity.warnings.Insert("Storage subtree depth limit reached or source unavailable.");
+			return;
+		}
+		for (int index = 0; index < source.GetComponentCount(); index++)
+		{
+			IEntityComponentSource component = source.GetComponent(index);
+			if (!component || component.GetClassName() != "SCR_ResourceComponent")
+				continue;
+			AddNode(source);
+			ME_CA_StorageResource resource = new ME_CA_StorageResource();
+			resource.sourceId = source.GetID().ToString();
+			resource.componentIndex = index;
+			resource.componentClass = component.GetClassName();
+			resource.containersDirectOverride = component.IsVariableSetDirectly("m_aContainers");
+			ReadFields(component, resource.fields);
+			BaseContainerList containers = component.GetObjectArray("m_aContainers");
+			resource.containersStatus = "unknown";
+			if (containers)
+			{
+				resource.containersStatus = "resolved";
+				for (int item = 0; item < containers.Count(); item++)
+				{
+					ME_CA_StorageContainer entry = new ME_CA_StorageContainer();
+					entry.index = item;
+					BaseContainer config = containers.Get(item);
+					if (config)
+					{
+						entry.className = config.GetClassName();
+						ReadFields(config, entry.fields);
+					}
+					resource.containers.Insert(entry);
+				}
+			}
+			m_Capacity.resources.Insert(resource);
+		}
+		for (int child = 0; child < source.GetNumChildren(); child++)
+			InspectStorage(IEntitySource.Cast(source.GetChild(child)), depth + 1);
+	}
+
+	override protected string GetExportStem()
+	{
+		return "ME_CA_StorageCapacity";
+	}
+
+	override protected bool WriteReport(JsonSaveContext context)
+	{
+		if (m_BaseMatches != 1 || !m_BaseSource)
+		{
+			Fail("source_base_name_missing_or_ambiguous");
+			return false;
+		}
+		m_Capacity = new ME_CA_StorageCapacityReport();
+		m_Capacity.baseName = m_BaseName;
+		m_Capacity.baseSourceId = m_BaseSource.GetID().ToString();
+		m_Capacity.worldPath = m_Report.worldPath;
+		m_Capacity.gameVersion = m_Report.gameVersion;
+		m_Capacity.generatedAtUTC = m_Report.generatedAtUTC;
+		m_Capacity.outputPath = m_Report.outputPath;
+		m_Capacity.subsceneCount = m_Report.subsceneCount;
+		m_Capacity.editorEntityCountBefore = m_Report.editorEntityCountBefore;
+		m_Capacity.editorEntityCountAfter = m_Report.editorEntityCountAfter;
+		m_Capacity.visitedSourceCount = m_Report.visitedSourceCount;
+		m_Capacity.editorEntityCountUnchanged = m_Report.editorEntityCountUnchanged;
+		m_Capacity.warnings.Copy(m_Report.warnings);
+		m_Capacity.warnings.Insert("Configured physical descendant capacity only; runtime grid membership and dynamically built storage are not analyzed.");
+		m_Capacity.warnings.Insert("Virtual container views must not be added to physical capacity a second time.");
+		m_Capacity.warnings.Insert("Prefab references identify owners, not exact inherited field definitions; editor IDs are provisional.");
+		AddNode(m_BaseSource);
+		InspectStorage(m_BaseSource, 0);
+		m_Capacity.coordinateMismatchCount = m_Report.coordinateMismatchCount;
+		m_Capacity.recordCount = m_Capacity.resources.Count();
+		m_Report.diagnosticEntityCount = m_Capacity.recordCount;
+		for (int sceneIndex = 0; sceneIndex < m_Capacity.subsceneCount; sceneIndex++)
+		{
+			ME_CA_ReportSubscene scene = new ME_CA_ReportSubscene();
+			scene.index = sceneIndex;
+			scene.name = m_Api.GetWorld().GetSubSceneName(sceneIndex);
+			m_Capacity.subscenes.Insert(scene);
+		}
+		return context.WriteValue("", m_Capacity);
+	}
+}

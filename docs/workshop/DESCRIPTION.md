@@ -15,6 +15,7 @@ Current status
 • Tested on CTI_Campaign_HQC_Eden.ent in Arma Reforger / Workbench 1.8.0.13.
 • A repository-side converter builds a partial archived report of 18 supply source bases from the diagnostic JSON, with configured income per cycle, intervals in minutes and field provenance.
 • A separate source-base command now exports only the selected component and four fields. Its report builder writes Harbors.json beside the generated table; the shared data.json is a section index.
+• Added a selected-base storage inspection command. On Everon airport it resolves two storage compositions and five physical containers, totaling 4000 configured supplies capacity; virtual views are excluded from the sum. Other bases and runtime grid membership remain unverified.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features
@@ -35,5 +36,5 @@ Limitations
 • Reading only the .ent file is not sufficient: related layers, parent worlds, prefabs and configuration resources must be resolved.
 • Configured candidates and maximum possible counts do not guarantee what will spawn in a particular game session.
 • Values depend on the world and game version. Missing resources must be reported as unknown rather than zero.
-• Object-valued configurations and faction catalogs are not resolved by this diagnostic prototype. Found components are not gameplay totals or soldier counts.
+• Complete object-valued configurations and faction catalogs remain unresolved; the selected-base storage command reads only its required container settings. Found components are not gameplay totals or soldier counts.
 • Runtime diagnostics and an in-game interface are outside the initial proposed scope.

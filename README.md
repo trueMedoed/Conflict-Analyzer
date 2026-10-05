@@ -6,6 +6,8 @@
 
 Первый эксперимент нашёл **299 точек ИИ**, **181 ambient-точку машин**, **18 баз-источников припасов** и **8 кандидатов HQ**. Это настройки источников, а не число появившихся бойцов, машин или выбранных штабов. Подробности — [отчёт эксперимента](docs/experiments/HQC_Eden_1.8.0.13.md), запуск — [диагностика source](docs/SOURCE_DIAGNOSTICS.md).
 
+Для аэропорта `SP_A_EveronAirport` проверены [вместимость и состав хранилищ в r0003](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/Supplies/StorageCapacity.md): 3 контейнера по 1000 и 2 по 500, всего **4000 припасов**. Отдельная команда сохраняет физические контейнеры и исключает виртуальные представления из суммы. Это исследование одной базы; инструкция и границы результата — [STORAGE_CAPACITY.md](docs/STORAGE_CAPACITY.md).
+
 ## Что планируется извлекать
 
 | Раздел | Данные |
@@ -30,6 +32,7 @@ Conflict Analyzer/
     EXPORT_ALGORITHM.md
     SOURCE_DIAGNOSTICS.md
     SUPPLY_SOURCES.md
+    STORAGE_CAPACITY.md
     VALIDATION.md
     experiments/
       HQC_Eden_1.8.0.13.md
@@ -43,10 +46,12 @@ Conflict Analyzer/
     Scripts/WorkbenchGame/WorldEditor/
       ME_CA_WorldDiagnosticsPlugin.c
       ME_CA_SupplySourcesPlugin.c
+      ME_CA_StorageCapacityPlugin.c
   tools/
     Convert-DiagnosticsLog.ps1
     Convert-SupplySources.ps1
     New-SupplySourcesReport.ps1
+    New-StorageCapacityReport.ps1
   snapshots/
     README.md
     1.8.0.13/
@@ -104,7 +109,7 @@ Conflict Analyzer/
 
 Структура слоёв описана также в официальной [документации SCR_WorldFilesHelper](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/interfaceSCR__WorldFilesHelper.html). Возможности будущего плагина нужно сверить с API установленной версии Workbench.
 
-Прототип читает доступные значения и признак прямого override, но пока не раскрывает вложенные объектные конфиги и полную цепочку происхождения. Для source base количество дохода отделено от вместимости, интервал представлен в секундах и минутах. Вместимость, условия дохода, единицы остальных настроек и правила суммирования складов ещё нужно проверить. Неполные данные обозначаются явно. Runtime-диагностика, вооружение бойцов и стоимость строительства остаются отдельными возможными расширениями.
+Широкая диагностика читает доступные примитивные значения и признак override; отдельная команда вместимости раскрывает только нужный вложенный список m_aContainers. Полная цепочка происхождения, другие объектные конфиги и runtime-связи ещё не разрешены. Для source base количество дохода отделено от вместимости, интервал представлен в секундах и минутах. Для остальных баз вместимость и состав ещё нужно проверить; условия дохода, единицы других настроек и runtime-принадлежность складов остаются для исследования. Неполные данные обозначаются явно. Runtime-диагностика, вооружение бойцов и стоимость строительства остаются отдельными возможными расширениями.
 
 ## Workshop
 

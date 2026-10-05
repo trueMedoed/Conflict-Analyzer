@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [ValidateSet('Diagnostics', 'SupplySources')][string]$ReportKind = 'Diagnostics'
+    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -28,7 +28,15 @@ if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
     $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
     throw 'Report metadata or editor entity counts are inconsistent.'
 }
-if ($ReportKind -eq 'SupplySources') {
+if ($ReportKind -eq 'StorageCapacity') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'source-base-storage-capacity' -or
+        $report.selection -ne 'source-base-descendant-resource-containers' -or
+        !$report.baseName -or !$report.baseSourceId -or $report.resources.Count -ne $report.recordCount -or
+        @($report.nodes | Where-Object sourceId -eq $report.baseSourceId).Count -ne 1) {
+        throw 'Storage-capacity report metadata or record count is inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} elseif ($ReportKind -eq 'SupplySources') {
     if ($report.schemaVersion -ne 2 -or $report.kind -ne 'supply-source-bases' -or
         $report.selection -ne 'SCR_CampaignSourceBaseComponent' -or $report.records.Count -ne $report.recordCount) {
         throw 'Supply-source report metadata or record count is inconsistent.'
