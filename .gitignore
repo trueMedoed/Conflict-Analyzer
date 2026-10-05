@@ -1,0 +1,16 @@
+# Personal editor and agent settings
+.claude/settings.local.json
+.claude/worktrees/
+.vscode/
+.vs/
+
+# Logs, scratch files and generated reports
+logs/
+*.log
+*.tmp
+*.bak
+*~
+work/
+exports/
+
+# Source resources, .meta files and resourceDatabase.rdb are intentionally tracked.
