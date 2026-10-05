@@ -24,6 +24,7 @@ Conflict Analyzer/
   README.md
   TODO.md
   docs/
+    DATA_LAYOUT.md
     VALIDATION.md
     workshop/
       DESCRIPTION.md
@@ -32,6 +33,10 @@ Conflict Analyzer/
   ME_Conflict_Analyzer/
     addon.gproj
     resourceDatabase.rdb
+  snapshots/
+    README.md
+  changes/
+    README.md
 ```
 
 Проект addon: [ME_Conflict_Analyzer/addon.gproj](ME_Conflict_Analyzer/addon.gproj).
@@ -40,6 +45,14 @@ Conflict Analyzer/
 - Собственный GUID: `7778354B6C3C4B09`.
 - Зависимость: базовая Arma Reforger, `58D0FB3206B6F859`.
 - Скрипты и игровые ресурсы добавляются после уточнения плана. `resourceDatabase.rdb` создан установленным Workbench при первичном сканировании и хранится в Git.
+
+## Архив данных и сравнения
+
+Утверждённая структура: **версия игры → сценарий мира → данные и таблицы**. Постоянные снимки хранятся в `snapshots/<game-version>/worlds/<scenario-key>/`, отчёты сравнения — отдельно в `changes/<old-version>_to_<new-version>/`. Оба каталога находятся в корне репозитория и сохраняются в Git; временная подготовка выгрузок выполняется в игнорируемом `exports/`.
+
+В снимке будут манифест версии, метаданные сценария, структурированный `data.json` и четыре Markdown-таблицы по ИИ, припасам, стартовым базам и машинам. Таблицы генерируются из JSON; сравнение использует стабильные идентификаторы и явно учитывает версии анализатора, схемы и набор addon.
+
+Сейчас созданы только описания каталогов; анализ, сборка снимков и сравнение ещё не реализованы. Подробности — [docs/DATA_LAYOUT.md](docs/DATA_LAYOUT.md), [архив снимков](snapshots/README.md) и [каталог сравнений](changes/README.md).
 
 ## Открытие в Workbench
 
