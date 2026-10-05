@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "1.8.0.13",
+  "gameChannel": null,
+  "gameChannelStatus": "unknown",
+  "workbenchVersion": "1.8.0.13",
+  "diagnosticAnalyzerVersion": "source-diagnostics-0.1",
+  "normalizerVersion": "supply-sources-0.1",
+  "capturedAtUTC": "2026-10-05T11:18:05Z",
+  "status": "partial",
+  "addons": {
+    "inventoryStatus": "partial",
+    "configuredProjectDependencies": [
+      { "id": "ME_Conflict_Analyzer", "guid": "7778354B6C3C4B09" },
+      { "id": "ArmaReforger", "guid": "58D0FB3206B6F859" },
+      { "id": "core", "guid": "5614BBCCBB55ED1C" }
+    ],
+    "completeLoadedInventory": null
+  },
+  "worlds": [
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0001",
+      "revisionId": "r0001",
+      "status": "partial",
+      "world": "worlds/CTI_Campaign_HQC_Eden/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/data.json",
+      "reports": ["worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md"],
+      "sourceBaseCount": 18
+    }
+  ],
+  "warnings": [
+    "Only source-base income and interval settings have been normalized.",
+    "Configured dependencies are not a complete inventory of loaded addons.",
+    "World resource GUID and release channel are unknown; cross-version identity matching remains unverified."
+  ]
+}

@@ -13,6 +13,7 @@ Conflict Analyzer helps scenario authors investigate the configuration of a Conf
 Current status
 • A World Editor diagnostic command reads selected source entities, component fields, layers, prefab references and world positions into partial JSON.
 • Tested on CTI_Campaign_HQC_Eden.ent in Arma Reforger / Workbench 1.8.0.13.
+• A repository-side converter builds a partial archived report of 18 supply source bases from the diagnostic JSON, with configured income per cycle, intervals in minutes and field provenance.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features
