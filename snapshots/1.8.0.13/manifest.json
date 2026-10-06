@@ -447,6 +447,76 @@
       "matchingPolicy": "settlements_and_islands_first_then_generic_within_radius_then_ungrouped",
       "language": "en_us",
       "presentationPurpose": "manual_world_group_review"
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0014",
+      "revisionId": "r0014",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "named-locations-0.1",
+      "normalizerVersion": "location-catalog-0.6",
+      "capturedAtUTC": "2026-10-06T01:23:30Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0014/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0014/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0014/Locations.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0014/Locations.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0014/UngroupedObjects.md"
+      ],
+      "locationCount": 170,
+      "eligibleLocationCount": 86,
+      "excludedLocationCount": 84,
+      "visibleLocationCount": 30,
+      "catalogObjectCount": 142,
+      "radiusMeters": 300,
+      "associationCount": 128,
+      "associatedObjectCount": 118,
+      "unassignedObjectCount": 24,
+      "primaryMatchedObjectCount": 55,
+      "genericMatchedObjectCount": 63,
+      "locationFilter": {
+        "field": "MainType",
+        "method": "descriptor_type",
+        "allowedDescriptorTypes": [
+          "Name City",
+          "Name Town",
+          "Name Village",
+          "Name Settlement",
+          "Name Island",
+          "Name Hill",
+          "Name Generic"
+        ],
+        "excludedDescriptorTypes": [
+          "Name Water Minor",
+          "Name Water Major"
+        ],
+        "unknownDescriptorTypePolicy": "exclude",
+        "otherLocationPolicy": "exclude_without_fallback"
+      },
+      "matchingPriority": {
+        "field": "MainType",
+        "primaryDescriptorTypes": [
+          "Name City",
+          "Name Town",
+          "Name Village",
+          "Name Settlement",
+          "Name Island",
+          "Name Hill"
+        ],
+        "secondaryDescriptorTypes": [
+          "Name Generic"
+        ],
+        "selectionScope": "per_object",
+        "secondaryRule": "only_when_no_primary_location_within_radius",
+        "withinTierRule": "all_matches",
+        "radiusAppliesToBothTiers": true
+      },
+      "matchingPolicy": "settlements_islands_and_hills_first_then_generic_within_radius_then_ungrouped",
+      "language": "en_us",
+      "presentationPurpose": "manual_world_group_review"
     }
   ],
   "warnings": [
