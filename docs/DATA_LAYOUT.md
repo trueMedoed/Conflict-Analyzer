@@ -39,7 +39,7 @@ changes/
         CHANGES.md
 ```
 
-Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны одиннадцать частичных ревизий: доход баз, вместимость их потомков, остальные физические контейнеры и справочник локаций. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
+Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны двенадцать частичных ревизий: доход баз, вместимость их потомков, остальные физические контейнеры и справочник локаций. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
 
 Каталоги `snapshots/` и `changes/` находятся в корне репозитория, вне `ME_Conflict_Analyzer/`. Они хранятся в Git. `exports/` остаётся игнорируемым каталогом временных выгрузок и подготовки результатов.
 
@@ -165,4 +165,8 @@ Markdown строится по storageGroups: одна строка на ID ко
 
 ## Группы населённых пунктов в 300 м — r0011
 
-Пять канонических файлов: world.json, data.json, Locations.json, Locations.md и UngroupedObjects.md. Схема 2, normalizerVersion location-catalog-0.3; locationFilter.allowedDescriptorTypes допускает только Name City / Town / Village / Settlement. Все 170 исходных подписей / 142 объекта сохранены. 34 подписи допустимы; 47 объектов собраны у 13 населённых пунктов, 95 оставшихся представлены отдельно. unassignedObjects — точное дополнение к сгруппированным ID; обе Markdown-таблицы генерируются из общего Locations.json. data.json содержит ungroupedTable / ungroupedObjectCount. Корневые Locations.md и UngroupedObjects.md представляют r0011. Автоматического географического назначения оставшихся объектов нет; опубликованные ревизии и происхождение входов сохранены.
+Пять канонических файлов: world.json, data.json, Locations.json, Locations.md и UngroupedObjects.md. Схема 2, normalizerVersion location-catalog-0.3; locationFilter.allowedDescriptorTypes допускает только Name City / Town / Village / Settlement. Все 170 исходных подписей / 142 объекта сохранены. 34 подписи допустимы; 47 объектов собраны у 13 населённых пунктов, 95 оставшихся представлены отдельно. unassignedObjects — точное дополнение к сгруппированным ID; обе Markdown-таблицы генерируются из общего Locations.json. data.json содержит ungroupedTable / ungroupedObjectCount. Первые корневые представления этого этапа находились в r0011. Автоматического географического назначения оставшихся объектов нет; опубликованные ревизии и происхождение входов сохранены.
+
+## Name Generic для остатка — r0012
+
+Пять канонических файлов: world.json, data.json, Locations.json и две Markdown-таблицы. Схема 2, normalizerVersion location-catalog-0.4. allowedDescriptorTypes дополнен Name Generic; matchingPriority задаёт settlement первым, generic вторым только при отсутствии совпадений первого этапа, radiusAppliesToBothTiers=true. matchingTier хранится у подписи, selectionTier — у связи. 64 допустимые подписи из 170, 28 непустых групп; 47 объектов первого этапа сохранены, второй добавляет 63, 32 остаются без группы. 120 связей с 110 уникальными объектами, все 142 исходных объекта сохранены. Корневые таблицы представляют r0012; опубликованные ревизии и происхождение входов сохранены.

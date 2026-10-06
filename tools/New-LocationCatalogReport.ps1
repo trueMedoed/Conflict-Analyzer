@@ -1,5 +1,5 @@
-<# Group verified OtherContainers parents and Harbors bases around settlements.
-   Radius proximity allows multiple settlements and never establishes gameplay ownership. #>
+<# Group verified OtherContainers parents and Harbors bases around settlements, then Name Generic.
+   All matches in the selected tier are retained; proximity never establishes gameplay ownership. #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$LocationsReportPath,
@@ -7,7 +7,7 @@ param(
     [Parameter(Mandatory = $true)][string]$HarborsReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
     [ValidateRange(0.001, 100000)][double]$RadiusMeters = 300,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0011',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0012',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )
@@ -89,8 +89,9 @@ foreach ($record in ($harbor.records | Sort-Object name)) {
     })
 }
 $validObjects = @($objects | Where-Object { Is-Position $_.worldPositionMeters $_.positionStatus })
-$unmatched = @{}; foreach ($item in $objects) { $unmatched[$item.id] = $(if (Is-Position $item.worldPositionMeters $item.positionStatus) { 'no_settlement_within_radius' } else { 'position_unknown_or_invalid' }) }
-$locationFilter = [ordered]@{ field = 'MainType'; method = 'descriptor_type'; allowedDescriptorTypes = @('Name City','Name Town','Name Village','Name Settlement'); excludedDescriptorTypes = @('Name Water Minor','Name Water Major'); unknownDescriptorTypePolicy = 'exclude'; otherLocationPolicy = 'exclude_without_fallback' }
+$unmatched = @{}; foreach ($item in $objects) { $unmatched[$item.id] = $(if (Is-Position $item.worldPositionMeters $item.positionStatus) { 'no_settlement_or_generic_within_radius' } else { 'position_unknown_or_invalid' }) }
+$locationFilter = [ordered]@{ field = 'MainType'; method = 'descriptor_type'; allowedDescriptorTypes = @('Name City','Name Town','Name Village','Name Settlement','Name Generic'); excludedDescriptorTypes = @('Name Water Minor','Name Water Major'); unknownDescriptorTypePolicy = 'exclude'; otherLocationPolicy = 'exclude_without_fallback' }
+$matchingPriority = [ordered]@{ field = 'MainType'; primaryDescriptorTypes = @('Name City','Name Town','Name Village','Name Settlement'); secondaryDescriptorTypes = @('Name Generic'); selectionScope = 'per_object'; secondaryRule = 'only_when_no_primary_location_within_radius'; withinTierRule = 'all_matches'; radiusAppliesToBothTiers = $true }
 $locations = [Collections.Generic.List[object]]::new()
 $locationIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $associationCount = 0
@@ -101,35 +102,51 @@ foreach ($marker in ($native.locations | Sort-Object displayName,sourceId,compon
     $nameField = Field $marker 'DisplayName'; $typeField = Field $marker 'MainType'; $null = Field $marker 'UnitType'
     if ($nameField.status -ne 'resolved' -or $nameField.value -cne $marker.rawName) { throw 'Descriptor name origin is inconsistent.' }
     $descriptorType = $(if ($typeField.status -eq 'resolved' -and $typeField.enumLabel) { $typeField.enumLabel } else { 'unknown' })
-    $exclusionReason = $(if ($descriptorType -eq 'unknown') { 'descriptor_type_unknown' } elseif ($descriptorType -in $locationFilter.excludedDescriptorTypes) { 'excluded_inland_water_descriptor' } elseif ($descriptorType -notin $locationFilter.allowedDescriptorTypes) { 'not_a_settlement_descriptor' } else { $null })
+    $exclusionReason = $(if ($descriptorType -eq 'unknown') { 'descriptor_type_unknown' } elseif ($descriptorType -in $locationFilter.excludedDescriptorTypes) { 'excluded_inland_water_descriptor' } elseif ($descriptorType -notin $locationFilter.allowedDescriptorTypes) { 'not_an_allowed_descriptor' } else { $null })
     $matchingEligible = $null -eq $exclusionReason
-    $nearby = [Collections.Generic.List[object]]::new()
-    if ($matchingEligible -and (Is-Position $marker.worldPositionMeters $marker.positionStatus)) {
-        foreach ($item in $validObjects) {
-            $dx = [double]$item.worldPositionMeters[0] - [double]$marker.worldPositionMeters[0]
-            $dz = [double]$item.worldPositionMeters[2] - [double]$marker.worldPositionMeters[2]
-            $squaredDistance = $dx*$dx + $dz*$dz
-            # Evaluate the inclusive boundary before rounding display distances.
-            if ($squaredDistance -le $RadiusMeters*$RadiusMeters) {
-                $nearby.Add([pscustomobject][ordered]@{ objectId = $item.id; distanceMeters = [Math]::Sqrt($squaredDistance); method = 'horizontal_radius_proximity'; ownershipEstablished = $false })
-                $unmatched.Remove($item.id); $associationCount++
-            }
-        }
-    }
+    $matchingTier = $(if (!$matchingEligible) { $null } elseif ($descriptorType -in $matchingPriority.primaryDescriptorTypes) { 'settlement' } else { 'generic' })
     $locations.Add([pscustomobject][ordered]@{
         id = $id; name = $marker.displayName; nameStatus = $marker.nameStatus
         localizationKey = $(if ($marker.rawName.StartsWith('#')) { $marker.rawName } else { $null }); rawName = $marker.rawName
         language = $native.language; nameMethod = $marker.nameMethod
         descriptorType = $descriptorType; matchingEligible = $matchingEligible; matchingExclusionReason = $exclusionReason
+        matchingTier = $matchingTier
         sourceId = $marker.sourceId; parentSourceId = $marker.parentSourceId; sourceName = $marker.sourceName; prefab = $marker.prefab
         subscene = $marker.subscene; layer = $marker.layer; componentIndex = $marker.componentIndex; componentClass = $marker.componentClass
         worldPositionMeters = @($marker.worldPositionMeters); positionStatus = $marker.positionStatus
-        nearbyObjectCount = $nearby.Count; nearbyObjects = @($nearby | Sort-Object distanceMeters,objectId)
+        nearbyObjectCount = 0; nearbyObjects = @()
         provenance = [ordered]@{ fieldPath = "$($marker.componentClass).DisplayName"; method = 'BaseContainer.Get'; rawValue = $nameField.value; fieldStatus = $nameField.status; directOverride = $nameField.directOverride; fields = $marker.fields; definingResource = $null; definingResourceStatus = 'unknown' }
     })
 }
+# Keep settlement assignments first; Name Generic sees only the remaining objects.
+$nearbyByLocation = @{}
+foreach ($location in $locations) { $nearbyByLocation[$location.id] = [Collections.Generic.List[object]]::new() }
+$validLocations = @($locations | Where-Object { $_.matchingEligible -and (Is-Position $_.worldPositionMeters $_.positionStatus) })
+$settlementMatchedObjectCount = 0; $genericMatchedObjectCount = 0
+foreach ($item in $validObjects) {
+    $candidates = [Collections.Generic.List[object]]::new()
+    foreach ($location in $validLocations) {
+        $dx = [double]$item.worldPositionMeters[0] - [double]$location.worldPositionMeters[0]
+        $dz = [double]$item.worldPositionMeters[2] - [double]$location.worldPositionMeters[2]
+        $squaredDistance = $dx*$dx + $dz*$dz
+        if ($squaredDistance -le $RadiusMeters*$RadiusMeters) {
+            $candidates.Add([pscustomobject]@{ locationId = $location.id; tier = $location.matchingTier; distanceMeters = [Math]::Sqrt($squaredDistance) })
+        }
+    }
+    $primary = @($candidates | Where-Object tier -eq 'settlement')
+    if ($primary.Count) { $selected = $primary; $settlementMatchedObjectCount++ }
+    else { $selected = @($candidates.ToArray()); if ($selected.Count) { $genericMatchedObjectCount++ } }
+    foreach ($candidate in $selected) {
+        $nearbyByLocation[$candidate.locationId].Add([pscustomobject][ordered]@{ objectId = $item.id; distanceMeters = $candidate.distanceMeters; method = 'horizontal_radius_proximity'; ownershipEstablished = $false; selectionTier = $candidate.tier })
+        $unmatched.Remove($item.id); $associationCount++
+    }
+}
+foreach ($location in $locations) {
+    $location.nearbyObjects = @($nearbyByLocation[$location.id] | Sort-Object distanceMeters,objectId)
+    $location.nearbyObjectCount = $location.nearbyObjects.Count
+}
 $unassigned = @($unmatched.Keys | Sort-Object | ForEach-Object { [ordered]@{ objectId = $_; reason = $unmatched[$_] } })
-$warnings = @($native.warnings) + @('Only root parents in OtherContainers and source bases in Harbors are cataloged; AI, vehicles and HQ candidates are not added.', 'Only city, town, village and settlement descriptor types are matched; no geographic fallback is performed.', 'All settlements within the horizontal radius are retained; a single object may appear in several settlement lists but never in the ungrouped list.', 'Other descriptor types and unknown types are retained for provenance but excluded from matching.', 'Supply coordinates retain their previous verified snapshots and capture times; proximity does not establish gameplay ownership.')
+$warnings = @($native.warnings) + @('Only root parents in OtherContainers and source bases in Harbors are cataloged; AI, vehicles and HQ candidates are not added.', 'Settlements are matched first; Name Generic is used only if no settlement matches the object within the same radius.', 'All matches within the selected tier are retained; grouped objects never appear in the ungrouped list.', 'Other descriptor types and unknown types are retained for provenance but excluded from matching.', 'Supply coordinates retain their previous verified snapshots and capture times; proximity does not establish gameplay ownership.')
 $inputs = [ordered]@{
     locations = [ordered]@{ sha256 = $locationInput.hash; capturedAtUTC = $capturedAtUTC; analyzerVersion = $native.analyzerVersion }
     otherContainers = [ordered]@{ sha256 = $otherInput.hash; snapshotId = $other.snapshotId; capturedAtUTC = $other.capturedAtUTC; path = $otherFile }
@@ -138,18 +155,19 @@ $inputs = [ordered]@{
 $report = [ordered]@{
     schemaVersion = 2; kind = 'location-radius-catalog'; status = 'partial'; snapshotId = $snapshotId
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; capturedAtUTC = $capturedAtUTC; language = $native.language
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.3'; radiusMeters = $RadiusMeters
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.4'; radiusMeters = $RadiusMeters
     distanceMethod = 'horizontal_euclidean_XZ'; boundaryRule = 'distance_squared_less_than_or_equal_to_radius_squared'
-    matchingPolicy = 'all_settlements_within_radius_then_ungrouped'; locationFilter = $locationFilter; objectScope = @('other_supply_parent','supply_source_base'); inputs = $inputs
+    matchingPolicy = 'settlements_first_then_generic_within_radius_then_ungrouped'; matchingPriority = $matchingPriority; locationFilter = $locationFilter; objectScope = @('other_supply_parent','supply_source_base'); inputs = $inputs
     summary = [ordered]@{
         locationCount = $locations.Count; otherSupplyParentCount = $other.storageGroups.Count; supplySourceBaseCount = $harbor.records.Count
         objectCount = $objects.Count; validPositionObjectCount = $validObjects.Count; associatedObjectCount = $objects.Count - $unmatched.Count
         associationCount = $associationCount; unassignedObjectCount = $unmatched.Count
+        settlementMatchedObjectCount = $settlementMatchedObjectCount; genericMatchedObjectCount = $genericMatchedObjectCount
         locationsWithObjectsCount = @($locations | Where-Object nearbyObjectCount -gt 0).Count
         eligibleLocationCount = @($locations | Where-Object matchingEligible).Count
         excludedLocationCount = @($locations | Where-Object { !$_.matchingEligible }).Count
         excludedInlandWaterLocationCount = @($locations | Where-Object matchingExclusionReason -eq 'excluded_inland_water_descriptor').Count
-        excludedOtherLocationCount = @($locations | Where-Object matchingExclusionReason -eq 'not_a_settlement_descriptor').Count
+        excludedOtherLocationCount = @($locations | Where-Object matchingExclusionReason -eq 'not_an_allowed_descriptor').Count
         unknownLocationDescriptorTypeCount = @($locations | Where-Object matchingExclusionReason -eq 'descriptor_type_unknown').Count
         unknownLocationPositionCount = @($locations | Where-Object { !(Is-Position $_.worldPositionMeters $_.positionStatus) }).Count
     }
@@ -158,11 +176,11 @@ $report = [ordered]@{
 $world = [ordered]@{
     schemaVersion = 2; snapshotId = $snapshotId; revisionId = $RevisionId; revisionReason = $RevisionReason; status = 'partial'
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; worldPath = $native.worldPath; capturedAtUTC = $capturedAtUTC
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.3'; workbenchVersion = $WorkbenchVersion
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.4'; workbenchVersion = $WorkbenchVersion
     workbenchVersionStatus = $(if ($WorkbenchVersion) { 'provided_by_operator' } else { 'unknown' }); language = $native.language
     worldResourceGuid = $null; worldResourceGuidStatus = 'unknown'; gameChannel = $null; identityStatus = 'provisional_editor_ids'
     subscenes = $native.subscenes; editorEntityCountUnchanged = $native.editorEntityCountUnchanged
-    addons = [ordered]@{ inventoryStatus = 'unknown'; completeLoadedInventory = $null }; locationFilter = $locationFilter; inputs = $inputs; warnings = $warnings
+    addons = [ordered]@{ inventoryStatus = 'unknown'; completeLoadedInventory = $null }; matchingPriority = $matchingPriority; locationFilter = $locationFilter; inputs = $inputs; warnings = $warnings
 }
 $index = [ordered]@{
     schemaVersion = 2; kind = 'conflict-world-index'; snapshotId = $snapshotId; status = 'partial'; worldMetadata = 'world.json'
@@ -188,14 +206,14 @@ $lines = [Collections.Generic.List[string]]::new()
 $lines.Add("# Локации и объекты в радиусе $(Number $saved.radiusMeters) м"); $lines.Add('')
 $lines.Add('## Цель'); $lines.Add('')
 $lines.Add('Сверять, все ли объекты рядом с именованной локацией входят в её группу в мире, и находить объекты, которые разбросаны или находятся вне этой группы. Названия, расстояния и координаты помогают найти каждый объект в Workbench и проверить его место в иерархии.')
-$lines.Add(''); $lines.Add('Для каждого города, деревни или поселения собираются объекты в радиусе. Попавшие хотя бы в один список убираются из общего списка объектов без группы. Остальные показаны отдельно для ручного поиска связей. Другие локации автоматически не подбираются. Сейчас включены объекты OtherContainers и Harbors; точки машин и групп ИИ планируются позднее.')
+$lines.Add(''); $lines.Add('Сначала объекты собираются у городов, деревень и поселений. Оставшиеся сопоставляются с Name Generic в том же радиусе: аэропорты, электростанции, фермы и другие подписи этого типа. Внутри выбранного этапа сохраняются все совпадения. Попавшие хотя бы в один список убираются из общего списка без группы. Остальные показаны отдельно для ручного поиска связей. Сейчас включены объекты OtherContainers и Harbors; точки машин и групп ИИ планируются позднее.')
 $lines.Add(''); $lines.Add('## Summary'); $lines.Add('')
 $lines.Add("Локаций с объектами: **$($visibleLocations.Count)**. Допущено к сопоставлению: **$($saved.summary.eligibleLocationCount)** из **$($saved.summary.locationCount)** именованных подписей в JSON; исключено: **$($saved.summary.excludedLocationCount)**. Допустимых локаций без объектов скрыто: **$($saved.summary.eligibleLocationCount - $visibleLocations.Count)**. Объектов справочника: **$($saved.summary.objectCount)** — **$($saved.summary.otherSupplyParentCount)** родителей OtherContainers и **$($saved.summary.supplySourceBaseCount)** баз Harbors. Игра **$($saved.gameVersion)**, мир ``$scenarioKey.ent``, ревизия ``$RevisionId``, язык ``$($saved.language)``. Статус **partial**.")
-$lines.Add(''); $lines.Add("Радиус: **$(Number $saved.radiusMeters) м**, включительно. Расстояние по горизонтали X/Z. С населёнными пунктами сопоставлены **$($saved.summary.associatedObjectCount)** объектов; без группы **$($saved.summary.unassignedObjectCount)**. Всего связей **$($saved.summary.associationCount)**: при пересечении радиусов объект может входить в несколько списков населённых пунктов, но в списке без группы его уже нет.")
+$lines.Add(''); $lines.Add("Радиус: **$(Number $saved.radiusMeters) м**, включительно для обоих этапов. Расстояние по горизонтали X/Z. С разрешёнными локациями сопоставлены **$($saved.summary.associatedObjectCount)** объектов: **$($saved.summary.settlementMatchedObjectCount)** на первом этапе у населённых пунктов и **$($saved.summary.genericMatchedObjectCount)** на втором у Name Generic; без группы **$($saved.summary.unassignedObjectCount)**. Всего связей **$($saved.summary.associationCount)**: при пересечении радиусов объект может входить в несколько списков одного этапа, но в списке без группы его уже нет.")
 $lines.Add(''); $lines.Add('## Откуда берутся данные'); $lines.Add('')
 $lines.Add('| Данные | Источник |'); $lines.Add('| --- | --- |')
 $lines.Add('| Локация | Именованный MapDescriptor: поле `DisplayName`, исходный ключ / текст и перевод `WidgetManager.Translate`; язык `WidgetManager.GetLanguage`. |')
-$lines.Add('| Отбор локаций | Поле `MainType`: используются только `Name City` / `Name Town` / `Name Village` / `Name Settlement`. Все другие подписи и причины исключения сохранены в JSON. |')
+$lines.Add('| Отбор локаций | Поле `MainType`: используются `Name City` / `Name Town` / `Name Village` / `Name Settlement`, затем `Name Generic` только для оставшихся объектов. Все другие подписи и причины исключения сохранены в JSON. |')
 $lines.Add('| Координаты локации | Мировая позиция source-объекта подписи карты, включая родительский Eden; сверена с преобразованиями родителей. |')
 $lines.Add('| Объекты OtherContainers | Корневые родительские строки канонического отчёта r0006; позиции отдельных контейнеров не используются вместо позиции родителя. |')
 $lines.Add('| Объекты Harbors | 18 source base из r0004, с сохранёнными собственными именами и мировыми координатами. |')
@@ -218,23 +236,23 @@ foreach ($location in $visibleLocations) {
 }
 $lines.Add('## Объекты без группы'); $lines.Add('')
 $lines.Add('Отдельный список для просмотра: [UngroupedObjects.md](UngroupedObjects.md).'); $lines.Add('')
-if (!$saved.unassignedObjects.Count) { $lines.Add('Все объекты выбранных каталогов входят хотя бы в один радиус населённого пункта.'); $lines.Add('') }
+if (!$saved.unassignedObjects.Count) { $lines.Add('Все объекты выбранных каталогов вошли в групповые списки.'); $lines.Add('') }
 else {
     $lines.Add('| Объект | Координаты X Y Z, м |'); $lines.Add('| --- | --- |')
     foreach ($item in $ungroupedRows) { $lines.Add("| $(Text $item.name) | $(Position $item.worldPositionMeters $item.positionStatus) |") }
     $lines.Add('')
 }
 $lines.Add('## Ограничения'); $lines.Add('')
-$lines.Add('Группа в справочнике означает близость к подписи населённого пункта; фактическую иерархию мира, игровую базу и ресурсную сеть ещё проверяют вручную. Мир не изменяется. Несколько совпадений сохраняются; бухты, инфраструктура и прочие подписи автоматически не назначаются. Включены только OtherContainers и Harbors.')
+$lines.Add('Группа в справочнике означает близость к разрешённой подписи; фактическую иерархию мира, игровую базу и ресурсную сеть ещё проверяют вручную. Мир не изменяется. Несколько совпадений внутри одного этапа сохраняются. Бухты, водоёмы и прочие типы автоматически не назначаются. Включены только OtherContainers и Harbors.')
 $lines.Add(''); $lines.Add('Названия и координаты подписей прочитаны заново; объекты припасов сохраняют прежние проверенные снимки и даты сбора. Пустые подписи не включены; неразрешённые переводы и позиции обозначаются явно. Source ID — предварительные editor-идентификаторы, их устойчивость между версиями ещё не подтверждена.')
 $lines.Add(''); $lines.Add('В Markdown показаны только допустимые локации с объектами; исходные подписи, их типы / ID, причины исключения и локации без объектов сохранены в каноническом JSON для проверки и сравнения.')
 [IO.File]::WriteAllText((Join-Path $output 'Locations.md'), (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
 $remainingLines = [Collections.Generic.List[string]]::new()
 $remainingLines.Add('# Объекты без группы'); $remainingLines.Add('')
 $remainingLines.Add('## Цель'); $remainingLines.Add('')
-$remainingLines.Add('Просмотреть оставшиеся объекты и вручную определить, с какими локациями или группами мира они могут быть связаны. В этот список входят только объекты, не попавшие ни к одному городу, деревне или поселению в заданном радиусе. Автоматического назначения другим локациям нет.')
+$remainingLines.Add('Просмотреть оставшиеся объекты и вручную определить, с какими локациями или группами мира они могут быть связаны. В этот список входят только объекты, не попавшие ни к одному городу, деревне, поселению или Name Generic в заданном радиусе. Автоматического назначения другим типам локаций нет.')
 $remainingLines.Add(''); $remainingLines.Add('## Summary'); $remainingLines.Add('')
-$remainingLines.Add("Без группы: **$($saved.summary.unassignedObjectCount)** из **$($saved.summary.objectCount)** объектов. Радиус населённых пунктов: **$(Number $saved.radiusMeters) м**, по X/Z включительно. Мир ``$scenarioKey.ent``, игра **$($saved.gameVersion)**, ревизия ``$RevisionId``.")
+$remainingLines.Add("Без группы: **$($saved.summary.unassignedObjectCount)** из **$($saved.summary.objectCount)** объектов. Радиус обоих этапов: **$(Number $saved.radiusMeters) м**, по X/Z включительно. Мир ``$scenarioKey.ent``, игра **$($saved.gameVersion)**, ревизия ``$RevisionId``.")
 $remainingLines.Add(''); $remainingLines.Add('Данные и идентификаторы: [Locations.json](Locations.json), [метаданные](world.json). Сопоставленные объекты: [Locations.md](Locations.md).'); $remainingLines.Add('')
 $remainingLines.Add('| Объект | Координаты X Y Z, м |'); $remainingLines.Add('| --- | --- |')
 foreach ($item in $ungroupedRows) { $remainingLines.Add("| $(Text $item.name) | $(Position $item.worldPositionMeters $item.positionStatus) |") }
