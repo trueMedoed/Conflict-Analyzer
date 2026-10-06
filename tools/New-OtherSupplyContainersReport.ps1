@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory = $true)][string]$ReportPath,
     [Parameter(Mandatory = $true)][string]$KnownStorageReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0005',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0006',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )
@@ -112,19 +112,21 @@ $keys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $componentKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $matchedPhysical = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $matchedVirtual = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$incompleteGroups = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($resource in ($native.resources | Sort-Object sourceId, componentIndex)) {
     $componentKey = "$($resource.sourceId)/$($resource.componentIndex)"
     if (!$componentKeys.Add($componentKey) -or $resource.componentClass -ne 'SCR_ResourceComponent') { throw 'Duplicate or unexpected resource component.' }
     $path = @(Get-PathNodes $resource.sourceId)
     $node = $path[-1]
-    # Choose the nearest ancestor prefab for a readable composition label, not base ownership.
-    $group = $node
-    for ($index = $path.Count - 2; $index -ge 0; $index--) { if ($path[$index].prefab) { $group = $path[$index]; break } }
+    # Aggregate the whole root composition; retain the nearest nested storage separately.
+    $group = $path[0]
+    $nestedStorage = $node
+    for ($index = $path.Count - 2; $index -ge 0; $index--) { if ($path[$index].prefab) { $nestedStorage = $path[$index]; break } }
     $enabledField = Get-Field $resource 'Enabled'
     $enabled = if ($enabledField.status -eq 'resolved' -and $enabledField.value -in @('true','false')) { $enabledField.value -eq 'true' } else { $null }
     $disabledField = Get-Field $resource 'm_aDisabledResourceTypes'
     $suppliesEnabled = if ($disabledField.status -eq 'resolved') { '0' -notin @($disabledField.values) } else { $null }
-    if ($resource.containersStatus -ne 'resolved') { $unknownLists.Add($componentKey); $warnings.Add("Unknown container list: $componentKey") }
+    if ($resource.containersStatus -ne 'resolved') { $unknownLists.Add($componentKey); $warnings.Add("Unknown container list: $componentKey"); $null = $incompleteGroups.Add($group.sourceId) }
     foreach ($container in ($resource.containers | Sort-Object index)) {
         $key = "$componentKey/$($container.index)"
         if (!$keys.Add($key)) { throw 'Duplicate container slot.' }
@@ -136,6 +138,7 @@ foreach ($resource in ($native.resources | Sort-Object sourceId, componentIndex)
         $capacity = Get-Number $max
         $item = [pscustomobject][ordered]@{
             id = $key; groupSourceId = $group.sourceId; groupLabel = (Get-Label $group)
+            nestedStorageSourceId = $nestedStorage.sourceId; nestedStorageLabel = (Get-Label $nestedStorage)
             sourceId = $node.sourceId; parentSourceId = $node.parentSourceId; sourceName = $node.name; label = (Get-Label $node)
             prefab = $node.prefab; subscene = $node.subscene; layer = $node.layer; positionStatus = $node.positionStatus
             worldPositionMeters = @($node.worldPositionMeters); hierarchySourceIds = @($path.sourceId)
@@ -157,7 +160,7 @@ foreach ($resource in ($native.resources | Sort-Object sourceId, componentIndex)
         }
         if ($type.status -ne 'resolved' -or $type.type -ne 'INTEGER' -or $type.value -ne '0' -or $type.enumLabel -ne 'SUPPLIES') {
             $item | Add-Member -NotePropertyName excludedReason -NotePropertyValue 'not_confirmed_supplies'
-            $unresolved.Add($item); $warnings.Add("Unknown or unexpected resource type: $key")
+            $unresolved.Add($item); $warnings.Add("Unknown or unexpected resource type: $key"); $null = $incompleteGroups.Add($group.sourceId)
         } elseif ($container.className -eq 'SCR_ResourceContainerVirtual') {
             if ($knownVirtual.ContainsKey($key)) { Assert-KnownIdentity $item $knownVirtual[$key]; $null = $matchedVirtual.Add($key) }
             else { $virtualViews.Add($item) }
@@ -166,20 +169,36 @@ foreach ($resource in ($native.resources | Sort-Object sourceId, componentIndex)
             else { $records.Add($item); if ($null -eq $capacity) { $warnings.Add("Unknown physical capacity: $key") } }
         } else {
             $item | Add-Member -NotePropertyName excludedReason -NotePropertyValue 'unresolved_container_class'
-            $unresolved.Add($item); $warnings.Add("Unknown container class: $key")
+            $unresolved.Add($item); $warnings.Add("Unknown container class: $key"); $null = $incompleteGroups.Add($group.sourceId)
         }
     }
 }
 if ($matchedPhysical.Count -ne $knownPhysical.Count -or $matchedVirtual.Count -ne $knownVirtual.Count) { throw 'Previously reported slots are missing from the fresh world inventory.' }
-$groupRecords = @($records | Group-Object groupSourceId | Sort-Object Name | ForEach-Object {
-    $members = @($_.Group | Sort-Object id)
+$groupIds = @(@($records | ForEach-Object groupSourceId) + @($incompleteGroups) | Sort-Object -Unique)
+$groupRecords = @($groupIds | ForEach-Object {
+    $groupId = $_
+    $members = @($records | Where-Object groupSourceId -eq $groupId | Sort-Object id)
+    $groupNode = $nodes[$groupId]
     $subtotal = [double]0
-    foreach ($item in $members) { if ($null -ne $item.capacitySupplies) { $subtotal += $item.capacitySupplies } }
-    $complete = @($members | Where-Object capacityStatus -ne 'resolved').Count -eq 0
-    [ordered]@{ sourceId = $_.Name; label = (Get-Label $nodes[$_.Name]); prefab = $nodes[$_.Name].prefab
+    $initialSubtotal = [double]0
+    foreach ($item in $members) {
+        if ($null -ne $item.capacitySupplies) { $subtotal += $item.capacitySupplies }
+        if ($null -ne $item.configuredInitialSupplies) { $initialSubtotal += $item.configuredInitialSupplies }
+    }
+    $complete = @($members | Where-Object capacityStatus -ne 'resolved').Count -eq 0 -and !$incompleteGroups.Contains($groupId)
+    $initialComplete = @($members | Where-Object { $null -eq $_.configuredInitialSupplies }).Count -eq 0 -and !$incompleteGroups.Contains($groupId)
+    $composition = @($members | Group-Object capacitySupplies | ForEach-Object {
+        [ordered]@{ capacitySupplies = $_.Group[0].capacitySupplies; containerCount = $_.Count }
+    } | Sort-Object capacitySupplies)
+    [ordered]@{ sourceId = $groupId; label = (Get-Label $groupNode); sourceName = $groupNode.name; prefab = $groupNode.prefab
+        groupingMethod = 'root_source_ancestor'; subscene = $groupNode.subscene; layer = $groupNode.layer
+        positionStatus = $groupNode.positionStatus; worldPositionMeters = @($groupNode.worldPositionMeters)
+        nestedStorageGroupCount = @($members | Group-Object nestedStorageSourceId).Count
         physicalContainerCount = $members.Count; knownCapacitySubtotalSupplies = $subtotal
         capacitySupplies = $(if ($complete) { $subtotal } else { $null }); capacityStatus = $(if ($complete) { 'resolved' } else { 'unknown' })
-        containerIds = @($members.id) }
+        configuredInitialSupplies = $(if ($initialComplete) { $initialSubtotal } else { $null })
+        configuredInitialStatus = $(if ($initialComplete) { 'resolved' } else { 'unknown' }); knownConfiguredInitialSubtotalSupplies = $initialSubtotal
+        capacityComposition = $composition; containerIds = @($members | ForEach-Object id) }
 })
 $knownSubtotal = [double]0
 $initialSubtotal = [double]0
@@ -188,11 +207,13 @@ $capacityComplete = @($records | Where-Object capacityStatus -ne 'resolved').Cou
 $report = [ordered]@{
     schemaVersion = 2; kind = 'other-supply-containers-report'; snapshotId = $snapshotId; status = 'partial'
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; capturedAtUTC = $capturedAtUTC
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'other-supply-containers-0.1'; sourceReportSha256 = $inputReport.hash
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'other-supply-containers-0.2'; sourceReportSha256 = $inputReport.hash
+    grouping = 'root_source_ancestor'
     scope = 'configured_physical_SUPPLIES_slots_except_verified_base_storage'; unit = 'supplies'; count = $records.Count
     previousStorage = [ordered]@{ snapshotId = $known.snapshotId; reportSha256 = $inputKnown.hash; capturedAtUTC = $known.capturedAtUTC; excludedPhysicalSlotCount = $matchedPhysical.Count; excludedVirtualSlotCount = $matchedVirtual.Count }
     summary = [ordered]@{
         storageGroupCount = $groupRecords.Count; physicalContainerCount = $records.Count; virtualViewCount = $virtualViews.Count
+        nestedStorageGroupCount = @($records | Group-Object nestedStorageSourceId).Count
         unresolvedSlotCount = $unresolved.Count; unknownContainerListCount = $unknownLists.Count
         capacitySupplies = $(if ($capacityComplete) { $knownSubtotal } else { $null }); capacityStatus = $(if ($capacityComplete) { 'resolved' } else { 'unknown' })
         knownCapacitySubtotalSupplies = $knownSubtotal; knownConfiguredInitialSubtotalSupplies = $initialSubtotal
@@ -207,7 +228,7 @@ $world = [ordered]@{
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; worldPath = $native.worldPath; capturedAtUTC = $capturedAtUTC
     worldResourceGuid = $null; worldResourceGuidStatus = 'unknown'; gameChannel = $null; workbenchVersion = $WorkbenchVersion
     workbenchVersionStatus = $(if ($WorkbenchVersion) { 'provided_by_operator' } else { 'unknown' }); analyzerVersion = $native.analyzerVersion
-    normalizerVersion = 'other-supply-containers-0.1'; identityStatus = 'provisional_editor_ids'; subscenes = $native.subscenes
+    normalizerVersion = 'other-supply-containers-0.2'; identityStatus = 'provisional_editor_ids'; subscenes = $native.subscenes
     editorEntityCountUnchanged = $native.editorEntityCountUnchanged; addons = [ordered]@{ inventoryStatus = 'unknown'; completeLoadedInventory = $null }
     inputs = [ordered]@{ inventory = [ordered]@{ sha256 = $inputReport.hash; capturedAtUTC = $capturedAtUTC }; previousStorage = $report.previousStorage }
     warnings = $report.warnings
@@ -215,7 +236,7 @@ $world = [ordered]@{
 $index = [ordered]@{
     schemaVersion = 2; kind = 'conflict-world-index'; snapshotId = $snapshotId; status = 'partial'; worldMetadata = 'world.json'
     sections = [ordered]@{
-        supplies = [ordered]@{ status = 'partial'; otherContainers = [ordered]@{ count = $records.Count; path = 'Supplies/OtherContainers.json'; table = 'Supplies/OtherContainers.md' }; knownBaseStorage = [ordered]@{ snapshotId = $known.snapshotId; status = 'previous_verified_revision' } }
+        supplies = [ordered]@{ status = 'partial'; otherContainers = [ordered]@{ count = $records.Count; rowCount = $groupRecords.Count; grouping = 'root_source_ancestor'; path = 'Supplies/OtherContainers.json'; table = 'Supplies/OtherContainers.md' }; knownBaseStorage = [ordered]@{ snapshotId = $known.snapshotId; status = 'previous_verified_revision' } }
         aiGroups = [ordered]@{ status = 'not_analyzed' }; startingBases = [ordered]@{ status = 'not_analyzed' }
         vehicleSpawns = [ordered]@{ status = 'not_analyzed' }; locations = [ordered]@{ status = 'not_analyzed' }
     }
@@ -228,27 +249,31 @@ $saved = Get-Content -LiteralPath (Join-Path $output 'Supplies/OtherContainers.j
 function Number($Value) { if ($null -eq $Value) { return 'unknown' }; return ([double]$Value).ToString('0.######', $culture) }
 $lines = [Collections.Generic.List[string]]::new()
 $lines.Add('# Остальные контейнеры с припасами'); $lines.Add(''); $lines.Add('## Summary'); $lines.Add('')
-$lines.Add("Физических контейнеров: **$($saved.count)**, групп хранилищ / объектов: **$($saved.summary.storageGroupCount)**. Игра **$($saved.gameVersion)**, мир ``$scenarioKey.ent``, ревизия ``$RevisionId``. Статус **partial**.")
+$lines.Add("Родительских объектов: **$($saved.summary.storageGroupCount)**, вложенных хранилищ / объектов: **$($saved.summary.nestedStorageGroupCount)**, физических контейнеров: **$($saved.count)**. Игра **$($saved.gameVersion)**, мир ``$scenarioKey.ent``, ревизия ``$RevisionId``. Статус **partial**.")
 $lines.Add(''); $lines.Add("Из выборки исключены **$($saved.previousStorage.excludedPhysicalSlotCount)** физических контейнеров баз, уже сохранённых в ``$($known.snapshotId)``. Остальных виртуальных представлений: **$($saved.summary.virtualViewCount)**; они не входят в таблицу и сумму.")
 $lines.Add(''); $lines.Add("Вместимость найденных остальных контейнеров: **$(Number $saved.summary.capacitySupplies) припасов**; известный подытог **$(Number $saved.summary.knownCapacitySubtotalSupplies)**. Неопределённых слотов: **$($saved.summary.unresolvedSlotCount)**, списков: **$($saved.summary.unknownContainerListCount)**.")
 $lines.Add(''); $lines.Add('## Откуда берутся данные'); $lines.Add('')
 $lines.Add('| Столбец | Источник |'); $lines.Add('| --- | --- |')
-$lines.Add('| Хранилище / объект | Ближайший предок с prefab, либо сам объект; подпись по source name или имени prefab. Это группировка состава, не принадлежность игровой базе. |')
-$lines.Add('| Контейнер | Source name, либо имя файла prefab физического объекта. |')
-$lines.Add('| Вместимость, припасы | `SCR_ResourceComponent.m_aContainers[].m_fResourceValueMax`. |')
-$lines.Add('| Начальные припасы в конфиге | `m_fResourceValueCurrent`; это не фактический запас в игровой сессии. |')
-$lines.Add('| Координаты X / Y / Z, м | Мировая позиция editor entity, сверенная с преобразованиями родительской иерархии. |')
-$lines.Add('| Source ID / компонент / слот | Уникальная комбинация ID source, индекса компонента и индекса контейнера. |')
-$lines.Add(''); $lines.Add('## Контейнеры'); $lines.Add('')
-$lines.Add('| Хранилище / объект | Контейнер | Вместимость, припасы | Начальные припасы в конфиге | Координаты X / Y / Z, м | Source ID / компонент / слот |')
-$lines.Add('| --- | --- | ---: | ---: | --- | --- |')
-foreach ($item in ($saved.containers | Sort-Object groupLabel, label, id)) {
+$lines.Add('| Родитель | Верхний source-объект в цепочке родителей контейнера: например, `Base_PowerPlant_FIA_01`, включающий вложенный `Storage_ShedMetal_02_FIA_01`. Подпись по source name или имени prefab; разные экземпляры разделяются по ID. |')
+$lines.Add('| Контейнеров | Число уникальных физических SUPPLIES-слотов всех потомков родителя после исключения уже учтённых контейнеров баз. |')
+$lines.Add('| Состав, припасы | Число контейнеров каждого размера по `m_fResourceValueMax`, например `2 × 1000 + 1 × 500`. |')
+$lines.Add('| Вместимость, припасы | Сумма `SCR_ResourceComponent.m_aContainers[].m_fResourceValueMax` физических контейнеров родителя. |')
+$lines.Add('| Начальные припасы в конфиге | Сумма `m_fResourceValueCurrent`; это не фактический запас в игровой сессии. |')
+$lines.Add('| Координаты X / Y / Z, м | Мировая позиция родителя, сверенная с преобразованиями иерархии. Координаты каждого контейнера сохраняются в JSON. |')
+$lines.Add('| Source ID | ID родительского экземпляра. ID отдельных физических слотов и вложенных хранилищ сохраняются в JSON. |')
+$lines.Add(''); $lines.Add('## Родительские объекты'); $lines.Add('')
+$lines.Add('| Родитель | Контейнеров | Состав, припасы | Вместимость, припасы | Начальные припасы в конфиге | Координаты X / Y / Z, м | Source ID |')
+$lines.Add('| --- | ---: | --- | ---: | ---: | --- | --- |')
+foreach ($item in ($saved.storageGroups | Sort-Object label, sourceId)) {
     $position = if ($item.worldPositionMeters.Count -eq 3) { ($item.worldPositionMeters | ForEach-Object { Number $_ }) -join ' / ' } else { 'unknown' }
-    $lines.Add("| $($item.groupLabel) | $($item.label) | $(Number $item.capacitySupplies) | $(Number $item.configuredInitialSupplies) | $position | $($item.id) |")
+    $composition = ($item.capacityComposition | ForEach-Object { "$($_.containerCount) × $(Number $_.capacitySupplies)" }) -join ' + '
+    if (!$composition) { $composition = 'unknown' }
+    $lines.Add("| $($item.label) | $($item.physicalContainerCount) | $composition | $(Number $item.capacitySupplies) | $(Number $item.configuredInitialSupplies) | $position | $($item.sourceId) |")
 }
 $lines.Add(''); $lines.Add('## Ограничения'); $lines.Add('')
 $lines.Add('Включены настроенные физические `SUPPLIES`-слоты открытого мира и всех загруженных subscene, включая Eden. Декорации без ресурсного контейнера не считаются. Состояния компонента / типа ресурсов сохранены в JSON; настроенная вместимость не равна доступной вместимости во время игры.')
 $lines.Add(''); $lines.Add('Рядом расположенные склады не назначаются базе автоматически. Runtime-связи, динамические постройки и создаваемые во время игры контейнеры ещё не анализируются. Виртуальные представления и неопределённые записи сохранены отдельно в JSON; прежние контейнеры исключены после проверки ID, prefab, конфигурации и координат.')
+$lines.Add(''); $lines.Add('Одна строка объединяет все вложенные хранилища корневого родителя по явной source-иерархии. Полный состав физических контейнеров, их начальные припасы и позиции остаются в JSON. Автоматические суффиксы подписей Workbench не выводятся из пустого source name; экземпляр определяется ID и координатами.')
 $lines.Add(''); $lines.Add('Данные: [OtherContainers.json](OtherContainers.json). Метаданные и источники: [world.json](../world.json).')
 [IO.File]::WriteAllText((Join-Path $output 'Supplies/OtherContainers.md'), (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllText((Join-Path $output 'Supplies.md'), "# Припасы`n`nРевизия ``$RevisionId``: [остальные контейнеры](Supplies/OtherContainers.md), физические слоты ранее проверенных баз исключены. Принадлежность отдельных складов ресурсной сети пока не определена.`n", [Text.UTF8Encoding]::new($false))

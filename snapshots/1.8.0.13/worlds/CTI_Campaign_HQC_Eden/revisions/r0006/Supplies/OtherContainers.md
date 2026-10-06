@@ -157,4 +157,4 @@
 
 Одна строка объединяет все вложенные хранилища корневого родителя по явной source-иерархии. Полный состав физических контейнеров, их начальные припасы и позиции остаются в JSON. Автоматические суффиксы подписей Workbench не выводятся из пустого source name; экземпляр определяется ID и координатами.
 
-Данные: [OtherContainers.json](../revisions/r0006/Supplies/OtherContainers.json). Метаданные и источники: [world.json](../revisions/r0006/world.json).
+Данные: [OtherContainers.json](OtherContainers.json). Метаданные и источники: [world.json](../world.json).

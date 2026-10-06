@@ -10,7 +10,7 @@
 
 В [актуальную таблицу Harbors](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md) добавлен столбец «Вместимость хранилищ, припасы» для всех 18 точек. [r0004](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.md) содержит 49 физических контейнеров и полный состав вложенных хранилищ; 15 вместимостей определены, три остаются unknown из-за неподтверждённой связи отдельно расположенных складов. Прежний r0001 сохранён в `revisions/r0001/`; доход / интервалы взяты из проверенного r0002 с сохранением его времени и SHA-256.
 
-Найдены [остальные контейнеры с припасами](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md): **568 физических слотов** в **129 группах**, настроенная вместимость **190700 припасов**. [r0005](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0005/Supplies/OtherContainers.json) сохраняет их состав, начальные припасы, координаты и происхождение полей. Ранее учтённые контейнеры баз исключены после проверки идентичности; виртуальные представления не входят в сумму. Команда и ограничения — [OTHER_CONTAINERS.md](docs/OTHER_CONTAINERS.md).
+В [OtherContainers](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md) каждая строка теперь описывает корневого родителя со всеми вложенными хранилищами: **124 родителя**, **568 физических контейнеров**, **190700 припасов** настроенной вместимости. Для `Base_PowerPlant_FIA_01` итог — **21 × 100 = 2100**. [JSON r0006](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json) сохраняет индивидуальный состав и координаты слотов. В таблице показаны позиция родителя и суммы; одинаковые prefab в разных местах не объединяются. Прежние контейнеры баз и виртуальные представления исключены из суммы. [Алгоритм](docs/OTHER_CONTAINERS.md).
 
 ## Что планируется извлекать
 
@@ -75,7 +75,7 @@ Conflict Analyzer/
           Supplies.md
           Supplies/Harbors.json
           Supplies/Harbors.md
-        revisions/r0005/
+        revisions/r0006/
           world.json
           data.json
           Supplies.md

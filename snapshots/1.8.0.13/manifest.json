@@ -126,6 +126,32 @@
       "virtualViewCount": 129,
       "configuredCapacitySupplies": 190700.0,
       "excludedKnownPhysicalContainerCount": 49
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0006",
+      "revisionId": "r0006",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "world-supply-containers-0.1",
+      "normalizerVersion": "other-supply-containers-0.2",
+      "capturedAtUTC": "2026-10-05T17:55:53Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0006/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0006/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.md"
+      ],
+      "scope": "configured_physical_SUPPLIES_slots_except_verified_base_storage",
+      "grouping": "root_source_ancestor",
+      "physicalContainerCount": 568,
+      "storageGroupCount": 124,
+      "nestedStorageGroupCount": 129,
+      "virtualViewCount": 129,
+      "configuredCapacitySupplies": 190700.0,
+      "excludedKnownPhysicalContainerCount": 49
     }
   ],
   "warnings": [
