@@ -22,6 +22,7 @@
 • Simplified Locations Markdown to 150 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
 • Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
 • Reduced the default location radius from 1000 to 500 m in r0009: 348 links, 76 populated locations and seven unmatched objects retained; previous published revisions are preserved.
+• Excluded ponds, rivers, streams and lakes from matching by descriptor type in r0010: 24 excluded labels, 288 links and 16 unmatched objects; all original labels and objects remain in JSON.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -42,4 +43,5 @@
 • Locations Markdown упрощён до 150 списков локаций с объектами; типы, ID локаций и все 170 исходных подписей сохранены в JSON.
 • Locations оформлен для ручной сверки групп мира: позиции локаций в заголовках, позиции объектов и расстояния в списках; данные припасов и идентификаторы сохранены в JSON.
 • В r0009 радиус локаций по умолчанию уменьшен с 1000 до 500 м: 348 связей, 76 локаций с объектами; семь объектов без совпадений сохранены. Предыдущие опубликованные ревизии сохранены.
+• В r0010 пруды, реки, ручьи и озёра исключены из сопоставления по типу подписи: 24 исключённые локации, 288 связей, 16 объектов без совпадений; все исходные подписи и объекты сохранены в JSON.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.
