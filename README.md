@@ -8,7 +8,7 @@
 
 Для аэропорта `SP_A_EveronAirport` проверены [вместимость и состав хранилищ в r0003](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0003/Supplies/StorageCapacity.md): 3 контейнера по 1000 и 2 по 500, всего **4000 припасов**. Отдельная команда сохраняет физические контейнеры и исключает виртуальные представления из суммы. Это исследование одной базы; инструкция и границы результата — [STORAGE_CAPACITY.md](docs/STORAGE_CAPACITY.md).
 
-[Harbors](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md) теперь разбит по локациям: **14 из 18** баз в **15 группах**, **4** базы без группы в конце. Сохранены пополнение за цикл, интервал в минутах и вместимость; добавлены собственные координаты и расстояния до подписей. Данные вместимости из [r0004](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.json): **49** физических контейнеров, **40500** известного подытога; **3** вместимости остаются unknown. Доход / интервалы сохраняют происхождение и время r0002. Повторные строки не прибавляются к итогам.
+[Harbors](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md#harbors) теперь разбит по локациям: **14 из 18** баз в **15 группах**, **4** базы без группы в конце. Сохранены пополнение за цикл, интервал в минутах и вместимость; добавлены собственные координаты и расстояния до подписей. Данные вместимости из [r0004](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.json): **49** физических контейнеров, **40500** известного подытога; **3** вместимости остаются unknown. Доход / интервалы сохраняют происхождение и время r0002. Повторные строки не прибавляются к итогам.
 
 [OtherContainers](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md) теперь разбит по локациям: **109 из 124** родителей в **25 группах**, **15** без группы в конце. Состав / вместимость и начальные припасы сохранены: **568** физических контейнеров, **190700** настроенной вместимости. Для Base_PowerPlant_FIA_01 — **21 × 100 = 2100**. [Полный JSON r0006](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json) сохраняет индивидуальные слоты; координаты строки относятся к корневому родителю. Одноимённые экземпляры разделяются по ID, повторные связи не увеличивают итоги. [Алгоритм исходного каталога](docs/OTHER_CONTAINERS.md).
 
@@ -16,7 +16,7 @@
 
 Цель Locations — сверять группировку объектов у разрешённых локаций в Workbench и находить разбросанные объекты. В заголовке каждой группы указаны координаты локации; таблица содержит объект, расстояние и его собственные координаты. В конце Locations находится раздел «Объекты без группы» для ручного изучения оставшихся объектов. Населённые пункты, острова и холмы имеют равный приоритет над Name Generic; группы справочника не устанавливают фактическую принадлежность сущностей в мире.
 
-Отдельные таблицы припасов представлены в [r0017](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies.md). Они используют готовые связи Locations r0016, сохраняя радиус 350 м и приоритеты. [Генерация / структура представлений](docs/LOCATION_SUPPLIES.md).
+Таблицы припасов объединены в [OtherContainers.md](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md): сначала OtherContainers, в самом конце — [Harbors](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md#harbors). У каждого каталога сохранены собственные группы и объекты без группы. [Ревизия r0018](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0018/Supplies.md) использует прежние связи Locations r0016, радиус 350 м и значения припасов. JSON-каталоги остаются отдельными. [Генерация / структура](docs/LOCATION_SUPPLIES.md).
 
 ## Что планируется извлекать
 
@@ -68,6 +68,7 @@ Conflict Analyzer/
     New-AllSourceCapacityReport.ps1
     New-OtherSupplyContainersReport.ps1
     New-LocationCatalogReport.ps1
+    New-LocationSupplyReports.ps1
   snapshots/
     README.md
     1.8.0.13/
@@ -76,7 +77,6 @@ Conflict Analyzer/
         world.json
         data.json
         Supplies.md
-        Supplies/Harbors.md
         Supplies/OtherContainers.md
         Locations.md
         revisions/r0002/
@@ -96,6 +96,13 @@ Conflict Analyzer/
           data.json
           Locations.json
           Locations.md
+        revisions/r0018/
+          world.json
+          data.json
+          Supplies.md
+          Supplies/OtherContainers.json
+          Supplies/OtherContainers.md
+          Supplies/Harbors.json
   changes/
     README.md
 ```

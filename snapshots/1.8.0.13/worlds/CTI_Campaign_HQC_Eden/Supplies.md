@@ -1,6 +1,6 @@
 # Припасы
 
-Актуальная [таблица баз-источников](Supplies/Harbors.md) представляет r0004: пополнение, интервал и вместимость вложенных хранилищ 18 точек. Канонические [данные](revisions/r0004/Supplies/Harbors.json), [состав контейнеров](revisions/r0004/Supplies/StorageCapacity.md), [индекс](revisions/r0004/data.json) и [метаданные](revisions/r0004/world.json) находятся в ревизии.
+Базы-источники находятся [в конце объединённой таблицы припасов](Supplies/OtherContainers.md#harbors), ревизия r0018. Пополнение, интервалы и вместимость 18 точек сохраняют исходные данные r0004. [Канонические значения](revisions/r0004/Supplies/Harbors.json), [состав контейнеров](revisions/r0004/Supplies/StorageCapacity.md), [индекс исходного отчёта](revisions/r0004/data.json) и [метаданные](revisions/r0004/world.json) сохранены.
 
 Статус partial: у трёх баз принадлежность отдельно расположенных складов не определена. [Исходный r0001](revisions/r0001/Supplies.md) сохранён отдельно; корневые data.json / world.json остаются историческими файлами r0001.
 
@@ -8,4 +8,4 @@
 
 [Справочник локаций](Locations.md), r0016, в радиусе 350 м собирает объекты сначала у населённых пунктов, островов и холмов на равных условиях (62 объекта), затем у Name Generic для остатка (61). [19 оставшихся в конце справочника](Locations.md#объекты-без-группы) сохранены для ручного просмотра. Сопоставление по позиции подписи не определяет географические границы; исходный мир и таблицы припасов не изменяются.
 
-Корневые таблицы припасов теперь представлены по локациям в **r0017**: [OtherContainers](Supplies/OtherContainers.md) — 25 групп / 15 родителей без группы; отдельно [Harbors](Supplies/Harbors.md) — 15 групп / 4 базы без группы. [JSON OtherContainers](revisions/r0017/Supplies/OtherContainers.json), [JSON Harbors](revisions/r0017/Supplies/Harbors.json), [метаданные представлений](revisions/r0017/world.json). Значения / состав прежних каталогов и связи Locations r0016 сохранены; повторные строки не суммируются.
+Таблицы припасов объединены в **r0018**: [OtherContainers](Supplies/OtherContainers.md#othercontainers) — 25 групп / 15 родителей без группы, в конце [Harbors](Supplies/OtherContainers.md#harbors) — 15 групп / 4 базы без группы. [JSON OtherContainers](revisions/r0018/Supplies/OtherContainers.json), [JSON Harbors](revisions/r0018/Supplies/Harbors.json), [метаданные представлений](revisions/r0018/world.json). Все значения и связи r0017 сохранены; повторные строки не суммируются.

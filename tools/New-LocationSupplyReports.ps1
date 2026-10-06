@@ -6,7 +6,7 @@ param(
     [Parameter(Mandatory=$true)][string]$OtherContainersReportPath,
     [Parameter(Mandatory=$true)][string]$HarborsReportPath,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0017',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0018',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -28,7 +28,7 @@ Assert ($locationWorld.snapshotId -ceq $locations.snapshotId) 'Location metadata
 Assert ($otherInput.hash -ceq $locations.inputs.otherContainers.sha256 -and $other.snapshotId -ceq $locations.inputs.otherContainers.snapshotId -and $harborInput.hash -ceq $locations.inputs.harbors.sha256 -and $harbors.snapshotId -ceq $locations.inputs.harbors.snapshotId) 'Supply inputs differ from those used for Locations.'
 Assert ($locations.radiusMeters -gt 0 -and $locations.distanceMethod -ceq 'horizontal_euclidean_XZ') 'Unsupported location distance policy.'
 $version=$locations.gameVersion; $scenario=$locations.scenarioKey
-$snapshotId="$version/$scenario/$RevisionId"; $normalizer='location-grouped-supplies-0.1'
+$snapshotId="$version/$scenario/$RevisionId"; $normalizer='location-grouped-supplies-0.2'
 function RevisionPath($source,$file){Assert ($source.snapshotId -match "^$([regex]::Escape($version))/$([regex]::Escape($scenario))/(r[0-9]{4})$") 'Invalid snapshot identity.';"../$($Matches[1])/$file"}
 $locationPath=RevisionPath $locations 'Locations.json'; $locationWorldPath=RevisionPath $locations 'world.json'
 $otherPath=RevisionPath $other 'Supplies/OtherContainers.json'; $harborPath=RevisionPath $harbors 'Supplies/Harbors.json'
@@ -93,7 +93,7 @@ foreach($type in @('OtherContainers','Harbors')){
 }
 Assert ($reports.OtherContainers.summary.objectCount+$reports.Harbors.summary.objectCount -eq $catalog.Count) 'Unsupported extra object category.'
 $world=[ordered]@{schemaVersion=2;snapshotId=$snapshotId;revisionId=$RevisionId;revisionReason=$RevisionReason;status='partial';gameVersion=$version;scenarioKey=$scenario;worldPath=$locationWorld.worldPath;capturedAtUTC=$locations.capturedAtUTC;captureTimeMeaning='Inherited location capture time; supply captures are retained separately in inputs';normalizerVersion=$normalizer;analyzerVersion=$locations.analyzerVersion;inputs=$inputs;radiusMeters=$locations.radiusMeters;matchingPolicy=$locations.matchingPolicy;matchingPriority=$locations.matchingPriority;locationFilter=$locations.locationFilter;warnings=$warnings}
-$index=[ordered]@{schemaVersion=2;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{supplies=[ordered]@{status='partial';sourceBases=[ordered]@{path='Supplies/Harbors.json';table='Supplies/Harbors.md';ungroupedSection='Supplies/Harbors.md#объекты-без-группы';summary=$reports.Harbors.summary};otherContainers=[ordered]@{path='Supplies/OtherContainers.json';table='Supplies/OtherContainers.md';ungroupedSection='Supplies/OtherContainers.md#объекты-без-группы';summary=$reports.OtherContainers.summary}};locations=[ordered]@{status='previous_verified_revision';path=$locationPath;table=(RevisionPath $locations 'Locations.md')};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
+$index=[ordered]@{schemaVersion=2;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{supplies=[ordered]@{status='partial';sourceBases=[ordered]@{path='Supplies/Harbors.json';table='Supplies/OtherContainers.md#harbors';ungroupedSection='Supplies/OtherContainers.md#harbors-без-группы';summary=$reports.Harbors.summary};otherContainers=[ordered]@{path='Supplies/OtherContainers.json';table='Supplies/OtherContainers.md';ungroupedSection='Supplies/OtherContainers.md#othercontainers-без-группы';summary=$reports.OtherContainers.summary}};locations=[ordered]@{status='previous_verified_revision';path=$locationPath;table=(RevisionPath $locations 'Locations.md')};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
 $null=New-Item -ItemType Directory -Path (Join-Path $output 'Supplies')
 function WriteJson($path,$value){[IO.File]::WriteAllText((Join-Path $output $path),($value | ConvertTo-Json -Depth 40)+"`n",[Text.UTF8Encoding]::new($false))}
 WriteJson 'world.json' $world;WriteJson 'data.json' $index
@@ -103,12 +103,14 @@ function Distance($value){([double]$value).ToString('0.###',$culture)}
 function Text($value){([string]$value).Replace('|','\|').Replace("`r",' ').Replace("`n",' ').Trim()}
 function Position($value,$status){if($status -cne 'resolved' -or @($value).Count -ne 3){return 'unknown'};@($value | ForEach-Object {Number $_}) -join ' '}
 function Value($value,$status){if($status -cne 'resolved'){return 'unknown'};Number $value}
+$documents=[Collections.Generic.List[string]]::new()
+$documents.Add('# Припасы по локациям')
+$documents.Add('Сначала — [OtherContainers](#othercontainers), в конце — [Harbors](#harbors). Каждый каталог сохраняет свои значения, списки локаций и объекты без группы; повторные связи не увеличивают итоги.')
 foreach($type in @('OtherContainers','Harbors')){
     $saved=Get-Content -LiteralPath (Join-Path $output "Supplies/$type.json") -Raw -Encoding utf8 | ConvertFrom-Json
     $lookup=@{};foreach($record in $saved.records){$lookup[$record.objectId]=$record}
     $lines=[Collections.Generic.List[string]]::new()
-    $title=$(if($type -ceq 'OtherContainers'){'Остальные контейнеры с припасами по локациям'}else{'Базы-источники припасов по локациям'})
-    $lines.Add("# $title");$lines.Add('');$lines.Add('## Summary');$lines.Add('')
+    $lines.Add("## $type");$lines.Add('');$lines.Add('### Summary');$lines.Add('')
     $lines.Add("Всего объектов: **$($saved.summary.objectCount)**. По локациям сгруппированы **$($saved.summary.groupedObjectCount)**, без группы — **$($saved.summary.ungroupedObjectCount)**. Локаций с объектами этого каталога: **$($saved.summary.locationCount)**; связей — **$($saved.summary.associationCount)**. Радиус **$(Number $saved.radiusMeters) м** по X/Z. Игра **$version**, мир ``$scenario.ent``, ревизия ``$RevisionId``. Статус **partial**.")
     if($type -ceq 'OtherContainers'){
         $s=$saved.sourceSummary
@@ -118,7 +120,7 @@ foreach($type in @('OtherContainers','Harbors')){
         $s=$saved.sourceSummary
         $lines.Add('');$lines.Add("Портов: **$($s.harborCount)**, аэропортов: **$($s.airfieldCount)**. Вместимость определена у **$($s.resolvedCapacityBaseCount)** баз, у **$($s.unknownCapacityBaseCount)** — ``unknown``. Физических контейнеров: **$(Number $s.physicalContainerCount)**; известный подытог — **$(Number $s.knownCapacitySubtotalSupplies) припасов**.")
     }
-    $lines.Add('');$lines.Add('Итоги относятся к уникальным объектам исходного каталога. Объект может повторяться у нескольких локаций одного этапа; повторные строки не прибавляются к общему количеству или вместимости.');$lines.Add('');$lines.Add('## Откуда берутся данные');$lines.Add('')
+    $lines.Add('');$lines.Add('Итоги относятся к уникальным объектам исходного каталога. Объект может повторяться у нескольких локаций одного этапа; повторные строки не прибавляются к общему количеству или вместимости.');$lines.Add('');$lines.Add('### Откуда берутся данные');$lines.Add('')
     $lines.Add('| Данные | Источник |');$lines.Add('| --- | --- |')
     $lines.Add('| Локация и её координаты | Именованные MapDescriptor-подписи из проверенного Locations: DisplayName / перевод и мировая позиция. Заголовок раздела содержит имя и X Y Z подписи. |')
     $lines.Add('| Группировка и расстояние | Готовые связи Locations по ID объекта. Населённые пункты, острова и холмы имеют равный приоритет; Name Generic используется только для остатка. Новые совпадения не вычисляются. |')
@@ -133,10 +135,10 @@ foreach($type in @('OtherContainers','Harbors')){
         $lines.Add('| Пополнение, мин. | m_iSuppliesArrivalInterval: исходные секунды / 60, без усечения. |')
         $lines.Add('| Вместимость хранилищ, припасы | Сумма m_fResourceValueMax физических SUPPLIES-контейнеров в дочерней иерархии source base. Виртуальные представления исключены; неизвестная принадлежность остаётся unknown. |')
     }
-    $lines.Add('');$lines.Add("Данные представления: [$type.json]($type.json), [метаданные](../world.json). Исходные значения и подробный состав: [исходный каталог]($($saved.inputs.supplies.path)). Группировка: [Locations]($($saved.inputs.locations.path.Replace('Locations.json','Locations.md'))), [Locations.json]($($saved.inputs.locations.path)). [Объекты без группы](#объекты-без-группы).")
-    $lines.Add('');$lines.Add('## Ограничения');$lines.Add('')
+    $lines.Add('');$lines.Add("Данные представления: [$type.json]($type.json), [метаданные](../world.json). Исходные значения и подробный состав: [исходный каталог]($($saved.inputs.supplies.path)). Группировка: [Locations]($($saved.inputs.locations.path.Replace('Locations.json','Locations.md'))), [Locations.json]($($saved.inputs.locations.path)). [Объекты без группы](#$($type.ToLowerInvariant())-без-группы).")
+    $lines.Add('');$lines.Add('### Ограничения');$lines.Add('')
     $lines.Add('Это географические списки для ручной сверки. Близость к подписи не подтверждает родительскую группу в редакторе, принадлежность базе или ресурсной сети. Значения вместимости и начального запаса относятся к конфигу; runtime, динамические постройки и условия дохода пока не проверены. Unknown сохраняется, новый запуск Workbench не выполнялся.')
-    $lines.Add('');$lines.Add('## Объекты по локациям');$lines.Add('')
+    $lines.Add('');$lines.Add('### Объекты по локациям');$lines.Add('')
     function AddTable($items,$withDistance){
         if($type -ceq 'OtherContainers'){$columns='| Родитель | Контейнеров | Состав, припасы | Вместимость, припасы | Начальные припасы в конфиге | Координаты X Y Z, м | Source ID |';$separator='| --- | ---: | --- | ---: | ---: | --- | --- |'}else{$columns='| Название | Пополнение за цикл, припасы | Пополнение, мин. | Вместимость хранилищ, припасы | Координаты X Y Z, м |';$separator='| --- | ---: | ---: | ---: | --- |'}
         if($withDistance){$columns=$columns+' Расстояние, м |';$separator=$separator+' ---: |'}
@@ -149,10 +151,11 @@ foreach($type in @('OtherContainers','Harbors')){
         }
         $lines.Add('')
     }
-    foreach($group in $saved.locations){$name=$(if($group.nameStatus -ceq 'resolved'){$group.name}else{$group.rawName+' (unknown)'});$lines.Add("### $(Text $name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('');AddTable $group.nearbyObjects $true}
-    $lines.Add('## Объекты без группы');$lines.Add('');$lines.Add("Без группы: **$($saved.summary.ungroupedObjectCount)**. Просмотреть эти объекты и вручную определить их связь с локациями или группами мира.");$lines.Add('')
+    foreach($group in $saved.locations){$name=$(if($group.nameStatus -ceq 'resolved'){$group.name}else{$group.rawName+' (unknown)'});$lines.Add("#### $(Text $name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('');AddTable $group.nearbyObjects $true}
+    $lines.Add("### $type без группы");$lines.Add('');$lines.Add("Без группы: **$($saved.summary.ungroupedObjectCount)**. Просмотреть эти объекты и вручную определить их связь с локациями или группами мира.");$lines.Add('')
     if($saved.unassignedObjects.Count){$remaining=@($saved.unassignedObjects | Sort-Object @{e={$lookup[$_.objectId].name}},objectId);AddTable $remaining $false}else{$lines.Add('Все объекты этого каталога вошли в списки локаций.');$lines.Add('')}
-    [IO.File]::WriteAllText((Join-Path $output "Supplies/$type.md"),($lines -join "`n").TrimEnd([char]13,[char]10)+"`n",[Text.UTF8Encoding]::new($false))
+    $documents.Add(($lines -join "`n").TrimEnd([char]13,[char]10))
 }
-[IO.File]::WriteAllText((Join-Path $output 'Supplies.md'),"# Припасы по локациям`n`nРевизия ``$RevisionId``: [остальные контейнеры](Supplies/OtherContainers.md) и отдельно [базы-источники](Supplies/Harbors.md). В каждом отчёте собственные группы и последняя категория объектов без группы. Полный справочник: [Locations]($($index.sections.locations.table)).`n`nДанные: [индекс](data.json), [метаданные](world.json).`n",[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $output 'Supplies/OtherContainers.md'),($documents -join "`n`n")+"`n",[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $output 'Supplies.md'),"# Припасы по локациям`n`nРевизия ``$RevisionId``: единый отчёт [OtherContainers](Supplies/OtherContainers.md#othercontainers), в самом конце — [Harbors](Supplies/OtherContainers.md#harbors). В каждом разделе собственные группы и объекты без группы. Полный справочник: [Locations]($($index.sections.locations.table)).`n`nДанные: [индекс](data.json), [метаданные](world.json).`n",[Text.UTF8Encoding]::new($false))
 [pscustomobject]@{OutputDirectory=$output;OtherContainers=$reports.OtherContainers.summary;Harbors=$reports.Harbors.summary}

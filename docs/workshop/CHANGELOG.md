@@ -30,6 +30,7 @@
 • r0015 increases both matching-stage radii from 300 to 350 m: five additional objects grouped, two move from Generic to settlements, and one receives another Generic link. There are 31 populated groups and 19 ungrouped objects; earlier revisions and source data are preserved.
 • r0016 combines grouped and ungrouped objects in one Locations report, with the ungrouped category at the end; matching data and earlier revisions are preserved.
 • r0017 adds separate location-grouped OtherContainers and Harbors views using existing Locations links, preserving supply values, unknown capacities and earlier snapshots.
+• r0018 combines supply tables into OtherContainers with Harbors as the final category; all values, locations, separate JSON catalogs and earlier revisions are preserved.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -58,4 +59,5 @@
 • r0015 повышает радиус обоих этапов с 300 до 350 м: ещё пять объектов сгруппированы, два переходят от Generic к населённым пунктам, один получает дополнительную связь Generic. 31 непустая группа и 19 объектов без группы; прежние ревизии и исходные данные сохранены.
 • r0016 объединяет группы и объекты без группы в одном Locations, с категорией без группы в конце; данные сопоставления и прежние ревизии сохранены.
 • r0017 добавляет отдельные представления OtherContainers и Harbors по готовым связям Locations; значения припасов, неизвестные вместимости и прежние снимки сохранены.
+• r0018 объединяет таблицы припасов в OtherContainers, Harbors идёт последней категорией; значения, локации, раздельные JSON-каталоги и прежние ревизии сохранены.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

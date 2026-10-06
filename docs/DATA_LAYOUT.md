@@ -39,7 +39,7 @@ changes/
         CHANGES.md
 ```
 
-Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны семнадцать частичных ревизий: доход баз, вместимость их потомков, остальные физические контейнеры и справочник локаций. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
+Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны восемнадцать частичных ревизий: доход баз, вместимость их потомков, остальные физические контейнеры и справочник локаций. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
 
 Каталоги `snapshots/` и `changes/` находятся в корне репозитория, вне `ME_Conflict_Analyzer/`. Они хранятся в Git. `exports/` остаётся игнорируемым каталогом временных выгрузок и подготовки результатов.
 
@@ -189,4 +189,8 @@ Name Hill включён в allowedDescriptorTypes и primaryDescriptorTypes н�
 
 ## Таблицы припасов по локациям — r0017
 
-Ревизия содержит world.json, data.json, Supplies.md и две пары Supplies/OtherContainers.json / .md и Supplies/Harbors.json / .md. JSON kind=location-grouped-supply-view хранит строки с полями исходных каталогов, ID, исходные ссылки, списки связей и остаток; полные физические слоты / происхождение полей остаются в r0006 / r0004. inputs сохраняет SHA-256 и даты этих каталогов и Locations r0016; world.json также сохраняет SHA-256 его метаданных. Normalizer location-grouped-supplies-0.1. Корневые Markdown-таблицы припасов представляют r0017, общий Locations остаётся r0016. Исходные каталоги и старые ревизии неизменны. Подробности — [LOCATION_SUPPLIES.md](LOCATION_SUPPLIES.md).
+Ревизия содержит world.json, data.json, Supplies.md и две пары Supplies/OtherContainers.json / .md и Supplies/Harbors.json / .md. JSON kind=location-grouped-supply-view хранит строки с полями исходных каталогов, ID, исходные ссылки, списки связей и остаток; полные физические слоты / происхождение полей остаются в r0006 / r0004. inputs сохраняет SHA-256 и даты этих каталогов и Locations r0016; world.json также сохраняет SHA-256 его метаданных. Normalizer location-grouped-supplies-0.1. Первые отдельные корневые Markdown-таблицы припасов находились в r0017, общий Locations остаётся r0016. Исходные каталоги и старые ревизии неизменны. Подробности — [LOCATION_SUPPLIES.md](LOCATION_SUPPLIES.md).
+
+## Объединённые таблицы припасов — r0018
+
+Шесть файлов: world.json, data.json, Supplies.md, Supplies/OtherContainers.json, Supplies/OtherContainers.md, Supplies/Harbors.json. Единственный Markdown-отчёт припасов содержит OtherContainers первым, Harbors последним; JSON и их данные раздельные и прежние. Индекс связывает обе категории с одним файлом и уникальными ссылками на разделы / остатки. normalizerVersion location-grouped-supplies-0.2. Корневой Supplies/OtherContainers.md представляет r0018, отдельный актуальный Harbors.md удалён; r0017 и прежние ревизии сохранены. Locations остаётся r0016.
