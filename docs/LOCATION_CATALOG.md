@@ -1,5 +1,9 @@
 # Справочник локаций и близких объектов
 
+## Цель
+
+Сверять, все ли объекты возле именованной локации входят в её группу в мире, и находить разбросанные объекты. Расстояния и позиции помогают найти объекты в Workbench и проверить иерархию вручную. В дальнейшем планируется включить точки появления машин и групп ИИ; текущая выборка — OtherContainers и Harbors.
+
 Пользователь выбрал **радиус 1000 м** и охват **только OtherContainers и Harbors**. Команда `Reports → Export named world locations` читает именованные подписи карты из открытого мира и всех subscene. `New-LocationCatalogReport.ps1` строит Locations.json / .md: у каждой локации список всех выбранных объектов в радиусе, без исключительного назначения ближайшему имени.
 
 ## Проверенный результат HQC Everon 1.8.0.13
@@ -10,7 +14,7 @@
 
 Для `E_LivingArea_S_FIA_01` (ID `0x2000000000001FBB {}`) в `5882.897949 / 3.710999 / 9773.521484` подпись `#AR-MapLocation_PowerPlant` находится в `5834.382812 / 4.572 / 9786.421875`: расстояние X/Z **50.201 м**. Перевод установленной игры — `power plant`. Эти значения соответствуют показанному пользователем примеру; регистр перевода сохраняется.
 
-[Таблица r0007](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0007/Locations.md), [канонический JSON](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0007/Locations.json), [корневой справочник](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Locations.md).
+[Таблица r0008](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0008/Locations.md), [канонический JSON](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0008/Locations.json), [корневой справочник](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Locations.md).
 
 ## Алгоритм
 
@@ -19,7 +23,7 @@
 3. Проверить версию / сценарий двух канонических каталогов припасов. Взять корневые родительские строки OtherContainers и source base Harbors, не отдельные контейнеры или декорации. Собственные имена объектов не заменять названиями локаций. Сохранить ссылки на исходные записи, snapshotId, время чтения и SHA-256 каждого входа отдельно.
 4. Для каждой валидной позиции рассчитать горизонтальное расстояние `sqrt(dx²+dz²)`. Условие `dx²+dz² <= 1000²` включительно применяется к исходным координатам до округления. Высота Y не участвует. Неизвестную / неподтверждённую позицию не считать нулевой; сохранить причину отсутствия сопоставления.
 5. Добавить **все** подходящие пары: один объект может входить в несколько локаций. Записать distanceMeters, method horizontal_radius_proximity и ownershipEstablished=false. Это близость к точечной подписи, не область локации, принадлежность базе или ресурсной сети.
-6. В Locations.json объекты хранятся один раз; список каждой локации содержит ID / расстояние. Общий data.json — индекс, world.json — метаданные. Locations.md строится из сохранённого JSON и показывает только локации с nearbyObjectCount > 0: название, координаты и число объектов. Тип подписи и ID локации скрыты в таблице и заголовках разделов; поля и все локации без объектов остаются в JSON. В Summary отдельно указаны 150 показанных / 170 вычитанных локаций и 20 скрытых. Списки объектов и несопоставленные записи сохраняются.
+6. В Locations.json объекты хранятся один раз; список каждой локации содержит ID / расстояние. Общий data.json — индекс, world.json — метаданные. Locations.md строится из сохранённого JSON и показывает только локации с nearbyObjectCount > 0: название, координаты и число объектов. Тип подписи и ID локации скрыты в таблице и заголовках разделов; поля и все локации без объектов остаются в JSON. В Summary отдельно указаны 150 показанных / 170 вычитанных локаций и 20 скрытых. Раздел «Объекты по локациям» содержит заголовок «название - X Y Z», без ключа / текста. Таблица состоит из объекта, расстояния и позиции самого объекта; каталог, вместимость и ID не показываются. Все координаты разделены пробелами. Списки и несопоставленные записи сохраняются.
 
 Методы перевода сверены с официальным [WidgetManager API](https://community.bistudio.com/wikidata/external-data/arma-reforger/EnfusionScriptAPIPublic/interfaceWidgetManager.html), методы карты — с [MapDescriptorComponent](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/interfaceMapDescriptorComponent.html). Поля фактически прочитаны и код скомпилирован в установленном Workbench 1.8.0.13.
 
@@ -43,10 +47,10 @@
   -LocationsReportPath .\exports\HQC_Eden_NamedLocations_1.8.0.13.json `
   -OtherContainersReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0006\Supplies\OtherContainers.json `
   -HarborsReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0004\Supplies\Harbors.json `
-  -OutputDirectory .\exports\HQC_Eden_Locations_r0007 `
+  -OutputDirectory .\exports\HQC_Eden_Locations_r0008 `
   -RadiusMeters 1000 `
-  -RevisionId r0007 `
-  -RevisionReason 'Index OtherContainers and Harbors under all named map locations within 1000 meters' `
+  -RevisionId r0008 `
+  -RevisionReason 'Present location and object positions for reviewing world group membership' `
   -WorkbenchVersion 1.8.0.13
 ```
 
@@ -57,3 +61,5 @@
 Объекты ИИ, машины и HQ-кандидаты пока не включены по выбору пользователя. Названия / координаты локаций прочитаны заново; координаты и параметры припасов взяты из предыдущих проверенных ревизий с отдельными датами. В справочник не входят runtime-названия, пустые подписи и все декоративные сущности мира.
 
 Радиус не совпадает с фактической областью локации; географические перекрытия сохраняются. Вместимости строк в разных списках нельзя складывать как мировой запас. Проверка областей, явных игровых связей и устойчивости ID между версиями остаётся дальнейшей работой. Статус partial; прямой FileIO-путь из меню пока не проверен интерактивно. Выполненные проверки — [VALIDATION.md](VALIDATION.md).
+
+Опубликованный r0007 сохранён; r0008 повторно оформляет те же данные с той же датой сбора и SHA-256 входов. Изменение представления не добавляет автоматическую проверку принадлежности редакторской группе. Технические поля и полные 170 подписей остаются в JSON.

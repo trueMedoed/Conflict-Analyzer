@@ -20,6 +20,7 @@
 • OtherContainers now groups 568 physical slots into 124 root-parent rows, retaining individual records and separate prefab instances in JSON.
 • Added named map locations and lists of OtherContainers / Harbors objects within a 1000 m horizontal radius: 170 labels, 142 objects. Overlapping matches retain distances and do not imply gameplay ownership.
 • Simplified Locations Markdown to 150 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
+• Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -38,4 +39,5 @@
 • OtherContainers теперь группирует 568 физических слотов в 124 строки корневых родителей; индивидуальные записи и разные экземпляры prefab сохранены в JSON.
 • Добавлены именованные локации и списки объектов OtherContainers / Harbors в горизонтальном радиусе 1000 м: 170 подписей, 142 объекта. Перекрывающиеся совпадения сохраняют расстояния и не означают игровую принадлежность.
 • Locations Markdown упрощён до 150 списков локаций с объектами; типы, ID локаций и все 170 исходных подписей сохранены в JSON.
+• Locations оформлен для ручной сверки групп мира: позиции локаций в заголовках, позиции объектов и расстояния в списках; данные припасов и идентификаторы сохранены в JSON.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

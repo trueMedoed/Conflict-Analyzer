@@ -12,7 +12,9 @@
 
 В [OtherContainers](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md) каждая строка теперь описывает корневого родителя со всеми вложенными хранилищами: **124 родителя**, **568 физических контейнеров**, **190700 припасов** настроенной вместимости. Для `Base_PowerPlant_FIA_01` итог — **21 × 100 = 2100**. [JSON r0006](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json) сохраняет индивидуальный состав и координаты слотов. В таблице показаны позиция родителя и суммы; одинаковые prefab в разных местах не объединяются. Прежние контейнеры баз и виртуальные представления исключены из суммы. [Алгоритм](docs/OTHER_CONTAINERS.md).
 
-Добавлен [справочник локаций](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Locations.md): **150 локаций с объектами** и списки **142 объектов OtherContainers / Harbors в радиусе 1000 м**. Все 170 вычитанных подписей, их типы и ID остаются в JSON; 20 локаций без объектов скрыты в Markdown. У Power Plant — 13 объектов, выбранный E_LivingArea_S_FIA_01 находится в 50,201 м. Все совпадения по горизонтали сохранены; один объект может входить в несколько списков. [JSON r0007](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0007/Locations.json) хранит ключи, переводы en_us, координаты и расстояния. [Алгоритм / запуск](docs/LOCATION_CATALOG.md).
+Добавлен [справочник локаций](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Locations.md): **150 локаций с объектами** и списки **142 объектов OtherContainers / Harbors в радиусе 1000 м**. Все 170 вычитанных подписей, их типы и ID остаются в JSON; 20 локаций без объектов скрыты в Markdown. У Power Plant — 13 объектов, выбранный E_LivingArea_S_FIA_01 находится в 50,201 м. Все совпадения по горизонтали сохранены; один объект может входить в несколько списков. [JSON r0008](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0008/Locations.json) хранит ключи, переводы en_us, координаты и расстояния. [Алгоритм / запуск](docs/LOCATION_CATALOG.md).
+
+Цель Locations — сверять группировку объектов возле именованных локаций в Workbench и находить разбросанные объекты. В заголовке каждой локации указана её позиция; таблица содержит название объекта, расстояние и его собственные координаты. Поля о припасах и технические идентификаторы сохранены в JSON. [r0008](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0008/Locations.md) меняет представление прежних данных; игровые группы ещё проверяются вручную.
 
 ## Что планируется извлекать
 
@@ -87,7 +89,7 @@ Conflict Analyzer/
           Supplies.md
           Supplies/OtherContainers.json
           Supplies/OtherContainers.md
-        revisions/r0007/
+        revisions/r0008/
           world.json
           data.json
           Locations.json

@@ -7,7 +7,7 @@ param(
     [Parameter(Mandatory = $true)][string]$HarborsReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
     [ValidateRange(0.001, 100000)][double]$RadiusMeters = 1000,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0007',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0008',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )
@@ -170,12 +170,16 @@ Write-Json 'world.json' $world; Write-Json 'data.json' $index; Write-Json 'Locat
 $saved = Get-Content -LiteralPath (Join-Path $output 'Locations.json') -Raw | ConvertFrom-Json
 $visibleLocations = @($saved.locations | Where-Object nearbyObjectCount -gt 0)
 function Number($Value) { if ($null -eq $Value) { return 'unknown' }; return ([double]$Value).ToString('0.###', $culture) }
-function Position($Value, [string]$Status) { if (!(Is-Position $Value $Status)) { return 'unknown' }; return ($Value | ForEach-Object { Number $_ }) -join ' / ' }
+function Position($Value, [string]$Status) { if (!(Is-Position $Value $Status)) { return 'unknown' }; return ($Value | ForEach-Object { Number $_ }) -join ' ' }
 function Label($Location) { if ($Location.nameStatus -eq 'resolved' -and $Location.name) { return $Location.name }; return $Location.rawName + ' (unknown)' }
 function Text([string]$Value) { return $Value.Replace('|','\|').Replace("`r",' ').Replace("`n",' ').Trim() }
 $savedObjects = @{}; foreach ($item in $saved.objects) { $savedObjects[$item.id] = $item }
 $lines = [Collections.Generic.List[string]]::new()
-$lines.Add("# Локации и объекты в радиусе $(Number $saved.radiusMeters) м"); $lines.Add(''); $lines.Add('## Summary'); $lines.Add('')
+$lines.Add("# Локации и объекты в радиусе $(Number $saved.radiusMeters) м"); $lines.Add('')
+$lines.Add('## Цель'); $lines.Add('')
+$lines.Add('Сверять, все ли объекты рядом с именованной локацией входят в её группу в мире, и находить объекты, которые разбросаны или находятся вне этой группы. Названия, расстояния и координаты помогают найти каждый объект в Workbench и проверить его место в иерархии.')
+$lines.Add(''); $lines.Add('Список в радиусе служит ориентиром для ручной проверки групп. В дальнейшем справочник будет дополнен точками появления машин и групп ИИ; сейчас включены объекты OtherContainers и Harbors.')
+$lines.Add(''); $lines.Add('## Summary'); $lines.Add('')
 $lines.Add("Локаций с объектами: **$($visibleLocations.Count)**. Всего именованных локаций в JSON: **$($saved.summary.locationCount)**; без объектов скрыто: **$($saved.summary.locationCount - $visibleLocations.Count)**. Объектов справочника: **$($saved.summary.objectCount)** — **$($saved.summary.otherSupplyParentCount)** родителей OtherContainers и **$($saved.summary.supplySourceBaseCount)** баз Harbors. Игра **$($saved.gameVersion)**, мир ``$scenarioKey.ent``, ревизия ``$RevisionId``, язык ``$($saved.language)``. Статус **partial**.")
 $lines.Add(''); $lines.Add("Радиус: **$(Number $saved.radiusMeters) м**, включительно. Расстояние по горизонтали X/Z. С локациями сопоставлены **$($saved.summary.associatedObjectCount)** объектов; без сопоставления **$($saved.summary.unassignedObjectCount)**. Всего связей **$($saved.summary.associationCount)**: один объект может находиться в радиусе нескольких подписей.")
 $lines.Add(''); $lines.Add('## Откуда берутся данные'); $lines.Add('')
@@ -187,18 +191,17 @@ $lines.Add('| Объекты Harbors | 18 source base из r0004, с сохра�
 $lines.Add('| Расстояние | `sqrt((objectX-locationX)^2 + (objectZ-locationZ)^2)`; проверка ≤ радиуса выполняется до округления вывода. |')
 $lines.Add(''); $lines.Add("Полные данные: [Locations.json](Locations.json), [метаданные](world.json). Входы: [OtherContainers]($otherFile), [Harbors]($harborFile).")
 $lines.Add(''); $lines.Add('## Список локаций'); $lines.Add('')
-$lines.Add('| Локация | Координаты X / Y / Z, м | Объектов в радиусе |')
+$lines.Add('| Локация | Координаты X Y Z, м | Объектов в радиусе |')
 $lines.Add('| --- | --- | ---: |')
 foreach ($location in $visibleLocations) { $lines.Add("| $(Text (Label $location)) | $(Position $location.worldPositionMeters $location.positionStatus) | $($location.nearbyObjectCount) |") }
 $lines.Add(''); $lines.Add('## Объекты по локациям'); $lines.Add('')
 foreach ($location in $visibleLocations) {
-    $lines.Add("### $(Text (Label $location))"); $lines.Add('')
-    $lines.Add("Позиция: ``$(Position $location.worldPositionMeters $location.positionStatus)`` м. Ключ / текст: ``$(Text $location.rawName)``."); $lines.Add('')
-    $lines.Add('| Объект | Каталог | Расстояние, м | Вместимость в конфиге, припасы | ID объекта |')
-    $lines.Add('| --- | --- | ---: | ---: | --- |')
+    $lines.Add("### $(Text (Label $location)) - $(Position $location.worldPositionMeters $location.positionStatus)"); $lines.Add('')
+    $lines.Add('| Объект | Расстояние, м | Координаты X Y Z, м |')
+    $lines.Add('| --- | ---: | --- |')
     foreach ($link in $location.nearbyObjects) {
-        $item = $savedObjects[$link.objectId]; $category = $(if ($item.category -eq 'other_supply_parent') { 'OtherContainers' } else { 'Harbors' })
-        $lines.Add("| $(Text $item.name) | $category | $(Number $link.distanceMeters) | $(Number $item.configuredCapacitySupplies) | $($item.sourceId) |")
+        $item = $savedObjects[$link.objectId]
+        $lines.Add("| $(Text $item.name) | $(Number $link.distanceMeters) | $(Position $item.worldPositionMeters $item.positionStatus) |")
     }
     $lines.Add('')
 }
@@ -210,7 +213,7 @@ else {
     $lines.Add('')
 }
 $lines.Add('## Ограничения'); $lines.Add('')
-$lines.Add('Это справочник близости к точечной подписи карты: радиус не является областью локации или доказательством принадлежности игровой базе / ресурсной сети. Несколько совпадений сохраняются; их суммы не складываются в общий запас мира. Включены только OtherContainers и Harbors; ИИ, машины, HQ-кандидаты и декорации не добавлены.')
+$lines.Add('Это справочник близости к точечной подписи карты: радиус не является областью локации или доказательством принадлежности группе, игровой базе или ресурсной сети. Несколько совпадений сохраняются для проверки в Workbench. Включены только OtherContainers и Harbors; ИИ, машины, HQ-кандидаты и декорации не добавлены.')
 $lines.Add(''); $lines.Add('Названия и координаты подписей прочитаны заново; объекты припасов сохраняют прежние проверенные снимки и даты сбора. Пустые подписи не включены; неразрешённые переводы и позиции обозначаются явно. Source ID — предварительные editor-идентификаторы, их устойчивость между версиями ещё не подтверждена.')
 $lines.Add(''); $lines.Add('В Markdown показаны только локации с объектами; типы подписей, ID локаций и локации без объектов сохранены в каноническом JSON для проверки и сравнения.')
 [IO.File]::WriteAllText((Join-Path $output 'Locations.md'), (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
