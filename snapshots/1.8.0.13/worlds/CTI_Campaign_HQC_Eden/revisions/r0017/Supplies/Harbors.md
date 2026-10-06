@@ -20,7 +20,7 @@
 | Пополнение, мин. | m_iSuppliesArrivalInterval: исходные секунды / 60, без усечения. |
 | Вместимость хранилищ, припасы | Сумма m_fResourceValueMax физических SUPPLIES-контейнеров в дочерней иерархии source base. Виртуальные представления исключены; неизвестная принадлежность остаётся unknown. |
 
-Данные представления: [Harbors.json](../revisions/r0017/Supplies/Harbors.json), [метаданные](../revisions/r0017/world.json). Исходные значения и подробный состав: [исходный каталог](../revisions/r0004/Supplies/Harbors.json). Группировка: [Locations](../revisions/r0016/Locations.md), [Locations.json](../revisions/r0016/Locations.json). [Объекты без группы](#объекты-без-группы).
+Данные представления: [Harbors.json](Harbors.json), [метаданные](../world.json). Исходные значения и подробный состав: [исходный каталог](../../r0004/Supplies/Harbors.json). Группировка: [Locations](../../r0016/Locations.md), [Locations.json](../../r0016/Locations.json). [Объекты без группы](#объекты-без-группы).
 
 ## Ограничения
 

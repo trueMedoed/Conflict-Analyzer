@@ -657,6 +657,65 @@
       "language": "en_us",
       "presentationPurpose": "manual_world_group_review",
       "ungroupedSection": "worlds/CTI_Campaign_HQC_Eden/revisions/r0016/Locations.md#объекты-без-группы"
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0017",
+      "revisionId": "r0017",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "named-locations-0.1",
+      "normalizerVersion": "location-grouped-supplies-0.1",
+      "capturedAtUTC": "2026-10-06T01:23:30Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies/OtherContainers.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies/Harbors.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies/OtherContainers.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0017/Supplies/Harbors.md"
+      ],
+      "locationSnapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0016",
+      "radiusMeters": 350.0,
+      "matchingPolicy": "settlements_islands_and_hills_first_then_generic_within_radius_then_ungrouped",
+      "matchingPriority": {
+        "field": "MainType",
+        "primaryDescriptorTypes": [
+          "Name City",
+          "Name Town",
+          "Name Village",
+          "Name Settlement",
+          "Name Island",
+          "Name Hill"
+        ],
+        "secondaryDescriptorTypes": [
+          "Name Generic"
+        ],
+        "selectionScope": "per_object",
+        "secondaryRule": "only_when_no_primary_location_within_radius",
+        "withinTierRule": "all_matches",
+        "radiusAppliesToBothTiers": true
+      },
+      "supplyViews": {
+        "otherContainers": {
+          "objectCount": 124,
+          "groupedObjectCount": 109,
+          "ungroupedObjectCount": 15,
+          "locationCount": 25,
+          "associationCount": 119
+        },
+        "harbors": {
+          "objectCount": 18,
+          "groupedObjectCount": 14,
+          "ungroupedObjectCount": 4,
+          "locationCount": 15,
+          "associationCount": 15
+        }
+      },
+      "presentationPurpose": "supply_catalog_location_review"
     }
   ],
   "warnings": [

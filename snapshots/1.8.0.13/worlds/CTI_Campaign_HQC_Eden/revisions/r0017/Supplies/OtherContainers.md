@@ -21,7 +21,7 @@
 | Контейнеров / состав / вместимость | Число уникальных физических SUPPLIES-слотов, состав по m_fResourceValueMax и их сумма из исходного OtherContainers. |
 | Начальные припасы в конфиге | Сумма m_fResourceValueCurrent; фактический запас игровой сессии не измерялся. |
 
-Данные представления: [OtherContainers.json](../revisions/r0017/Supplies/OtherContainers.json), [метаданные](../revisions/r0017/world.json). Исходные значения и подробный состав: [исходный каталог](../revisions/r0006/Supplies/OtherContainers.json). Группировка: [Locations](../revisions/r0016/Locations.md), [Locations.json](../revisions/r0016/Locations.json). [Объекты без группы](#объекты-без-группы).
+Данные представления: [OtherContainers.json](OtherContainers.json), [метаданные](../world.json). Исходные значения и подробный состав: [исходный каталог](../../r0006/Supplies/OtherContainers.json). Группировка: [Locations](../../r0016/Locations.md), [Locations.json](../../r0016/Locations.json). [Объекты без группы](#объекты-без-группы).
 
 ## Ограничения
 

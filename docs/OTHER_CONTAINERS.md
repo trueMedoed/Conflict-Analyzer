@@ -4,7 +4,7 @@
 
 В HQC Everon **1.8.0.13** найдено **568 остальных физических контейнеров** в **129 вложенных хранилищах / объектах**, объединённых в **124 корневых родителя**, вместимость **190700 припасов**. Состав: **387 × 100**, **58 × 500**, **123 × 1000**. Ранее сохранённые **49 физических контейнеров** r0004 исключены после проверки ID, prefab, класса, значений и координат. 129 остальных виртуальных представлений сохранены отдельно и не суммируются. Обе subscene прочитаны; все найденные физические SUPPLIES-слоты этой версии находятся в HQC, слой default, а в Eden дополнительных слотов нет.
 
-[Таблица r0006](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.md), [канонический JSON](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json). Корневая [OtherContainers.md](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md) представляет те же данные.
+[Таблица r0006](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.md), [канонический JSON](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0006/Supplies/OtherContainers.json). Корневая [OtherContainers.md](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md) теперь представляет r0017 по локациям с теми же значениями / составом исходного r0006.
 
 ## Алгоритм и поля
 
@@ -55,3 +55,7 @@
 Для Base_PowerPlant_FIA_01 (ID `0x2000000000004987 {}`) вложенный Storage_ShedMetal_02_FIA_01 содержит 21 × 100: одна строка вместимости 2100 и настроенного начального запаса 2100. У VehicleMaintenance_M_USSR_01 три хранилища дают 34 контейнера / 3400; три разных FieldHospital_M_FIA_01 остаются тремя строками по 20 контейнеров / 2000. Суффикс `_1` со скриншота — отображаемая подпись Workbench; source name пуст, поэтому используется имя prefab, ID и координаты.
 
 r0006 — повторная обработка прежней проверенной выгрузки, без нового чтения мира. Время UTC и SHA-256 сбора сохранены; normalizerVersion — other-supply-containers-0.2. Позиции строк относятся к родителям, индивидуальные позиции — в JSON. Unknown у дочернего слота / списка остаётся в итогах родителя, вместе с известным подытогом. Прежняя [таблица отдельных слотов r0005](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0005/Supplies/OtherContainers.md) сохранена без изменений.
+
+## Представление по локациям — r0017
+
+Корневой OtherContainers.md теперь использует 25 групп Locations r0016: 109 уникальных родителей / 119 связей; 15 оставшихся находятся в конце. Вместимость 190700 и 568 физических контейнеров считаются по всем 124 уникальным родителям. Повторные связи не суммируются. Имена, состав, настроенные начальные припасы и Source ID сохранены; координаты разделены пробелами, добавлены расстояния до подписей. Полные слоты остаются в r0006. Генератор и отдельный Harbors — [LOCATION_SUPPLIES.md](LOCATION_SUPPLIES.md).
