@@ -6,8 +6,8 @@ param(
     [Parameter(Mandatory = $true)][string]$OtherContainersReportPath,
     [Parameter(Mandatory = $true)][string]$HarborsReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
-    [ValidateRange(0.001, 100000)][double]$RadiusMeters = 1000,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0008',
+    [ValidateRange(0.001, 100000)][double]$RadiusMeters = 500,
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0009',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )

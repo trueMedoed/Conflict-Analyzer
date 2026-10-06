@@ -200,6 +200,33 @@
       "associationCount": 1084,
       "language": "en_us",
       "presentationPurpose": "manual_world_group_review"
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0009",
+      "revisionId": "r0009",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "named-locations-0.1",
+      "normalizerVersion": "location-catalog-0.1",
+      "capturedAtUTC": "2026-10-06T01:23:30Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0009/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0009/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0009/Locations.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0009/Locations.md"
+      ],
+      "locationCount": 170,
+      "visibleLocationCount": 76,
+      "catalogObjectCount": 142,
+      "radiusMeters": 500.0,
+      "associationCount": 348,
+      "associatedObjectCount": 135,
+      "unassignedObjectCount": 7,
+      "language": "en_us",
+      "presentationPurpose": "manual_world_group_review"
     }
   ],
   "warnings": [

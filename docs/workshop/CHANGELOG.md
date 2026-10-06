@@ -21,6 +21,7 @@
 • Added named map locations and lists of OtherContainers / Harbors objects within a 1000 m horizontal radius: 170 labels, 142 objects. Overlapping matches retain distances and do not imply gameplay ownership.
 • Simplified Locations Markdown to 150 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
 • Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
+• Reduced the default location radius from 1000 to 500 m in r0009: 348 links, 76 populated locations and seven unmatched objects retained; previous published revisions are preserved.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -40,4 +41,5 @@
 • Добавлены именованные локации и списки объектов OtherContainers / Harbors в горизонтальном радиусе 1000 м: 170 подписей, 142 объекта. Перекрывающиеся совпадения сохраняют расстояния и не означают игровую принадлежность.
 • Locations Markdown упрощён до 150 списков локаций с объектами; типы, ID локаций и все 170 исходных подписей сохранены в JSON.
 • Locations оформлен для ручной сверки групп мира: позиции локаций в заголовках, позиции объектов и расстояния в списках; данные припасов и идентификаторы сохранены в JSON.
+• В r0009 радиус локаций по умолчанию уменьшен с 1000 до 500 м: 348 связей, 76 локаций с объектами; семь объектов без совпадений сохранены. Предыдущие опубликованные ревизии сохранены.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.
