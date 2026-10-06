@@ -27,6 +27,7 @@
 • r0012 adds Name Generic as a second matching stage for objects outside settlement groups, using the same 300 m radius: 63 additional objects grouped, 32 remaining, and all 47 previous settlement assignments preserved.
 • r0013 adds Name Island with equal settlement priority within 300 m: three previously ungrouped objects matched to Île-aux-Saules, 29 remain; earlier settlement and Generic assignments are preserved.
 • r0014 adds Name Hill to the first stage within 300 m: five previously ungrouped objects matched to CALVARY HILL, 24 remain; previous settlement, island and Generic assignments are preserved.
+• r0015 increases both matching-stage radii from 300 to 350 m: five additional objects grouped, two move from Generic to settlements, and one receives another Generic link. There are 31 populated groups and 19 ungrouped objects; earlier revisions and source data are preserved.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -52,4 +53,5 @@
 • r0012 добавляет Name Generic вторым этапом для остатка после населённых пунктов в том же радиусе 300 м: ещё 63 объекта сгруппированы, 32 остались, все 47 прежних назначений у населённых пунктов сохранены.
 • r0013 добавляет Name Island наравне с населёнными пунктами в радиусе 300 м: три объекта из остатка отнесены к Île-aux-Saules, осталось 29; прежние назначения населённых пунктов / Generic сохранены.
 • r0014 добавляет Name Hill в первый этап в радиусе 300 м: пять объектов из остатка отнесены к CALVARY HILL, осталось 24; прежние назначения населённых пунктов / островов / Generic сохранены.
+• r0015 повышает радиус обоих этапов с 300 до 350 м: ещё пять объектов сгруппированы, два переходят от Generic к населённым пунктам, один получает дополнительную связь Generic. 31 непустая группа и 19 объектов без группы; прежние ревизии и исходные данные сохранены.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

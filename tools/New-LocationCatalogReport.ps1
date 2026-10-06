@@ -6,8 +6,8 @@ param(
     [Parameter(Mandatory = $true)][string]$OtherContainersReportPath,
     [Parameter(Mandatory = $true)][string]$HarborsReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
-    [ValidateRange(0.001, 100000)][double]$RadiusMeters = 300,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0014',
+    [ValidateRange(0.001, 100000)][double]$RadiusMeters = 350,
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0015',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )
@@ -155,7 +155,7 @@ $inputs = [ordered]@{
 $report = [ordered]@{
     schemaVersion = 2; kind = 'location-radius-catalog'; status = 'partial'; snapshotId = $snapshotId
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; capturedAtUTC = $capturedAtUTC; language = $native.language
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.6'; radiusMeters = $RadiusMeters
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.7'; radiusMeters = $RadiusMeters
     distanceMethod = 'horizontal_euclidean_XZ'; boundaryRule = 'distance_squared_less_than_or_equal_to_radius_squared'
     matchingPolicy = 'settlements_islands_and_hills_first_then_generic_within_radius_then_ungrouped'; matchingPriority = $matchingPriority; locationFilter = $locationFilter; objectScope = @('other_supply_parent','supply_source_base'); inputs = $inputs
     summary = [ordered]@{
@@ -176,7 +176,7 @@ $report = [ordered]@{
 $world = [ordered]@{
     schemaVersion = 2; snapshotId = $snapshotId; revisionId = $RevisionId; revisionReason = $RevisionReason; status = 'partial'
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; worldPath = $native.worldPath; capturedAtUTC = $capturedAtUTC
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.6'; workbenchVersion = $WorkbenchVersion
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.7'; workbenchVersion = $WorkbenchVersion
     workbenchVersionStatus = $(if ($WorkbenchVersion) { 'provided_by_operator' } else { 'unknown' }); language = $native.language
     worldResourceGuid = $null; worldResourceGuidStatus = 'unknown'; gameChannel = $null; identityStatus = 'provisional_editor_ids'
     subscenes = $native.subscenes; editorEntityCountUnchanged = $native.editorEntityCountUnchanged

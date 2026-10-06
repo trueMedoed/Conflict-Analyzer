@@ -8,7 +8,7 @@
 
 Без группы: **19** из **142** объектов. Радиус обоих этапов: **350 м**, по X/Z включительно. Мир `CTI_Campaign_HQC_Eden.ent`, игра **1.8.0.13**, ревизия `r0015`.
 
-Данные и идентификаторы: [Locations.json](revisions/r0015/Locations.json), [метаданные](revisions/r0015/world.json). Сопоставленные объекты: [Locations.md](Locations.md).
+Данные и идентификаторы: [Locations.json](Locations.json), [метаданные](world.json). Сопоставленные объекты: [Locations.md](Locations.md).
 
 | Объект | Координаты X Y Z, м |
 | --- | --- |
