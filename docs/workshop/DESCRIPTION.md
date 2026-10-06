@@ -19,8 +19,8 @@ Current status
 • Added a storage-capacity column for all 18 source bases: 49 unique physical containers, 15 resolved descendant capacities and three unknown ownership cases. Income retains its earlier verified capture; nearby detached caches are not assigned by distance.
 • Added a targeted world supplies inventory and OtherContainers report: 568 additional physical slots in 129 groups, 190700 configured capacity. Previously reported base containers are excluded after identity checks; 129 other virtual views remain separate. Detached cache ownership and runtime spawning remain unverified.
 • OtherContainers now groups 568 physical slots into 124 root-parent rows, retaining individual records and separate prefab instances in JSON.
-• Matching within 300 m now uses settlements first, then all Name Generic labels for remaining objects: 47 original settlement objects retained, 63 added in the second stage, and 32 left for review. All 142 objects and 170 source labels remain in JSON; other types are excluded.
-• Simplified Locations Markdown to 28 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
+• Matching within 300 m uses settlements and islands with equal first-stage priority, then Name Generic for remaining objects: 50 objects in the first stage, 63 in the second, and 29 left for review. All 142 objects and 170 source labels remain in JSON; island matching uses map-label positions, not island boundaries.
+• Simplified Locations Markdown to 29 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
 • Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
