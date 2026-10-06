@@ -23,6 +23,7 @@
 • Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
 • Reduced the default location radius from 1000 to 500 m in r0009: 348 links, 76 populated locations and seven unmatched objects retained; previous published revisions are preserved.
 • Excluded ponds, rivers, streams and lakes from matching by descriptor type in r0010: 24 excluded labels, 288 links and 16 unmatched objects; all original labels and objects remain in JSON.
+• r0011 groups objects only around settlements within 300 m: 47 matched objects and a separate UngroupedObjects list of 95 remaining objects with world positions; geographic fallback is not performed.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -44,4 +45,5 @@
 • Locations оформлен для ручной сверки групп мира: позиции локаций в заголовках, позиции объектов и расстояния в списках; данные припасов и идентификаторы сохранены в JSON.
 • В r0009 радиус локаций по умолчанию уменьшен с 1000 до 500 м: 348 связей, 76 локаций с объектами; семь объектов без совпадений сохранены. Предыдущие опубликованные ревизии сохранены.
 • В r0010 пруды, реки, ручьи и озёра исключены из сопоставления по типу подписи: 24 исключённые локации, 288 связей, 16 объектов без совпадений; все исходные подписи и объекты сохранены в JSON.
+• r0011 собирает объекты только у населённых пунктов в радиусе 300 м: 47 сгруппированных объектов и отдельный UngroupedObjects со списком 95 оставшихся и их координатами; автоматического назначения другим локациям нет.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

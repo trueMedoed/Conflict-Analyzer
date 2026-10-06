@@ -23,7 +23,7 @@
 | Объекты Harbors | 18 source base из r0004, с сохранёнными собственными именами и мировыми координатами. |
 | Расстояние | `sqrt((objectX-locationX)^2 + (objectZ-locationZ)^2)`; проверка ≤ радиуса выполняется до округления вывода. |
 
-Полные данные: [Locations.json](revisions/r0011/Locations.json), [метаданные](revisions/r0011/world.json). Для проверки: [объекты без группы](UngroupedObjects.md). Входы: [OtherContainers](revisions/r0006/Supplies/OtherContainers.json), [Harbors](revisions/r0004/Supplies/Harbors.json).
+Полные данные: [Locations.json](Locations.json), [метаданные](world.json). Для проверки: [объекты без группы](UngroupedObjects.md). Входы: [OtherContainers](../r0006/Supplies/OtherContainers.json), [Harbors](../r0004/Supplies/Harbors.json).
 
 ## Список локаций
 
