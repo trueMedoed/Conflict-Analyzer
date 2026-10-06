@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch', 'WorldSupplyContainers', 'NamedLocations')][string]$ReportKind = 'Diagnostics'
+    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch', 'WorldSupplyContainers', 'NamedLocations', 'ControlPoints')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -29,7 +29,15 @@ if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
     $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
     throw 'Report metadata or editor entity counts are inconsistent.'
 }
-if ($ReportKind -eq 'NamedLocations') {
+if ($ReportKind -eq 'ControlPoints') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'conflict-control-points' -or
+        $report.selection -ne 'ConflictControlPoint-prefab' -or $report.records.Count -ne $report.recordCount -or
+        @($report.records | Where-Object { $_.prefab -notmatch '/ConflictControlPoint[^/]*\.et$' }).Count -or
+        @($report.records.sourceId | Sort-Object -Unique).Count -ne $report.recordCount) {
+        throw 'Control-point inventory metadata or counts are inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} elseif ($ReportKind -eq 'NamedLocations') {
     if ($report.schemaVersion -ne 2 -or $report.kind -ne 'named-world-locations' -or
         $report.selection -ne 'named-map-descriptor-DisplayName' -or $report.locations.Count -ne $report.recordCount -or
         $report.inspectedDescriptorCount -ne $report.recordCount + $report.unnamedDescriptorCount) {

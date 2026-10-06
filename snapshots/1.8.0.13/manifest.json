@@ -774,6 +774,94 @@
         }
       },
       "presentationPurpose": "combined_supply_catalog_location_review"
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0019",
+      "revisionId": "r0019",
+      "schemaVersion": 3,
+      "status": "partial",
+      "normalizerVersion": "supply-priority-architecture-0.1",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Locations.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Supplies/ControlPoints.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Supplies/OtherContainers.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Supplies/Harbors.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Locations.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Supplies.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0019/Supplies/OtherContainers.md"
+      ],
+      "summary": {
+        "objectCount": 149,
+        "controlPointCount": 7,
+        "sourceBaseCount": 18,
+        "otherParentCount": 124,
+        "recognizedParentCount": 109,
+        "unrecognizedParentCount": 15,
+        "associationCount": 119.0,
+        "visibleGroupCount": 50,
+        "stages": {
+          "control_points": {
+            "anchorCount": 7,
+            "assignedParentCount": 0,
+            "associationCount": 0,
+            "populatedGroupCount": 0
+          },
+          "harbors": {
+            "anchorCount": 18,
+            "assignedParentCount": 0,
+            "associationCount": 0,
+            "populatedGroupCount": 0
+          },
+          "settlements": {
+            "anchorCount": 34,
+            "assignedParentCount": 42,
+            "associationCount": 42,
+            "populatedGroupCount": 9
+          },
+          "other": {
+            "anchorCount": 52,
+            "assignedParentCount": 67,
+            "associationCount": 77,
+            "populatedGroupCount": 16
+          },
+          "unrecognized": {
+            "parentCount": 15
+          }
+        }
+      },
+      "matchingPolicy": {
+        "order": [
+          "control_points",
+          "harbors",
+          "settlements",
+          "other",
+          "unrecognized"
+        ],
+        "radiusMeters": 350.0,
+        "radiusScope": "map_location_stages_only",
+        "scope": "remaining_other_supply_parents",
+        "sourceAnchorRule": "confirmed_source_parent_hierarchy",
+        "anchorInventoryRule": "all_control_points_and_source_bases_are_shown_once_in_their_own_category",
+        "withinStage": "all_matches",
+        "settlementDescriptorTypes": [
+          "Name City",
+          "Name Town",
+          "Name Village",
+          "Name Settlement"
+        ],
+        "otherDescriptorTypes": [
+          "Name Generic",
+          "Name Island",
+          "Name Hill"
+        ],
+        "otherMapTypes": "excluded",
+        "ownershipEstablished": false
+      }
     }
   ],
   "warnings": [

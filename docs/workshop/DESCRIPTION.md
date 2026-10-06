@@ -22,7 +22,7 @@ Current status
 • Matching within 350 m uses settlements, islands and hills with equal first-stage priority, then Name Generic for remaining objects: 62 objects in the first stage, 61 in the second, and 19 left for review. All source objects and labels remain in JSON; matching uses map-label positions rather than geographic boundaries.
 • Simplified Locations Markdown to 31 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
 • Locations supports manual world-group review with location positions in headings and object positions / distances in each list. The unified report ends with an Ungrouped objects category containing the 19 remaining objects; a separate UngroupedObjects table is no longer generated.
-• OtherContainers and Harbors share one report: 25 container location groups and 15 remaining objects first, followed by Harbors at the end with 15 groups and four remaining bases. Composition, income and capacity are preserved; overlapping links do not inflate totals.
+• The report now uses five categories: source control points, Harbors, settlements, other locations and unrecognized objects. Seven control points expose separate configured supply settings. Source hierarchy verifies the first two categories; remaining objects use a 350 m map-label radius. Previous values and unknowns are preserved.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features
