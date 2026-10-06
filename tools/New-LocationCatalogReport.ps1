@@ -7,7 +7,7 @@ param(
     [Parameter(Mandatory = $true)][string]$HarborsReportPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
     [ValidateRange(0.001, 100000)][double]$RadiusMeters = 350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0015',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId = 'r0016',
     [Parameter(Mandatory = $true)][string]$RevisionReason,
     [string]$WorkbenchVersion
 )
@@ -155,7 +155,7 @@ $inputs = [ordered]@{
 $report = [ordered]@{
     schemaVersion = 2; kind = 'location-radius-catalog'; status = 'partial'; snapshotId = $snapshotId
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; capturedAtUTC = $capturedAtUTC; language = $native.language
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.7'; radiusMeters = $RadiusMeters
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.8'; radiusMeters = $RadiusMeters
     distanceMethod = 'horizontal_euclidean_XZ'; boundaryRule = 'distance_squared_less_than_or_equal_to_radius_squared'
     matchingPolicy = 'settlements_islands_and_hills_first_then_generic_within_radius_then_ungrouped'; matchingPriority = $matchingPriority; locationFilter = $locationFilter; objectScope = @('other_supply_parent','supply_source_base'); inputs = $inputs
     summary = [ordered]@{
@@ -176,7 +176,7 @@ $report = [ordered]@{
 $world = [ordered]@{
     schemaVersion = 2; snapshotId = $snapshotId; revisionId = $RevisionId; revisionReason = $RevisionReason; status = 'partial'
     gameVersion = $native.gameVersion; scenarioKey = $scenarioKey; worldPath = $native.worldPath; capturedAtUTC = $capturedAtUTC
-    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.7'; workbenchVersion = $WorkbenchVersion
+    analyzerVersion = $native.analyzerVersion; normalizerVersion = 'location-catalog-0.8'; workbenchVersion = $WorkbenchVersion
     workbenchVersionStatus = $(if ($WorkbenchVersion) { 'provided_by_operator' } else { 'unknown' }); language = $native.language
     worldResourceGuid = $null; worldResourceGuidStatus = 'unknown'; gameChannel = $null; identityStatus = 'provisional_editor_ids'
     subscenes = $native.subscenes; editorEntityCountUnchanged = $native.editorEntityCountUnchanged
@@ -185,7 +185,7 @@ $world = [ordered]@{
 $index = [ordered]@{
     schemaVersion = 2; kind = 'conflict-world-index'; snapshotId = $snapshotId; status = 'partial'; worldMetadata = 'world.json'
     sections = [ordered]@{
-        locations = [ordered]@{ status = 'partial'; path = 'Locations.json'; table = 'Locations.md'; ungroupedTable = 'UngroupedObjects.md'; locationCount = $locations.Count; eligibleLocationCount = $report.summary.eligibleLocationCount; excludedLocationCount = $report.summary.excludedLocationCount; objectCount = $objects.Count; ungroupedObjectCount = $unmatched.Count; radiusMeters = $RadiusMeters; matchingPolicy = $report.matchingPolicy }
+        locations = [ordered]@{ status = 'partial'; path = 'Locations.json'; table = 'Locations.md'; ungroupedSection = 'Locations.md#объекты-без-группы'; locationCount = $locations.Count; eligibleLocationCount = $report.summary.eligibleLocationCount; excludedLocationCount = $report.summary.excludedLocationCount; objectCount = $objects.Count; ungroupedObjectCount = $unmatched.Count; radiusMeters = $RadiusMeters; matchingPolicy = $report.matchingPolicy }
         supplies = [ordered]@{ status = 'previous_verified_revisions'; otherContainers = $otherFile; harbors = $harborFile }
         aiGroups = [ordered]@{ status = 'not_analyzed' }; startingBases = [ordered]@{ status = 'not_analyzed' }; vehicleSpawns = [ordered]@{ status = 'not_analyzed' }
     }
@@ -206,7 +206,7 @@ $lines = [Collections.Generic.List[string]]::new()
 $lines.Add("# Локации и объекты в радиусе $(Number $saved.radiusMeters) м"); $lines.Add('')
 $lines.Add('## Цель'); $lines.Add('')
 $lines.Add('Сверять, все ли объекты рядом с именованной локацией входят в её группу в мире, и находить объекты, которые разбросаны или находятся вне этой группы. Названия, расстояния и координаты помогают найти каждый объект в Workbench и проверить его место в иерархии.')
-$lines.Add(''); $lines.Add('Сначала объекты собираются у городов, деревень, поселений, островов и холмов на равных условиях. Оставшиеся сопоставляются с Name Generic в том же радиусе: аэропорты, электростанции, фермы и другие подписи этого типа. Внутри выбранного этапа сохраняются все совпадения. Попавшие хотя бы в один список убираются из общего списка без группы. Остальные показаны отдельно для ручного поиска связей. Сейчас включены объекты OtherContainers и Harbors; точки машин и групп ИИ планируются позднее.')
+$lines.Add(''); $lines.Add('Сначала объекты собираются у городов, деревень, поселений, островов и холмов на равных условиях. Оставшиеся сопоставляются с Name Generic в том же радиусе: аэропорты, электростанции, фермы и другие подписи этого типа. Внутри выбранного этапа сохраняются все совпадения. Попавшие хотя бы в один список убираются из общего списка без группы. Остальные показаны в конце этого документа в разделе «Объекты без группы» для ручного поиска связей. Сейчас включены объекты OtherContainers и Harbors; точки машин и групп ИИ планируются позднее.')
 $lines.Add(''); $lines.Add('## Summary'); $lines.Add('')
 $lines.Add("Локаций с объектами: **$($visibleLocations.Count)**. Допущено к сопоставлению: **$($saved.summary.eligibleLocationCount)** из **$($saved.summary.locationCount)** именованных подписей в JSON; исключено: **$($saved.summary.excludedLocationCount)**. Допустимых локаций без объектов скрыто: **$($saved.summary.eligibleLocationCount - $visibleLocations.Count)**. Объектов справочника: **$($saved.summary.objectCount)** — **$($saved.summary.otherSupplyParentCount)** родителей OtherContainers и **$($saved.summary.supplySourceBaseCount)** баз Harbors. Игра **$($saved.gameVersion)**, мир ``$scenarioKey.ent``, ревизия ``$RevisionId``, язык ``$($saved.language)``. Статус **partial**.")
 $lines.Add(''); $lines.Add("Радиус: **$(Number $saved.radiusMeters) м**, включительно для обоих этапов. Расстояние по горизонтали X/Z. С разрешёнными локациями сопоставлены **$($saved.summary.associatedObjectCount)** объектов: **$($saved.summary.primaryMatchedObjectCount)** на первом этапе у населённых пунктов, островов и холмов и **$($saved.summary.genericMatchedObjectCount)** на втором у Name Generic; без группы **$($saved.summary.unassignedObjectCount)**. Всего связей **$($saved.summary.associationCount)**: при пересечении радиусов объект может входить в несколько списков одного этапа, но в списке без группы его уже нет.")
@@ -218,7 +218,7 @@ $lines.Add('| Координаты локации | Мировая позици�
 $lines.Add('| Объекты OtherContainers | Корневые родительские строки канонического отчёта r0006; позиции отдельных контейнеров не используются вместо позиции родителя. |')
 $lines.Add('| Объекты Harbors | 18 source base из r0004, с сохранёнными собственными именами и мировыми координатами. |')
 $lines.Add('| Расстояние | `sqrt((objectX-locationX)^2 + (objectZ-locationZ)^2)`; проверка ≤ радиуса выполняется до округления вывода. |')
-$lines.Add(''); $lines.Add("Полные данные: [Locations.json](Locations.json), [метаданные](world.json). Для проверки: [объекты без группы](UngroupedObjects.md). Входы: [OtherContainers]($otherFile), [Harbors]($harborFile).")
+$lines.Add(''); $lines.Add("Полные данные: [Locations.json](Locations.json), [метаданные](world.json). Для проверки: [объекты без группы](#объекты-без-группы). Входы: [OtherContainers]($otherFile), [Harbors]($harborFile).")
 $lines.Add(''); $lines.Add('## Список локаций'); $lines.Add('')
 $lines.Add('| Локация | Координаты X Y Z, м | Объектов в радиусе |')
 $lines.Add('| --- | --- | ---: |')
@@ -234,28 +234,19 @@ foreach ($location in $visibleLocations) {
     }
     $lines.Add('')
 }
-$lines.Add('## Объекты без группы'); $lines.Add('')
-$lines.Add('Отдельный список для просмотра: [UngroupedObjects.md](UngroupedObjects.md).'); $lines.Add('')
+$lines.Add('## Ограничения'); $lines.Add('')
+$lines.Add('Группа в справочнике означает близость к разрешённой подписи; фактическую иерархию мира, игровую базу и ресурсную сеть ещё проверяют вручную. Мир не изменяется. Несколько совпадений внутри одного этапа сохраняются. Бухты, водоёмы и прочие типы автоматически не назначаются. Включены только OtherContainers и Harbors.')
+$lines.Add(''); $lines.Add('Названия и координаты подписей прочитаны заново; объекты припасов сохраняют прежние проверенные снимки и даты сбора. Пустые подписи не включены; неразрешённые переводы и позиции обозначаются явно. Source ID — предварительные editor-идентификаторы, их устойчивость между версиями ещё не подтверждена.')
+$lines.Add(''); $lines.Add('В Markdown показаны только допустимые локации с объектами; исходные подписи, их типы / ID, причины исключения и локации без объектов сохранены в каноническом JSON для проверки и сравнения.')
+$lines.Add(''); $lines.Add('## Объекты без группы'); $lines.Add('')
+$lines.Add("Без группы: **$($saved.summary.unassignedObjectCount)** из **$($saved.summary.objectCount)** объектов. Радиус обоих этапов: **$(Number $saved.radiusMeters) м**, по X/Z включительно.")
+$lines.Add(''); $lines.Add('Просмотреть оставшиеся объекты и вручную определить, с какими локациями или группами мира они могут быть связаны. Здесь перечислены объекты, не попавшие ни к одной допустимой подписи в заданном радиусе. Автоматического назначения другим типам локаций нет.'); $lines.Add('')
 if (!$saved.unassignedObjects.Count) { $lines.Add('Все объекты выбранных каталогов вошли в групповые списки.'); $lines.Add('') }
 else {
     $lines.Add('| Объект | Координаты X Y Z, м |'); $lines.Add('| --- | --- |')
     foreach ($item in $ungroupedRows) { $lines.Add("| $(Text $item.name) | $(Position $item.worldPositionMeters $item.positionStatus) |") }
     $lines.Add('')
 }
-$lines.Add('## Ограничения'); $lines.Add('')
-$lines.Add('Группа в справочнике означает близость к разрешённой подписи; фактическую иерархию мира, игровую базу и ресурсную сеть ещё проверяют вручную. Мир не изменяется. Несколько совпадений внутри одного этапа сохраняются. Бухты, водоёмы и прочие типы автоматически не назначаются. Включены только OtherContainers и Harbors.')
-$lines.Add(''); $lines.Add('Названия и координаты подписей прочитаны заново; объекты припасов сохраняют прежние проверенные снимки и даты сбора. Пустые подписи не включены; неразрешённые переводы и позиции обозначаются явно. Source ID — предварительные editor-идентификаторы, их устойчивость между версиями ещё не подтверждена.')
-$lines.Add(''); $lines.Add('В Markdown показаны только допустимые локации с объектами; исходные подписи, их типы / ID, причины исключения и локации без объектов сохранены в каноническом JSON для проверки и сравнения.')
+$lines.Add('Координаты относятся к самому объекту / корневому родителю. Полные записи и причины отсутствия сопоставления остаются в Locations.json; неизвестная позиция выводится как unknown. Этот отчёт не изменяет группы или сущности в мире.')
 [IO.File]::WriteAllText((Join-Path $output 'Locations.md'), (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
-$remainingLines = [Collections.Generic.List[string]]::new()
-$remainingLines.Add('# Объекты без группы'); $remainingLines.Add('')
-$remainingLines.Add('## Цель'); $remainingLines.Add('')
-$remainingLines.Add('Просмотреть оставшиеся объекты и вручную определить, с какими локациями или группами мира они могут быть связаны. В этот список входят только объекты, не попавшие ни к одному городу, деревне, поселению, острову, холму или Name Generic в заданном радиусе. Автоматического назначения другим типам локаций нет.')
-$remainingLines.Add(''); $remainingLines.Add('## Summary'); $remainingLines.Add('')
-$remainingLines.Add("Без группы: **$($saved.summary.unassignedObjectCount)** из **$($saved.summary.objectCount)** объектов. Радиус обоих этапов: **$(Number $saved.radiusMeters) м**, по X/Z включительно. Мир ``$scenarioKey.ent``, игра **$($saved.gameVersion)**, ревизия ``$RevisionId``.")
-$remainingLines.Add(''); $remainingLines.Add('Данные и идентификаторы: [Locations.json](Locations.json), [метаданные](world.json). Сопоставленные объекты: [Locations.md](Locations.md).'); $remainingLines.Add('')
-$remainingLines.Add('| Объект | Координаты X Y Z, м |'); $remainingLines.Add('| --- | --- |')
-foreach ($item in $ungroupedRows) { $remainingLines.Add("| $(Text $item.name) | $(Position $item.worldPositionMeters $item.positionStatus) |") }
-$remainingLines.Add(''); $remainingLines.Add('Координаты относятся к самому объекту / корневому родителю. Полные записи и причины отсутствия сопоставления остаются в JSON; неизвестная позиция выводится как unknown. Этот отчёт не изменяет группы или сущности в мире.')
-[IO.File]::WriteAllText((Join-Path $output 'UngroupedObjects.md'), (($remainingLines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
 [pscustomobject]@{ OutputDirectory = $output; Locations = $locations.Count; CatalogObjects = $objects.Count; AssociatedObjects = $objects.Count-$unmatched.Count; Associations = $associationCount; UnassignedObjects = $unmatched.Count }

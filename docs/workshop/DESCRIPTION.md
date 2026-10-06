@@ -21,7 +21,7 @@ Current status
 • OtherContainers now groups 568 physical slots into 124 root-parent rows, retaining individual records and separate prefab instances in JSON.
 • Matching within 350 m uses settlements, islands and hills with equal first-stage priority, then Name Generic for remaining objects: 62 objects in the first stage, 61 in the second, and 19 left for review. All source objects and labels remain in JSON; matching uses map-label positions rather than geographic boundaries.
 • Simplified Locations Markdown to 31 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
-• Locations now supports manual world-group review with location positions in headings and object positions / distances in each list; supply and identifier columns remain in JSON.
+• Locations supports manual world-group review with location positions in headings and object positions / distances in each list. The unified report ends with an Ungrouped objects category containing the 19 remaining objects; a separate UngroupedObjects table is no longer generated.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features
