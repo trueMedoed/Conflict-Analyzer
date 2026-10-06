@@ -11,6 +11,142 @@ class ME_CA_StorageNode
 	ref array<float> worldPositionMeters = {};
 }
 
+//! Targeted inventory of configured SUPPLIES slots in every loaded subscene.
+class ME_CA_WorldSupplyContainersReport
+{
+	int schemaVersion = 2;
+	string kind = "world-supply-containers";
+	string analyzerVersion = "world-supply-containers-0.1";
+	string status = "partial";
+	string selection = "SCR_ResourceComponent-SUPPLIES-and-unresolved-slots";
+	string worldPath;
+	string gameVersion;
+	string generatedAtUTC;
+	string outputPath;
+	int subsceneCount;
+	int editorEntityCountBefore;
+	int editorEntityCountAfter;
+	int visitedSourceCount;
+	int inspectedResourceComponentCount;
+	int filteredNonSuppliesSlotCount;
+	int recordCount;
+	int coordinateMismatchCount;
+	bool editorEntityCountUnchanged;
+	ref array<ref ME_CA_ReportSubscene> subscenes = {};
+	ref array<string> warnings = {};
+	ref array<ref ME_CA_StorageNode> nodes = {};
+	ref array<ref ME_CA_StorageResource> resources = {};
+}
+
+[WorkbenchPluginAttribute(name: "Export world supplies containers", description: "Read configured physical supplies slots and virtual views across all loaded subscenes.", wbModules: { "WorldEditor" }, category: "[ME] Conflict Analyzer/Reports")]
+class ME_CA_WorldSupplyContainersPlugin : ME_CA_StorageCapacityPlugin
+{
+	override protected void ConfigureReport()
+	{
+		m_BaseSource = null;
+		m_NodeIds.Clear();
+		m_Capacity = new ME_CA_StorageCapacityReport();
+		m_Report.warnings.Clear();
+		m_Report.analyzerVersion = "world-supply-containers-0.1";
+	}
+
+	override protected void Visit(IEntitySource source, int depth)
+	{
+		if (!source || m_Visited.Contains(source))
+			return;
+		m_Visited.Insert(source, true);
+		if (depth > 256)
+		{
+			m_Report.warnings.Insert("Source hierarchy depth limit reached.");
+			return;
+		}
+		// Every source is inspected once; the inherited helper does not recurse here.
+		InspectStorage(source, 0, false);
+		for (int child = 0; child < source.GetNumChildren(); child++)
+			Visit(IEntitySource.Cast(source.GetChild(child)), depth + 1);
+	}
+
+	override protected string GetExportStem()
+	{
+		return "ME_CA_WorldSupplyContainers";
+	}
+
+	override protected bool WriteReport(JsonSaveContext context)
+	{
+		ME_CA_WorldSupplyContainersReport report = new ME_CA_WorldSupplyContainersReport();
+		report.worldPath = m_Report.worldPath;
+		report.gameVersion = m_Report.gameVersion;
+		report.generatedAtUTC = m_Report.generatedAtUTC;
+		report.outputPath = m_Report.outputPath;
+		report.subsceneCount = m_Report.subsceneCount;
+		report.editorEntityCountBefore = m_Report.editorEntityCountBefore;
+		report.editorEntityCountAfter = m_Report.editorEntityCountAfter;
+		report.editorEntityCountUnchanged = m_Report.editorEntityCountUnchanged;
+		report.visitedSourceCount = m_Report.visitedSourceCount;
+		report.coordinateMismatchCount = m_Report.coordinateMismatchCount;
+		report.inspectedResourceComponentCount = m_Capacity.resources.Count();
+		report.warnings.Copy(m_Report.warnings);
+		report.warnings.Insert("Configured editor containers only; runtime spawns, grid membership and dynamic construction are not analyzed.");
+		report.warnings.Insert("Physical SUPPLIES slots and virtual views are separate; previously reported slots must be excluded by verified identity.");
+		report.warnings.Insert("Unknown resource types and unknown lists are retained for completeness; source IDs are provisional editor identifiers.");
+		ref map<string, ref ME_CA_StorageNode> nodes = new map<string, ref ME_CA_StorageNode>();
+		foreach (ME_CA_StorageNode node : m_Capacity.nodes)
+			nodes.Insert(node.sourceId, node);
+		ref map<string, bool> needed = new map<string, bool>();
+		foreach (ME_CA_StorageResource resource : m_Capacity.resources)
+		{
+			array<ref ME_CA_StorageContainer> selected = {};
+			foreach (ME_CA_StorageContainer slot : resource.containers)
+			{
+				bool confirmedOther = false;
+				foreach (ME_CA_DiagnosticField field : slot.fields)
+				{
+					if (field.name == "m_eResourceType" && field.status == "resolved" && !field.enumLabel.IsEmpty() && field.enumLabel != "SUPPLIES")
+						confirmedOther = true;
+				}
+				if (confirmedOther)
+					report.filteredNonSuppliesSlotCount++;
+				else
+					selected.Insert(slot);
+			}
+			resource.containers.Clear();
+			foreach (ME_CA_StorageContainer selectedSlot : selected)
+				resource.containers.Insert(selectedSlot);
+			if (resource.containers.IsEmpty() && resource.containersStatus == "resolved")
+				continue;
+			report.resources.Insert(resource);
+			string id = resource.sourceId;
+			int ancestors = 0;
+			while (!id.IsEmpty() && !needed.Contains(id))
+			{
+				if (!nodes.Contains(id) || ancestors > 256)
+				{
+					Fail("container_parent_hierarchy_unavailable");
+					return false;
+				}
+				needed.Insert(id, true);
+				id = nodes.Get(id).parentSourceId;
+				ancestors++;
+			}
+		}
+		foreach (ME_CA_StorageNode selectedNode : m_Capacity.nodes)
+		{
+			if (needed.Contains(selectedNode.sourceId))
+				report.nodes.Insert(selectedNode);
+		}
+		for (int index = 0; index < report.subsceneCount; index++)
+		{
+			ME_CA_ReportSubscene scene = new ME_CA_ReportSubscene();
+			scene.index = index;
+			scene.name = m_Api.GetWorld().GetSubSceneName(index);
+			report.subscenes.Insert(scene);
+		}
+		report.recordCount = report.resources.Count();
+		m_Report.diagnosticEntityCount = report.recordCount;
+		return context.WriteValue("", report);
+	}
+}
+
 class ME_CA_StorageResource
 {
 	string sourceId;
@@ -175,7 +311,7 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 		m_NodeIds.Insert(id, true);
 	}
 
-	protected void InspectStorage(IEntitySource source, int depth)
+	protected void InspectStorage(IEntitySource source, int depth, bool traverseChildren = true)
 	{
 		if (!source || depth > 256)
 		{
@@ -214,8 +350,11 @@ class ME_CA_StorageCapacityPlugin : ME_CA_WorldDiagnosticsPlugin
 			}
 			m_Capacity.resources.Insert(resource);
 		}
-		for (int child = 0; child < source.GetNumChildren(); child++)
-			InspectStorage(IEntitySource.Cast(source.GetChild(child)), depth + 1);
+		if (traverseChildren)
+		{
+			for (int child = 0; child < source.GetNumChildren(); child++)
+				InspectStorage(IEntitySource.Cast(source.GetChild(child)), depth + 1);
+		}
 	}
 
 	override protected string GetExportStem()

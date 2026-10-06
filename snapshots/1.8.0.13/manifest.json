@@ -102,10 +102,34 @@
       "knownCapacityBaseCount": 15,
       "unknownCapacityBaseCount": 3,
       "physicalContainerCount": 49
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0005",
+      "revisionId": "r0005",
+      "schemaVersion": 2,
+      "status": "partial",
+      "analyzerVersion": "world-supply-containers-0.1",
+      "normalizerVersion": "other-supply-containers-0.1",
+      "capturedAtUTC": "2026-10-05T17:55:53Z",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0005/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0005/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0005/Supplies/OtherContainers.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0005/Supplies/OtherContainers.md"
+      ],
+      "scope": "configured_physical_SUPPLIES_slots_except_verified_base_storage",
+      "physicalContainerCount": 568,
+      "storageGroupCount": 129,
+      "virtualViewCount": 129,
+      "configuredCapacitySupplies": 190700.0,
+      "excludedKnownPhysicalContainerCount": 49
     }
   ],
   "warnings": [
-    "Archived partial revisions cover source-base income and configured descendant storage of all source bases; detached storage ownership and other sections remain incomplete.",
+    "Archived partial revisions cover source-base income, configured descendant storage and other configured physical supplies slots; detached base ownership, runtime spawns and other sections remain incomplete.",
     "Configured dependencies are not a complete inventory of loaded addons.",
     "World resource GUID and release channel are unknown; cross-version identity matching remains unverified."
   ],

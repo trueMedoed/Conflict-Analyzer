@@ -17,6 +17,7 @@ Current status
 • A separate source-base command now exports only the selected component and four fields. Its report builder writes Harbors.json beside the generated table; the shared data.json is a section index.
 • Added a selected-base storage inspection command. On Everon airport it resolves two storage compositions and five physical containers, totaling 4000 configured supplies capacity; virtual views are excluded from the sum. The subsequent batch covers all 18 source bases; runtime grid membership remains unverified.
 • Added a storage-capacity column for all 18 source bases: 49 unique physical containers, 15 resolved descendant capacities and three unknown ownership cases. Income retains its earlier verified capture; nearby detached caches are not assigned by distance.
+• Added a targeted world supplies inventory and OtherContainers report: 568 additional physical slots in 129 groups, 190700 configured capacity. Previously reported base containers are excluded after identity checks; 129 other virtual views remain separate. Detached cache ownership and runtime spawning remain unverified.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features

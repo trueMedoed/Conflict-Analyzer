@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch')][string]$ReportKind = 'Diagnostics'
+    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch', 'WorldSupplyContainers')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -28,7 +28,15 @@ if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
     $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
     throw 'Report metadata or editor entity counts are inconsistent.'
 }
-if ($ReportKind -eq 'StorageCapacityBatch') {
+if ($ReportKind -eq 'WorldSupplyContainers') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'world-supply-containers' -or
+        $report.selection -ne 'SCR_ResourceComponent-SUPPLIES-and-unresolved-slots' -or
+        $report.resources.Count -ne $report.recordCount -or
+        $report.inspectedResourceComponentCount -lt $report.recordCount) {
+        throw 'World supply container inventory metadata or counts are inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} elseif ($ReportKind -eq 'StorageCapacityBatch') {
     if ($report.schemaVersion -ne 2 -or $report.kind -ne 'source-bases-storage-capacity' -or
         $report.selection -ne 'all-source-base-descendant-resource-containers' -or
         $report.bases.Count -ne $report.baseCount -or $report.baseCount -le 0 -or

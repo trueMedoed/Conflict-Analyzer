@@ -10,6 +10,8 @@
 
 В [актуальную таблицу Harbors](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/Harbors.md) добавлен столбец «Вместимость хранилищ, припасы» для всех 18 точек. [r0004](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0004/Supplies/Harbors.md) содержит 49 физических контейнеров и полный состав вложенных хранилищ; 15 вместимостей определены, три остаются unknown из-за неподтверждённой связи отдельно расположенных складов. Прежний r0001 сохранён в `revisions/r0001/`; доход / интервалы взяты из проверенного r0002 с сохранением его времени и SHA-256.
 
+Найдены [остальные контейнеры с припасами](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Supplies/OtherContainers.md): **568 физических слотов** в **129 группах**, настроенная вместимость **190700 припасов**. [r0005](snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0005/Supplies/OtherContainers.json) сохраняет их состав, начальные припасы, координаты и происхождение полей. Ранее учтённые контейнеры баз исключены после проверки идентичности; виртуальные представления не входят в сумму. Команда и ограничения — [OTHER_CONTAINERS.md](docs/OTHER_CONTAINERS.md).
+
 ## Что планируется извлекать
 
 | Раздел | Данные |
@@ -35,6 +37,7 @@ Conflict Analyzer/
     SOURCE_DIAGNOSTICS.md
     SUPPLY_SOURCES.md
     STORAGE_CAPACITY.md
+    OTHER_CONTAINERS.md
     VALIDATION.md
     experiments/
       HQC_Eden_1.8.0.13.md
@@ -55,6 +58,7 @@ Conflict Analyzer/
     New-SupplySourcesReport.ps1
     New-StorageCapacityReport.ps1
     New-AllSourceCapacityReport.ps1
+    New-OtherSupplyContainersReport.ps1
   snapshots/
     README.md
     1.8.0.13/
@@ -64,12 +68,19 @@ Conflict Analyzer/
         data.json
         Supplies.md
         Supplies/Harbors.md
+        Supplies/OtherContainers.md
         revisions/r0002/
           world.json
           data.json
           Supplies.md
           Supplies/Harbors.json
           Supplies/Harbors.md
+        revisions/r0005/
+          world.json
+          data.json
+          Supplies.md
+          Supplies/OtherContainers.json
+          Supplies/OtherContainers.md
   changes/
     README.md
 ```
