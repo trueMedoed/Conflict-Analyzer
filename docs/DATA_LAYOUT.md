@@ -39,7 +39,7 @@ changes/
         CHANGES.md
 ```
 
-Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны шесть частичных ревизий: доход баз, вместимость их потомков и остальные физические контейнеры. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
+Обозначения в угловых скобках — параметры схемы, не буквальные имена каталогов. Для `1.8.0.13 / CTI_Campaign_HQC_Eden` собраны семь частичных ревизий: доход баз, вместимость их потомков, остальные физические контейнеры и справочник локаций. `AI-Groups.md`, `Starting-Bases.md`, `Vehicle-Spawns.md` и сравнения показаны как план: такие файлы ещё не созданы.
 
 Каталоги `snapshots/` и `changes/` находятся в корне репозитория, вне `ME_Conflict_Analyzer/`. Они хранятся в Git. `exports/` остаётся игнорируемым каталогом временных выгрузок и подготовки результатов.
 
@@ -64,7 +64,7 @@ changes/
 
 В `data.json` базы находятся в `supplies.sourceBases.records`. Запись содержит `source`, `name`, `baseNameLocalizationKey`, `supplyIncomePerCycle`, `arrivalIntervalSeconds`, `arrivalIntervalMinutes` и `provenance`. Имя — `IEntitySource.GetName()`. Количество — `m_iRegularSuppliesIncomeBase`; исходный интервал — `m_iSuppliesArrivalInterval`; минуты вычисляются делением на 60 без целочисленного усечения. Поля компонента читаются через `BaseContainer.Get`; `directOverride=false` означает унаследованное значение или значение по умолчанию.
 
-`source` сохраняет editor source ID, subscene, слой, родительские ID, ближайший prefab и мировые координаты в метрах. Ближайший prefab не объявляется точным ресурсом, задающим унаследованное поле: `definingResource` пока `null` со статусом `unknown`. Локализационный ключ базы сохраняется как исходное значение; перевод и поиск именованной локации ещё не выполняются.
+`source` сохраняет editor source ID, subscene, слой, родительские ID, ближайший prefab и мировые координаты в метрах. Ближайший prefab не объявляется точным ресурсом, задающим унаследованное поле: `definingResource` пока `null` со статусом `unknown`. Локализационный ключ базы сохраняется как исходное значение; первоначальная таблица не переводит его. Отдельный r0007 читает именованные подписи карты и составляет связи по радиусу.
 
 В этой ревизии `supplies.sourceBases.status=extracted` означает извлечение настроек выбранных компонентов, а не проверку всех условий генерации в игре. Раздел припасов и весь снимок имеют `status=partial`. ИИ, HQ, машины и прочие точки припасов имеют `status=not_analyzed`, `records=null`; это не пустые подтверждённые выборки. Нулевой итог допустим только для выполненной и проверенной выборки.
 
@@ -74,7 +74,7 @@ GUID мира, канал игры и полный список загружен
 
 Первый раздел обычного экспорта реализован для баз-источников: он сохраняет только объекты с `SCR_CampaignSourceBaseComponent` и четыре явных поля, читает сцену вместе с Eden и готовит JSON отдельного отчёта. Широкая диагностика остаётся отдельной командой, её дамп не требуется. Запуск — в [SUPPLY_SOURCES.md](SUPPLY_SOURCES.md); правила расширения — в [EXPORT_ALGORITHM.md](EXPORT_ALGORITHM.md).
 
-Пары файлов: `AI-Groups.json` / `AI-Groups.md`, `Supplies/Harbors.json` / `Supplies/Harbors.md`, `Starting-Bases.json` / `Starting-Bases.md`, `Vehicle-Spawns.json` / `Vehicle-Spawns.md`. Другие таблицы припасов получают собственные пары после фактического анализа. `Locations.json` хранит используемые именованные локации для связи по ID; он создаётся после реализации этого анализа.
+Пары файлов: `AI-Groups.json` / `AI-Groups.md`, `Supplies/Harbors.json` / `Supplies/Harbors.md`, `Starting-Bases.json` / `Starting-Bases.md`, `Vehicle-Spawns.json` / `Vehicle-Spawns.md`. Другие таблицы припасов получают собственные пары после фактического анализа. `Locations.json` реализован в r0007: именованные подписи и объекты с отдельными ID, списки связей по радиусу; охват объектов пока только OtherContainers / Harbors.
 
 В `r0002` `Supplies/Harbors.json` имеет `kind=supply-source-bases-report`, `count` и `records`; поля записей соответствуют модели source base выше, добавлены `enabled`, путь мира subscene, статусы значений и предупреждения. Исходное поле хранится в `provenance.rawValue`; неизвестное значение или необходимость анализа fallback обозначаются `unknown`, не нулём. Нативный вход имеет `kind=supply-source-bases` и только целевые поля.
 
@@ -144,3 +144,7 @@ Markdown-таблицы генерируются из JSON. Исправлени
 Пять файлов r0006 повторно нормализуют прежний нативный вход: JSON сохраняет все 568 физических и 129 виртуальных слотов, а storageGroups содержит 124 корневых родителя. normalizerVersion 0.2 / grouping root_source_ancestor указывают новый способ группировки. groupSourceId / groupLabel теперь относятся к корню; исходная ближайшая группа сохранена в nestedStorageSourceId / nestedStorageLabel. Прежние поля и происхождение индивидуальных слотов не изменены.
 
 Markdown строится по storageGroups: одна строка на ID корня, с составом и итогами всех потомков. Позиция строки — позиция родителя, позиции слотов остаются в JSON. Индекс содержит count физических слотов и rowCount таблицы отдельно. Корневая OtherContainers.md представляет r0006; r0001–r0005 и Harbors сохранены. capturedAtUTC / sourceReportSha256 относятся к прежнему сбору, revisionReason объясняет повторную обработку.
+
+## Справочник локаций — r0007
+
+Четыре файла: world.json, data.json, Locations.json / .md. JSON хранит 170 локаций и 142 объекта один раз; nearbyObjects каждой локации содержит objectId / distanceMeters / method / ownershipEstablished=false. Радиус 1000 м X/Z, все совпадения. 1084 пары не являются числом уникальных объектов. Ссылки на r0006 / r0004 и даты / SHA-256 входов сохраняются; прежние снимки не меняются. Корневой Locations.md направлен на r0007. Подробные поля и ограничения — [LOCATION_CATALOG.md](LOCATION_CATALOG.md).

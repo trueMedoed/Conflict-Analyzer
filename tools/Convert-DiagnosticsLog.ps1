@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$LogPath,
     [Parameter(Mandatory = $true)][string]$OutputPath,
-    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch', 'WorldSupplyContainers')][string]$ReportKind = 'Diagnostics'
+    [ValidateSet('Diagnostics', 'SupplySources', 'StorageCapacity', 'StorageCapacityBatch', 'WorldSupplyContainers', 'NamedLocations')][string]$ReportKind = 'Diagnostics'
 )
 $ErrorActionPreference = 'Stop'
 $lines = Get-Content -LiteralPath $LogPath
@@ -20,15 +20,23 @@ $chunks = @($lines | Where-Object { $_.Contains($prefix) } | ForEach-Object {
     $_.Substring($_.IndexOf($prefix) + $prefix.Length)
 })
 $json = $chunks -join ''
-if ($json.Length -ne $expectedLength) {
-    throw "Incomplete JSON: expected $expectedLength characters, received $($json.Length)."
+if ([Text.Encoding]::UTF8.GetByteCount($json) -ne $expectedLength -or $json.Contains([string][char]0xFFFD)) {
+    # Enforce string.Length() counts UTF-8 bytes, including localized map labels.
+    throw "Incomplete JSON: expected $expectedLength UTF-8 bytes, received $([Text.Encoding]::UTF8.GetByteCount($json))."
 }
 $report = $json | ConvertFrom-Json -ErrorAction Stop
 if (!$report.worldPath -or !$report.editorEntityCountUnchanged -or
     $report.editorEntityCountBefore -ne $report.editorEntityCountAfter) {
     throw 'Report metadata or editor entity counts are inconsistent.'
 }
-if ($ReportKind -eq 'WorldSupplyContainers') {
+if ($ReportKind -eq 'NamedLocations') {
+    if ($report.schemaVersion -ne 2 -or $report.kind -ne 'named-world-locations' -or
+        $report.selection -ne 'named-map-descriptor-DisplayName' -or $report.locations.Count -ne $report.recordCount -or
+        $report.inspectedDescriptorCount -ne $report.recordCount + $report.unnamedDescriptorCount) {
+        throw 'Named location inventory metadata or counts are inconsistent.'
+    }
+    $recordCount = $report.recordCount
+} elseif ($ReportKind -eq 'WorldSupplyContainers') {
     if ($report.schemaVersion -ne 2 -or $report.kind -ne 'world-supply-containers' -or
         $report.selection -ne 'SCR_ResourceComponent-SUPPLIES-and-unresolved-slots' -or
         $report.resources.Count -ne $report.recordCount -or

@@ -1,0 +1,59 @@
+# Справочник локаций и близких объектов
+
+Пользователь выбрал **радиус 1000 м** и охват **только OtherContainers и Harbors**. Команда `Reports → Export named world locations` читает именованные подписи карты из открытого мира и всех subscene. `New-LocationCatalogReport.ps1` строит Locations.json / .md: у каждой локации список всех выбранных объектов в радиусе, без исключительного назначения ближайшему имени.
+
+## Проверенный результат HQC Everon 1.8.0.13
+
+Найдено **170 именованных локаций**, все в родительском Eden, язык **en_us**. Исследовано 1827 MapDescriptor-компонентов, 1657 с пустой / недоступной DisplayName не включены. Названия и мировые позиции всех сохранённых подписей разрешены; типы включают населённые пункты, местные названия, холмы, острова, моря, водоёмы и руины.
+
+Справочник содержит **142 объекта**: **124 корневых родителя OtherContainers r0006** и **18 баз Harbors r0004**. Все входят хотя бы в один радиус; **150 локаций** имеют выбранные объекты, всего **1084 связи**. Это число пар локация / объект, не число уникальных объектов или физических контейнеров. У power plant — **13 объектов**.
+
+Для `E_LivingArea_S_FIA_01` (ID `0x2000000000001FBB {}`) в `5882.897949 / 3.710999 / 9773.521484` подпись `#AR-MapLocation_PowerPlant` находится в `5834.382812 / 4.572 / 9786.421875`: расстояние X/Z **50.201 м**. Перевод установленной игры — `power plant`. Эти значения соответствуют показанному пользователем примеру; регистр перевода сохраняется.
+
+[Таблица r0007](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0007/Locations.md), [канонический JSON](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0007/Locations.json), [корневой справочник](../snapshots/1.8.0.13/worlds/CTI_Campaign_HQC_Eden/Locations.md).
+
+## Алгоритм
+
+1. Обойти все editor source и prefab-детей в обеих subscene. Среди MapDescriptor-компонентов сохранить записи с непустой вычитанной DisplayName; фильтр не основан только на префиксе класса. Читать только DisplayName, MainType, UnitType, источник и мировую позицию; координаты сверять с матрицами родителей. Нативный результат этой версии содержит только SCR_MapDescriptorComponent с именованными географическими типами и Ruin.
+2. Сохранить исходный ключ / текст, перевод WidgetManager.Translate, язык WidgetManager.GetLanguage и статус перевода. Неразрешённое имя оставить с исходным ключом и unknown; оно не подменяется догадкой. Одинаковые отображаемые названия сохранять отдельными location ID `(sourceId, componentIndex)`.
+3. Проверить версию / сценарий двух канонических каталогов припасов. Взять корневые родительские строки OtherContainers и source base Harbors, не отдельные контейнеры или декорации. Собственные имена объектов не заменять названиями локаций. Сохранить ссылки на исходные записи, snapshotId, время чтения и SHA-256 каждого входа отдельно.
+4. Для каждой валидной позиции рассчитать горизонтальное расстояние `sqrt(dx²+dz²)`. Условие `dx²+dz² <= 1000²` включительно применяется к исходным координатам до округления. Высота Y не участвует. Неизвестную / неподтверждённую позицию не считать нулевой; сохранить причину отсутствия сопоставления.
+5. Добавить **все** подходящие пары: один объект может входить в несколько локаций. Записать distanceMeters, method horizontal_radius_proximity и ownershipEstablished=false. Это близость к точечной подписи, не область локации, принадлежность базе или ресурсной сети.
+6. В Locations.json объекты хранятся один раз; список каждой локации содержит ID / расстояние. Общий data.json — индекс, world.json — метаданные. Locations.md строится из сохранённого JSON, включает все локации, списки объектов и несопоставленные записи. Предыдущие снимки не пересобираются; пустая локация не удаляется молча.
+
+Методы перевода сверены с официальным [WidgetManager API](https://community.bistudio.com/wikidata/external-data/arma-reforger/EnfusionScriptAPIPublic/interfaceWidgetManager.html), методы карты — с [MapDescriptorComponent](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/interfaceMapDescriptorComponent.html). Поля фактически прочитаны и код скомпилирован в установленном Workbench 1.8.0.13.
+
+## CLI
+
+К проверенным `-gproj` и `-addonsDir` из [SOURCE_DIAGNOSTICS.md](SOURCE_DIAGNOSTICS.md) добавить:
+
+```text
+-wbModule=WorldEditor -run -exitAfterInit -plugin=ME_CA_LocationsPlugin -ME_CA_World=worlds/MP/CTI_Campaign_HQC_Eden.ent -ME_CA_LogJson=1
+```
+
+После завершения именно этого процесса извлечь журнал; выходные пути должны быть свободны:
+
+```powershell
+.\tools\Convert-DiagnosticsLog.ps1 `
+  -LogPath '<console.log этого запуска>' `
+  -OutputPath .\exports\HQC_Eden_NamedLocations_1.8.0.13.json `
+  -ReportKind NamedLocations
+
+.\tools\New-LocationCatalogReport.ps1 `
+  -LocationsReportPath .\exports\HQC_Eden_NamedLocations_1.8.0.13.json `
+  -OtherContainersReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0006\Supplies\OtherContainers.json `
+  -HarborsReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0004\Supplies\Harbors.json `
+  -OutputDirectory .\exports\HQC_Eden_Locations_r0007 `
+  -RadiusMeters 1000 `
+  -RevisionId r0007 `
+  -RevisionReason 'Index OtherContainers and Harbors under all named map locations within 1000 meters' `
+  -WorkbenchVersion 1.8.0.13
+```
+
+Нативный string.Length учитывает UTF-8-байты: проверка журнала учитывает многобайтные названия (Régina, Îlot). Неполные / смешанные выгрузки и символ замены U+FFFD отклоняются. ASCII-выгрузки сохраняют прежние байты. Перенос в snapshots и обновление корневого представления выполняются после проверки; JSON и каталог результата не перезаписываются.
+
+## Ограничения
+
+Объекты ИИ, машины и HQ-кандидаты пока не включены по выбору пользователя. Названия / координаты локаций прочитаны заново; координаты и параметры припасов взяты из предыдущих проверенных ревизий с отдельными датами. В справочник не входят runtime-названия, пустые подписи и все декоративные сущности мира.
+
+Радиус не совпадает с фактической областью локации; географические перекрытия сохраняются. Вместимости строк в разных списках нельзя складывать как мировой запас. Проверка областей, явных игровых связей и устойчивости ID между версиями остаётся дальнейшей работой. Статус partial; прямой FileIO-путь из меню пока не проверен интерактивно. Выполненные проверки — [VALIDATION.md](VALIDATION.md).
