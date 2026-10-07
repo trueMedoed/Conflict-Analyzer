@@ -41,6 +41,7 @@
 • r0026 rounds displayed coordinates to three decimal places for Workbench; canonical positions, distances, groups and previous revisions are unchanged.
 • r0027 removes redundant depot subheadings and keeps all nine marker positions in tables under location headings; settings, container lists and JSON values are preserved.
 • r0028 hides depot marker coordinates in Markdown; location/object coordinates, settings, container lists and canonical positions are preserved.
+• r0029 removes depot component settings from Markdown, preserves their source values in JSON and defers gameplay investigation to optional TODO work. Physical storage and grouping are unchanged.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -80,4 +81,5 @@
 • r0026 округляет координаты в таблицах и заголовках до трёх знаков после точки для Workbench; исходные позиции, расстояния, группы и прежние ревизии сохранены.
 • r0027 убирает повторные подзаголовки складов и сохраняет позиции всех 9 маркеров в таблицах под локациями; настройки, списки контейнеров и JSON-значения прежние.
 • r0028 убирает координаты маркеров складов из Markdown; позиции локаций / объектов, настройки, списки и канонические координаты сохранены.
+• r0029 убирает настройки компонентов складских маркеров из Markdown, сохраняет исходные значения в JSON и откладывает исследование в опциональный TODO. Физические хранилища и группировка прежние.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

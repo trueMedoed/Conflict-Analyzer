@@ -37,6 +37,8 @@ Current status
 
 • Supply depots use the location heading without a redundant depot subheading or marker coordinates; location/object coordinates and container lists are preserved. Full marker positions remain in JSON.
 
+• Depot marker component settings are hidden in Markdown and retained in JSON; their gameplay effect is deferred for later investigation. Physical container tables, capacity/composition and grouping are unchanged.
+
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
 • Supply points and storage counts, initial supplies, capacity, replenishment amount and interval.

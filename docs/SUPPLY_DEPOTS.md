@@ -1,6 +1,6 @@
 # Склады припасов CampaignRemnantsSupplyDepot
 
-В r0028 отдельная категория **«Склады припасов»** стоит после Harbors в Locations.md и Supplies/OtherContainers.md. В HQC Eden 1.8.0.13 целевой экспорт нашёл **9** экземпляров CampaignRemnantsSupplyDepot. Их SCR_MapDescriptorComponent имеет MainType=87 / Icon (generic), DisplayName пустой: эти маркеры не входят в прежние 170 именованных подписей.
+В r0029 отдельная категория **«Склады припасов»** стоит после Harbors в Locations.md и Supplies/OtherContainers.md. В HQC Eden 1.8.0.13 целевой экспорт нашёл **9** экземпляров CampaignRemnantsSupplyDepot. Их SCR_MapDescriptorComponent имеет MainType=87 / Icon (generic), DisplayName пустой: эти маркеры не входят в прежние 170 именованных подписей.
 
 ## Что читается
 
@@ -42,7 +42,7 @@
 
 Конвертер требует полный успешный отчёт, проверяет UTF-8-байты, уникальные source ID / точный prefab / счётчики и не перезаписывает существующий файл. Генерация шести категорий — [SUPPLY_PRIORITY.md](SUPPLY_PRIORITY.md); новый параметр SupplyDepotsReportPath обязателен.
 
-Supplies/SupplyDepots.json сохраняет выбранные настройки и полный узкий native-экспорт девяти маркеров, world.json — его метаданные. inputs.supplyDepots хранит отдельную capture-дату / SHA-256; даты контейнеров / Harbors / КП / подписей сохраняются прежними. В r0028 десять файлов, schemaVersion 3, normalizer supply-priority-architecture-0.10; старые ревизии неизменны. Статус partial, runtime-сеть и сравнение версий остаются для проверки. [VALIDATION.md](VALIDATION.md).
+Supplies/SupplyDepots.json сохраняет выбранные настройки и полный узкий native-экспорт девяти маркеров, world.json — его метаданные. inputs.supplyDepots хранит отдельную capture-дату / SHA-256; даты контейнеров / Harbors / КП / подписей сохраняются прежними. В r0029 десять файлов, schemaVersion 3, normalizer supply-priority-architecture-0.11; старые ревизии неизменны. Статус partial, runtime-сеть и сравнение версий остаются для проверки. [VALIDATION.md](VALIDATION.md).
 
 ## Отображение без подзаголовков склада — r0027
 
@@ -51,3 +51,7 @@ Supplies/SupplyDepots.json сохраняет выбранные настрой�
 ## Актуальное отображение — r0028
 
 r0028 убирает из обоих текущих Markdown координаты маркеров CampaignRemnantsSupplyDepot по прямому уточнению пользователя. Не переносить их в другие таблицы / строки этих документов. Заголовки локаций и собственные координаты контейнерных родителей остаются, формат 0.000 прежний. Настройки компонентов, расстояния, списки всех складов и остатки сохраняются. Полные позиции всех девяти маркеров остаются в каноническом JSON для расчётов и происхождения; JSON меняют только revision metadata. Десять файлов, schemaVersion 3, supply-priority-architecture-0.10; текущие root views r0028, r0001–r0027 неизменны.
+
+## Актуальное отображение — r0029
+
+r0029 убирает таблицы настроек SCR_CampaignSuppliesComponent маркеров складов из Markdown: m_iSuppliesMax / m_iSupplies (50000 / 50000) и m_fOperationalRadius (20 м), а также сопутствующий абзац об операционном радиусе. Отбор маркеров, физические контейнеры, суммы / состав, расстояния и координаты локаций / объектов прежние. Native и все поля / позиции маркеров остаются в JSON; влияние этих настроек на игру не объявлять установленным, исследование отложено как опциональное в TODO. JSON меняют только revision metadata. Десять файлов, schemaVersion 3, supply-priority-architecture-0.11; текущие root views r0029, r0001–r0028 неизменны.

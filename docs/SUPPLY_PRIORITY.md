@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0028 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0029 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0028 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0029 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0028 `
-  -RevisionReason 'Hide supply depot marker coordinates in Markdown, preserving location and object coordinates and canonical data'
+  -RevisionId r0029 `
+  -RevisionReason 'Hide depot component settings from Markdown and defer their gameplay investigation, preserving canonical data'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -77,3 +77,7 @@ r0027 убирает отдельные подзаголовки «Склад - 
 ## Без координат маркеров складов — r0028
 
 r0028 убирает из обоих текущих Markdown координаты маркеров CampaignRemnantsSupplyDepot по прямому уточнению пользователя. Не переносить их в другие таблицы / строки этих документов. Заголовки локаций и собственные координаты контейнерных родителей остаются, формат 0.000 прежний. Настройки компонентов, расстояния, списки всех складов и остатки сохраняются. Полные позиции всех девяти маркеров остаются в каноническом JSON для расчётов и происхождения; JSON меняют только revision metadata. Десять файлов, schemaVersion 3, supply-priority-architecture-0.10; текущие root views r0028, r0001–r0027 неизменны.
+
+## Без настроек компонентов маркеров — r0029
+
+r0029 убирает таблицы настроек SCR_CampaignSuppliesComponent маркеров складов из Markdown: m_iSuppliesMax / m_iSupplies (50000 / 50000) и m_fOperationalRadius (20 м), а также сопутствующий абзац об операционном радиусе. Отбор маркеров, физические контейнеры, суммы / состав, расстояния и координаты локаций / объектов прежние. Native и все поля / позиции маркеров остаются в JSON; влияние этих настроек на игру не объявлять установленным, исследование отложено как опциональное в TODO. JSON меняют только revision metadata. Десять файлов, schemaVersion 3, supply-priority-architecture-0.11; текущие root views r0029, r0001–r0028 неизменны.
