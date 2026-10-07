@@ -11,7 +11,7 @@ param(
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0024',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0025',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -30,7 +30,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.6'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.7'
 Assert ($depots.gameVersion -ceq $version -and $depots.worldPath -ceq $cp.worldPath) 'Supply-depot world/version mismatch.'
 $mapLinksInput=ReadInput $ControlPointMapLinksPath
 Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
@@ -180,15 +180,41 @@ $policy=[ordered]@{order=$categories;radiusMeters=$RadiusMeters;radiusScope='map
 $policy.controlPointMapGroupMerge=[ordered]@{phase='after_source_and_map_classification';correspondenceMethods=@('normalized_display_name','localization_key_prefab_identity','user_confirmed_nearby_location');explicitLinkPriority='before_automatic_identity_matching_for_that_control_point';explicitLinkScope='exact_game_version_scenario_and_source_ids';maximumAnchorDistanceMeters=$RadiusMeters;ambiguousMatch='reject';memberRule='transfer_existing_map_group_members_and_remove_from_lower_categories';radiusOrigin='original_map_label';displayDistanceOrigin='control_point_source';sourceParentEstablished=$false;ownershipEstablished=$false}
 $policy.radiusScope='map_location_matching_control_point_label_correspondence_and_supply_depot_matching'
 $policy.supplyDepotRule=[ordered]@{selection='CampaignRemnantsSupplyDepot_prefab';protectedCategories=@('control_points','harbors');phase='after_control_point_map_merges_before_lower_map_groups';memberRule='confirmed_source_hierarchy_or_horizontal_radius_proximity';radiusMeters=$RadiusMeters;distanceOrigin='supply_depot_marker';withinStage='all_matches';ownershipEstablished=$false}
+$policy.supplyDepotLocationRule=[ordered]@{scope='supply_depot_markers_only';radiusMeters=$RadiusMeters;order=@('settlements','other');settlementDescriptorTypes=$settlementTypes;otherDescriptorTypes=$otherTypes;selection='nearest_in_first_matching_tier';equalDistanceTieBreak='map_location_id';unmatched='retain_without_location';sourceParentEstablished=$false;ownershipEstablished=$false}
+$depotLocationAssociations=[Collections.Generic.List[object]]::new()
+foreach($depotGroup in ($groups | Where-Object category -ceq 'supply_depots')){
+    $candidates=@(foreach($marker in $mapInventory){
+        if($marker.descriptorType -notin ($settlementTypes+$otherTypes) -or $marker.nameStatus -cne 'resolved' -or [string]::IsNullOrWhiteSpace($marker.name)){continue}
+        if(!(ValidPosition $depotGroup.worldPositionMeters $depotGroup.positionStatus) -or !(ValidPosition $marker.worldPositionMeters $marker.positionStatus)){continue}
+        $dx=[double]$depotGroup.worldPositionMeters[0]-[double]$marker.worldPositionMeters[0];$dz=[double]$depotGroup.worldPositionMeters[2]-[double]$marker.worldPositionMeters[2]
+        $d2=$dx*$dx+$dz*$dz;if($d2 -gt $RadiusMeters*$RadiusMeters){continue}
+        [pscustomobject][ordered]@{mapLocationId=$marker.id;tier=$(if($marker.descriptorType -in $settlementTypes){'settlements'}else{'other'});tierRank=$(if($marker.descriptorType -in $settlementTypes){0}else{1});distanceMeters=[Math]::Sqrt($d2)}
+    })
+    $candidates=@($candidates | Sort-Object tierRank,distanceMeters,mapLocationId)
+    $selected=$(if($candidates.Count){$candidates[0]}else{$null})
+    $depotLocationAssociations.Add([pscustomobject][ordered]@{depotGroupId=$depotGroup.id;depotObjectId=$depotGroup.anchorObjectId;mapLocationId=$(if($selected){$selected.mapLocationId}else{$null});distanceMeters=$(if($selected){$selected.distanceMeters}else{$null});tier=$(if($selected){$selected.tier}else{$null});status=$(if($selected){'matched'}elseif(ValidPosition $depotGroup.worldPositionMeters $depotGroup.positionStatus){'no_eligible_location_within_radius'}else{'position_unknown_or_invalid'});method='nearest_named_location_in_priority_tier';sourceParentEstablished=$false;ownershipEstablished=$false;candidates=$candidates})
+}
+$depotRegions=@(foreach($marker in $mapInventory){
+    $associated=@($depotLocationAssociations | Where-Object {$_.status -ceq 'matched' -and $_.mapLocationId -ceq $marker.id})
+    if(!$associated.Count){continue}
+    [pscustomobject][ordered]@{id="depot-location/$($marker.id)";mapLocationId=$marker.id;name=$marker.name;descriptorType=$marker.descriptorType;worldPositionMeters=$marker.worldPositionMeters;positionStatus=$marker.positionStatus;depots=@($associated | Sort-Object depotGroupId)}
+})
+$depotRegions=@($depotRegions | Sort-Object name,mapLocationId)
+$depotLocationGrouping=[ordered]@{policy=$policy.supplyDepotLocationRule;locations=$depotRegions;unlocatedDepots=@($depotLocationAssociations | Where-Object status -cne 'matched' | Sort-Object depotGroupId);associations=@($depotLocationAssociations.ToArray())}
 $warnings=@('Control points are selected by prefab, source bases by their previous verified catalog; named map labels are a separate source.','Control-point component supplies/max are configured fields, not measured physical capacity or runtime stock.','Control-point and Harbor members require confirmed source hierarchy; the 350 m radius applies only to the remaining map-location stages.','Each remaining OtherContainers root parent belongs only to its first matching category; all matches within that category are retained.','Control-point and Harbor source entities remain inventory anchors in their own category.','Source parenting and map proximity do not establish runtime resource-grid membership; unknown remains unknown.')
 $warnings[2]='After hierarchy and map classification, uniquely corresponding map-label groups are merged into their control-point report group. Transferred map neighbors are not confirmed source children.'
 $warnings+='Transferred members retain original map-label proximity evidence; displayed distances use the control-point source position and can exceed the map-label radius.'
 $warnings+='Supply-depot markers and their component supplies/max are separate from physical storage. Remaining parents match within the approved depot radius; completed control-point and Harbor assignments are protected.'
+$warnings+='Depot markers are displayed under named locations within the approved radius: settlements first, then other permitted types, nearest within that tier. Unmatched markers remain separate; this does not change their source parenting or container assignments.'
 $catalog=[ordered]@{schemaVersion=3;kind='priority-location-catalog';snapshotId=$snapshotId;status='partial';gameVersion=$version;scenarioKey=$scenario;normalizerVersion=$normalizer;inputs=$inputs;matchingPolicy=$policy;summary=[ordered]@{objectCount=$objects.Count;controlPointCount=$controlRecords.Count;sourceBaseCount=$harbors.records.Count;otherParentCount=$other.records.Count;recognizedParentCount=$other.records.Count-$unrecognized.Count;unrecognizedParentCount=$unrecognized.Count;associationCount=($stageSummary.Values | Where-Object {$_ -is [System.Collections.IDictionary] -and $_.Contains('associationCount')} | ForEach-Object {$_.associationCount} | Measure-Object -Sum).Sum;visibleGroupCount=$visible.Count;stages=$stageSummary};objects=@($objects.ToArray());groups=@($groups.ToArray());unrecognizedObjects=$unrecognized;mapLocationInventory=$mapInventory;warnings=$warnings}
 $catalog.mapGroupMerges=@($mapMerges.ToArray())
 $catalog.summary.mergedMapLocationCount=$mapMerges.Count
 $catalog.summary.transferredParentCount=$transferredIds.Count
 $catalog.summary.supplyDepotCount=$depotRecords.Count
+$catalog.depotLocationGrouping=$depotLocationGrouping
+$catalog.summary.locatedSupplyDepotCount=@($depotLocationAssociations | Where-Object status -ceq 'matched').Count
+$catalog.summary.unlocatedSupplyDepotCount=$depotLocationGrouping.unlocatedDepots.Count
+$catalog.summary.supplyDepotLocationGroupCount=$depotRegions.Count
 $world=[ordered]@{schemaVersion=3;snapshotId=$snapshotId;revisionId=$RevisionId;revisionReason=$RevisionReason;status='partial';gameVersion=$version;scenarioKey=$scenario;worldPath=$cp.worldPath;normalizerVersion=$normalizer;inputs=$inputs;controlPointCapture=$cp;matchingPolicy=$policy;warnings=$warnings}
 $world.supplyDepotCapture=$depots
 $index=[ordered]@{schemaVersion=3;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{locations=[ordered]@{path='Locations.json';table='Locations.md'};supplies=[ordered]@{catalog='Locations.json';table='Supplies/OtherContainers.md';controlPoints='Supplies/ControlPoints.json';otherContainers='Supplies/OtherContainers.json';harbors='Supplies/Harbors.json';order=$categories};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
@@ -254,6 +280,39 @@ function HarborTable($lines,$categoryGroups,$supply){
     }
     $lines.Add('')
 }
+function DepotBlock($lines,$assignment,$supply){
+    $group=@($saved.groups | Where-Object id -ceq $assignment.depotGroupId)[0]
+    $anchor=$rows[$assignment.depotObjectId]
+    $lines.Add("#### Склад - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
+    if($assignment.status -ceq 'matched'){$lines.Add("Расстояние от маркера склада до локации: **$(Distance $assignment.distanceMeters) м** по X/Z.");$lines.Add('')}
+    if($supply){
+        $lines.Add('| Максимум / Изначально компонента, припасы | Операционный радиус в конфиге, м |')
+        $lines.Add('| --- | ---: |')
+        $lines.Add("| $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) / $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.operationalRadiusMeters.value $anchor.operationalRadiusMeters.status) |")
+        $lines.Add('')
+    }
+    if(!$group.members.Count){return}
+    if($supply){ParentTable $lines $group.members $true}
+    else{
+        $lines.Add('| Объект | Расстояние до склада, м | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- |')
+        foreach($link in $group.members){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Distance $link.distanceMeters) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")}
+        $lines.Add('')
+    }
+}
+function DepotLocationSections($lines,$supply){
+    $lines.Add("Сначала ищется город / деревня / поселение в радиусе **$(Number $RadiusMeters) м**, затем другая допустимая локация в том же радиусе; выбирается ближайшая в первом подходящем этапе. Заголовки локаций содержат их координаты, вложенные склады — собственные координаты маркеров. Контейнеры сохраняют привязку к складу и расстояния до его маркера.")
+    $lines.Add('')
+    if($supply){$lines.Add('Поля компонента маркера учитываются отдельно от физических контейнеров. Операционный радиус в конфиге не заменяет радиус группировки справочника; приоритет КП / Harbors сохранён.');$lines.Add('')}
+    foreach($location in $saved.depotLocationGrouping.locations){
+        $lines.Add("### $(Text $location.name) - $(Position $location.worldPositionMeters $location.positionStatus)");$lines.Add('')
+        foreach($assignment in $location.depots){DepotBlock $lines $assignment $supply}
+    }
+    if($saved.depotLocationGrouping.unlocatedDepots.Count){
+        $lines.Add('### Без привязки к локации');$lines.Add('')
+        $lines.Add("В радиусе **$(Number $RadiusMeters) м** не найдено допустимой подписи. Эти склады и их контейнеры сохраняются для ручной сверки.");$lines.Add('')
+        foreach($assignment in $saved.depotLocationGrouping.unlocatedDepots){DepotBlock $lines $assignment $supply}
+    }
+}
 foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     $supply=$document.StartsWith('Supplies/');$lines=[Collections.Generic.List[string]]::new();$lines.Add($(if($supply){'# Припасы по группам мира'}else{'# Объекты по группам мира'}));$lines.Add('');$lines.Add('## Цель');$lines.Add('')
     $lines.Add('Сверять группы объектов в мире и находить разбросанные сущности: контрольные точки ConflictControlPoint, Harbors, склады CampaignRemnantsSupplyDepot, города / деревни, остальные допустимые локации и нераспознанные объекты. Соответствующие подписи карты и их готовые списки объединены с контрольными точками. Подтверждённые source-потомки и перенесённые соседи карты различаются в JSON; runtime-сеть не проверялась.');$lines.Add('');$lines.Add('## Summary');$lines.Add('')
@@ -268,6 +327,7 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
         $categoryGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
         if($category -ceq 'harbors'){HarborTable $lines $categoryGroups $supply;continue}
+        if($category -ceq 'supply_depots'){DepotLocationSections $lines $supply;continue}
         foreach($group in $categoryGroups){$lines.Add("### $(Text $group.name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
             if($group.mergedMapLocations.Count){$lines.Add("Объекты соответствующей подписи карты перенесены в эту группу справочника. Расстояния ниже рассчитаны до контрольной точки; исходные координаты подписи и расстояния сохранены в JSON. Source-родство перенесённых объектов этим не подтверждается.");$lines.Add('')}
             foreach($merge in ($group.mergedMapLocations | Where-Object correspondenceMethod -ceq 'user_confirmed_nearby_location')){$lines.Add("Подпись **$(Text $merge.name)** связана с этой контрольной точкой по указанию пользователя; расстояние между ними — **$(Distance $merge.anchorDistanceMeters) м** по X/Z.");$lines.Add('')}

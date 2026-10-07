@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0024 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0025 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0024 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0025 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0024 `
-  -RevisionReason 'Render Harbors in one table with storage capacity and physical composition before replenishment interval and amount'
+  -RevisionId r0025 `
+  -RevisionReason 'Group supply-depot markers under named locations within 350 m, prioritizing settlements and retaining unlocated depots'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -61,3 +61,7 @@ SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.s
 ## Единая таблица Harbors — r0024
 
 В Supplies/OtherContainers.md раздел Harbors содержит одну таблицу из 18 строк: Название → Вместимость хранилищ, припасы → Состав, припасы → Пополнение, мин. → Пополнение за цикл, припасы → Координаты X Y Z, м. Состав вычисляется из сохранённых физических source-потомков в Locations.json по m_fResourceValueMax, с подсчётом уникальных ID слотов и группировкой одинаковой вместимости. Аэропорт: 4000, `2 × 500 + 3 × 1000`, 10 минут, 2000 за цикл. Все 49 слотов / 40500 известной вместимости сохранены; для StPierre / Lamentin / Meaux вместимость и состав unknown, а не ноль. Частично известный состав при неразрешённых слотах помечается unknown. Отдельные заголовки баз и повторные source-пояснения отсутствуют. Locations.md содержит одну географическую таблицу Harbors (имя / собственные координаты), без колонок припасов. JSON, группировка и остальные категории не изменяются; normalizer supply-priority-architecture-0.6, schemaVersion 3.
+
+## Локация → склад → контейнеры — r0025
+
+Привязка самого маркера выполняется отдельно от неизменённой привязки физических родителей к складу. SupplyDepotLocationRule: 350 м X/Z, сначала населённые пункты, затем Name Generic / Island / Hill; ближайший в первом подходящем этапе, равные расстояния — по ID. DepotLocationGrouping содержит locations / unlocatedDepots / associations и всех кандидатов; в каждом новом заголовке — имя / позиция подписи, внутри — позиция маркера и его прежние контейнеры. 7 маркеров связаны с 7 локациями, 2 остаются без привязки. Радиус не увеличен ради Levie / Figari. Все исходные groups / objects / records / captures и приоритеты не меняются. Normalizer supply-priority-architecture-0.7, schemaVersion 3, десять файлов. [Подробности](SUPPLY_DEPOTS.md).

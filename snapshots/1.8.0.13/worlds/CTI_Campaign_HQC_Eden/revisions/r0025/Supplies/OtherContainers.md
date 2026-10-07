@@ -30,7 +30,7 @@
 | Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |
 | Разбивка | Сначала подтверждённая source-иерархия контрольных точек / Harbors; затем совпадения оставшихся объектов с городами / деревнями и остальными разрешёнными подписями в радиусе карты. После этого группы соответствующих подписей переносятся к КП; затем оставшиеся родители в радиусе склада переносятся в отдельную категорию после Harbors и исключаются ниже. Внутри одного этапа сохраняются все совпадения. |
 
-Канонический граф: [Locations.json](../revisions/r0025/Locations.json); настройки: [ControlPoints](../revisions/r0025/Supplies/ControlPoints.json), [OtherContainers](../revisions/r0025/Supplies/OtherContainers.json), [Harbors](../revisions/r0025/Supplies/Harbors.json), [SupplyDepots](../revisions/r0025/Supplies/SupplyDepots.json), [метаданные](../revisions/r0025/world.json).
+Канонический граф: [Locations.json](../Locations.json); настройки: [ControlPoints](ControlPoints.json), [OtherContainers](OtherContainers.json), [Harbors](Harbors.json), [SupplyDepots](SupplyDepots.json), [метаданные](../world.json).
 
 ## Контрольные точки
 

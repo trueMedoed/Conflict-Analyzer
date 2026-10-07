@@ -31,6 +31,8 @@ Current status
 
 • Harbors now uses one 18-row table: capacity and physical composition next to the name, then replenishment interval / amount and coordinates. Repeated base headings and source notes are removed; unknown values are preserved.
 
+• Supply depots are displayed under named locations: settlements within 350 m first, then the nearest other permitted label. Seven markers are located and two remain explicitly unlocated; container assignments, values and priorities are unchanged.
+
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
 • Supply points and storage counts, initial supplies, capacity, replenishment amount and interval.
