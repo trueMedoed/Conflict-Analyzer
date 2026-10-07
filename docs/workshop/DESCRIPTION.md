@@ -39,7 +39,7 @@ Current status
 
 • Depot marker component settings are hidden in Markdown and retained in JSON; their gameplay effect is deferred for later investigation. Physical container tables, capacity/composition and grouping are unchanged.
 
-• Each control point presents command-post storage and other storage in one table. Command-post initial supplies are marked unknown; the existing storage values are preserved.
+• Each control point presents command-post storage and other storage in one table. Command-post initial supplies are 0 after its prefab action; later campaign initialization of the base resource grid is a separate stage and has not been measured.
 • Seven control points now show command-post storage capacity 1000 and both compositions: 5 × 200 or 5 × 166 + 1 × 170. Workbench verifies FIA=5 / US=6 / USSR=6 physical slots, excluding the virtual representative; composition is calculated from installed code, with the runtime grid unmeasured.
 
 Planned features

@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0032 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0033 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,11 +33,11 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0032 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0033 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0032 `
+  -RevisionId r0033 `
   -DepotRadiusMeters 100 -RadiusMeters 350 `
-  -RevisionReason 'Combine command-post storage and other control-point storage in one table'
+  -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -97,3 +97,9 @@ r0031 показывает у всех 7 КП строку «Командный 
 ## Единая таблица контрольной точки — r0032
 
 r0032 объединяет строку «Командный пункт» и остальные хранилища каждой КП в одной таблице: Название → Вместимость / Изначально → Состав, припасы → Координаты X Y Z, м → Расстояние, м. Командный пункт первый; 1000 / неизвестно, прежние два варианта состава, расстояние 0 до корня на позиции КП. Начальный запас не подставлять из компонентных 250 / 500 или исходных prototype-slots. JSON меняет только revision metadata, группировка и все значения прежние. Схема 3, supply-priority-architecture-0.14, 11 канонических файлов; текущие root views r0032, предыдущие ревизии сохранены.
+
+## Подтверждённый начальный запас — r0033
+
+r0033 подтверждает configuredInitialSupplies=0 у хранилища командного пункта FIA / US / USSR. Workbench разрешил m_fResourceValueCurrent действия и GetValueCurrent в трёх storage и трёх editable HQ: 0, max 1000. После изменения maxima действие потребляет весь агрегированный запас и запрашивает генерацию 0; исходные prototype-slots по 100 не являются запасом после действия. В таблицах семи КП — 1000 / 0, scope command_post_storage_after_encapsulator_action. Отложенный SetInitialSupplies работает с общей сетью базы и добавляет только при нехватке; runtimeInitialSuppliesStatus=not_measured, не объявлять 0 фактическим запасом после инициализации миссии. Прежние captures / группировка / контейнерные значения сохраняются; новый initial capture отдельный. Схема 3, supply-priority-architecture-0.15, 11 канонических файлов; текущие root views r0033, предыдущие ревизии неизменны.
+
+Поле configuredInitialSupplies / status / scope каждой КП ссылается на три варианта каталога; commonConfiguredInitialSupplies=0. Генератор сверяет действие с configuredInitialSupplies, область применения и два разрешённых источника (storage и editable HQ) каждого варианта. Исходные count / capacity capture-даты сохранены, initialSuppliesEvidence содержит новый лог и дату. Запас всей базы после SetInitialSupplies остаётся not_measured. [Подробности](experiments/CONTROL_POINT_STORAGE_1.8.0.13.md).

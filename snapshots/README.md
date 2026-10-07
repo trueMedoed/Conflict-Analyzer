@@ -85,4 +85,6 @@
 
 Ревизия **r0031**: [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0031/Supplies/OtherContainers.md), [каталог вариантов командного пункта](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0031/Supplies/ControlPointStorage.json). Семь КП показывают 1000 и состав для 5 / 6 контейнеров; старые значения / captures / группировка неизменны. На этом этапе root views r0031.
 
-Ревизия **r0032**: [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0032/Supplies/OtherContainers.md). У каждой КП одна таблица с командным пунктом и остальными хранилищами; начальные припасы командного пункта неизвестны. JSON меняет только revision metadata. Текущие root views r0032.
+Ревизия **r0032**: [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0032/Supplies/OtherContainers.md). У каждой КП одна таблица с командным пунктом и остальными хранилищами; начальные припасы командного пункта неизвестны. JSON меняет только revision metadata. На этом этапе root views r0032.
+
+Ревизия **r0033**: [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0033/Supplies/OtherContainers.md), [подтверждённый initial target / provenance](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0033/Supplies/ControlPointStorage.json). У командного пункта 1000 / 0 после действия префаба; фактический запас сети после инициализации миссии не измерен. Текущие root views r0033.

@@ -46,6 +46,7 @@
 • Documented the source of 1000-capacity command-post storage in local game 1.8.0.13 resources (FIA / US / USSR encapsulator actions). Analyzer support and runtime-grid validation remain planned; existing snapshots are unchanged.
 • r0032 combines command-post storage and other control-point storage in a single table per control point; initial command-post supplies remain unknown.
 • r0031 adds a verified command-post prefab catalog and shows capacity 1000 with five-/six-container compositions at all seven control points. Source values and classification are preserved; composition is calculated from configured actions, not a runtime measurement.
+• r0033 resolves command-post initial supplies as 0 after the prefab action, separately from later campaign grid initialization; all seven storage rows show 1000 / 0.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -90,4 +91,5 @@
 • Найден и описан источник вместимости 1000 у хранилища командного пункта в локальных ресурсах 1.8.0.13: encapsulator actions FIA / US / USSR. Поддержка анализатором и runtime-проверка остаются планом; снимки прежние.
 • r0032 объединяет командный пункт и остальные хранилища каждой КП в одну таблицу; начальные припасы командного пункта явно неизвестны.
 • r0031 добавляет проверенный каталог prefab командного пункта и строки 1000 / состава для 5 и 6 контейнеров у всех 7 КП. Исходные значения и группировка прежние; состав рассчитан по действию, а не измерен в игре.
+• r0033 подтверждает начальный запас командного пункта 0 после действия префаба, отдельно от поздней инициализации сети базы; у всех семи КП — 1000 / 0.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.
