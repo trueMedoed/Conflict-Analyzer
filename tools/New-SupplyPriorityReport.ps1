@@ -11,7 +11,7 @@ param(
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0026',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0027',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -30,7 +30,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.8'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.9'
 Assert ($depots.gameVersion -ceq $version -and $depots.worldPath -ceq $cp.worldPath) 'Supply-depot world/version mismatch.'
 $mapLinksInput=ReadInput $ControlPointMapLinksPath
 Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
@@ -283,14 +283,17 @@ function HarborTable($lines,$categoryGroups,$supply){
 function DepotBlock($lines,$assignment,$supply){
     $group=@($saved.groups | Where-Object id -ceq $assignment.depotGroupId)[0]
     $anchor=$rows[$assignment.depotObjectId]
-    $lines.Add("#### Склад - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
     if($assignment.status -ceq 'matched'){$lines.Add("Расстояние от маркера склада до локации: **$(Distance $assignment.distanceMeters) м** по X/Z.");$lines.Add('')}
     if($supply){
-        $lines.Add('| Максимум / Изначально компонента, припасы | Операционный радиус в конфиге, м |')
-        $lines.Add('| --- | ---: |')
-        $lines.Add("| $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) / $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.operationalRadiusMeters.value $anchor.operationalRadiusMeters.status) |")
-        $lines.Add('')
+        $lines.Add('| Координаты склада X Y Z, м | Максимум / Изначально компонента, припасы | Операционный радиус в конфиге, м |')
+        $lines.Add('| --- | --- | ---: |')
+        $lines.Add("| $(Position $group.worldPositionMeters $group.positionStatus) | $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) / $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.operationalRadiusMeters.value $anchor.operationalRadiusMeters.status) |")
+    }else{
+        $lines.Add('| Координаты склада X Y Z, м |')
+        $lines.Add('| --- |')
+        $lines.Add("| $(Position $group.worldPositionMeters $group.positionStatus) |")
     }
+    $lines.Add('')
     if(!$group.members.Count){return}
     if($supply){ParentTable $lines $group.members $true}
     else{
@@ -300,7 +303,7 @@ function DepotBlock($lines,$assignment,$supply){
     }
 }
 function DepotLocationSections($lines,$supply){
-    $lines.Add("Сначала ищется город / деревня / поселение в радиусе **$(Number $RadiusMeters) м**, затем другая допустимая локация в том же радиусе; выбирается ближайшая в первом подходящем этапе. Заголовки локаций содержат их координаты, вложенные склады — собственные координаты маркеров. Контейнеры сохраняют привязку к складу и расстояния до его маркера.")
+    $lines.Add("Сначала ищется город / деревня / поселение в радиусе **$(Number $RadiusMeters) м**, затем другая допустимая локация в том же радиусе; выбирается ближайшая в первом подходящем этапе. Заголовки локаций содержат их координаты; собственные координаты маркеров склада показаны в таблицах, без отдельных подзаголовков. Контейнеры сохраняют привязку к складу и расстояния до его маркера.")
     $lines.Add('')
     if($supply){$lines.Add('Поля компонента маркера учитываются отдельно от физических контейнеров. Операционный радиус в конфиге не заменяет радиус группировки справочника; приоритет КП / Harbors сохранён.');$lines.Add('')}
     foreach($location in $saved.depotLocationGrouping.locations){

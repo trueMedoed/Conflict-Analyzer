@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0026 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0027 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0026 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0027 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0026 `
-  -RevisionReason 'Round displayed world coordinates to three decimal places for Workbench, preserving canonical positions and grouping'
+  -RevisionId r0027 `
+  -RevisionReason 'Remove redundant supply depot subheadings and show marker coordinates in tables under locations'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -69,3 +69,7 @@ SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.s
 ## Координаты для Workbench — r0026
 
 Координаты заголовков и строк обоих текущих справочников отображаются с тремя знаками после точки, разделены пробелами: `4943.125 28.594 11793.299`. Формат 0.000 не зависит от языка системы. Округляется только отображение; JSON хранит исходную точность и используется для расчёта расстояний / радиуса до округления. Интервалы, припасы, расстояния и группы не меняются. Normalizer supply-priority-architecture-0.8, schemaVersion 3; r0001–r0025 сохранены.
+
+## Склады без повторных подзаголовков — r0027
+
+r0027 убирает отдельные подзаголовки «Склад - X Y Z» из Locations.md и Supplies/OtherContainers.md по указанию пользователя. Остаётся заголовок именованной локации с её координатами; собственная позиция маркера показана в таблице «Координаты склада X Y Z, м», в отчёте припасов рядом с прежними настройками компонента. В текущих семи именованных группах по одному складу; отдельные подзаголовки не вводятся. Два маркера без локации показываются последовательными таблицами позиций / настроек и своими прежними списками. Все девять маркеров, пустой список Régina, 47 родителей / 242 контейнера / 68000 вместимости, расстояния и формат 0.000 сохраняются. JSON меняют только revision metadata; normalizer supply-priority-architecture-0.9, schemaVersion 3, десять файлов. Текущие root views r0027; r0001–r0026 неизменны.
