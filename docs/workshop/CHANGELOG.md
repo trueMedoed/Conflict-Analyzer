@@ -36,6 +36,7 @@
 • r0021 links Provins and its five objects to Transformer Station by an explicit version/scenario/source rule; values and prior grouping are preserved.
 • r0022 simplifies parent supply tables: capacity / initial values precede composition; Source ID and container-count columns are hidden, with complete data retained in JSON.
 • r0023 adds nine CampaignRemnantsSupplyDepot markers after Harbors and groups 47 remaining parents within 350 m; control-point/Harbor assignments and source values are preserved, with one unrecognized object left.
+• r0024 consolidates Harbors into one table with physical capacity / composition before replenishment settings; source values, unknowns and grouping are preserved.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -70,4 +71,5 @@
 • r0021 связывает Provins и его пять объектов с Transformer Station по явному правилу версии / сценария / источников; значения и прежние группы сохранены.
 • r0022 упрощает таблицы родителей с припасами: вместимость / начальные припасы перед составом, Source ID и счётчик контейнеров скрыты, полные данные остаются в JSON.
 • r0023 добавляет 9 CampaignRemnantsSupplyDepot после Harbors и 47 родителей в 350 м; КП / Harbors и исходные значения сохранены, нераспознанным остался один объект.
+• r0024 объединяет Harbors в одну таблицу: вместимость / состав перед пополнением; исходные значения, unknown и распределение сохранены.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

@@ -29,6 +29,8 @@ Current status
 
 • Container tables now show combined capacity / initial values before composition; source IDs and separate container counts remain in JSON.
 
+• Harbors now uses one 18-row table: capacity and physical composition next to the name, then replenishment interval / amount and coordinates. Repeated base headings and source notes are removed; unknown values are preserved.
+
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
 • Supply points and storage counts, initial supplies, capacity, replenishment amount and interval.

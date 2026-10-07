@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0023 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0024 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0023 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0024 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0023 `
-  -RevisionReason 'Add all CampaignRemnantsSupplyDepot markers after Harbors, grouping remaining supply parents within 350 m while preserving control-point and Harbor priority'
+  -RevisionId r0024 `
+  -RevisionReason 'Render Harbors in one table with storage capacity and physical composition before replenishment interval and amount'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -57,3 +57,7 @@ Normalizer supply-priority-architecture-0.2, схема 3. mapGroupMerges и mer
 ## Категория складов — r0023
 
 SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.supplyDepotCapture и отдельный Supplies/SupplyDepots.json сохраняют свежий целевой экспорт и его дату / SHA-256. MatchingPolicy.supplyDepotRule задаёт радиус / защищённые КП-Harbors / source-chain-or-proximity, distanceOrigin=supply_depot_marker. 47 родителей дают 242 контейнера / 68000 вместимости по уникальным ID; настройки маркеров 50000 / 50000 учитываются отдельно, операционный радиус 20 м не заменяет радиус справочника 350 м. [Подробности](SUPPLY_DEPOTS.md).
+
+## Единая таблица Harbors — r0024
+
+В Supplies/OtherContainers.md раздел Harbors содержит одну таблицу из 18 строк: Название → Вместимость хранилищ, припасы → Состав, припасы → Пополнение, мин. → Пополнение за цикл, припасы → Координаты X Y Z, м. Состав вычисляется из сохранённых физических source-потомков в Locations.json по m_fResourceValueMax, с подсчётом уникальных ID слотов и группировкой одинаковой вместимости. Аэропорт: 4000, `2 × 500 + 3 × 1000`, 10 минут, 2000 за цикл. Все 49 слотов / 40500 известной вместимости сохранены; для StPierre / Lamentin / Meaux вместимость и состав unknown, а не ноль. Частично известный состав при неразрешённых слотах помечается unknown. Отдельные заголовки баз и повторные source-пояснения отсутствуют. Locations.md содержит одну географическую таблицу Harbors (имя / собственные координаты), без колонок припасов. JSON, группировка и остальные категории не изменяются; normalizer supply-priority-architecture-0.6, schemaVersion 3.

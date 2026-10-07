@@ -11,7 +11,7 @@ param(
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0023',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0024',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -30,7 +30,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.5'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.6'
 Assert ($depots.gameVersion -ceq $version -and $depots.worldPath -ceq $cp.worldPath) 'Supply-depot world/version mismatch.'
 $mapLinksInput=ReadInput $ControlPointMapLinksPath
 Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
@@ -222,6 +222,38 @@ function ParentTable($lines,$links,$showDistance){
     }
     $lines.Add('')
 }
+function HarborComposition($group,$row){
+    $counts=[Collections.Generic.SortedDictionary[double,int]]::new()
+    $slotIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $unknown=$row.capacityStatus -cne 'resolved'
+    foreach($slot in $group.physicalDescendantContainers){
+        Assert ($slotIds.Add($slot.id)) 'Duplicate physical Harbor slot.'
+        $fields=@($slot.fields | Where-Object name -ceq 'm_fResourceValueMax')
+        if($fields.Count -ne 1 -or $fields[0].status -cne 'resolved'){$unknown=$true;continue}
+        $capacity=[double]::Parse($fields[0].value,$culture)
+        if([double]::IsNaN($capacity) -or [double]::IsInfinity($capacity) -or $capacity -lt 0){$unknown=$true;continue}
+        if(!$counts.ContainsKey($capacity)){$counts[$capacity]=0}
+        $counts[$capacity]++
+    }
+    $parts=@($counts.GetEnumerator() | ForEach-Object {"$($_.Value) × $(Number $_.Key)"})
+    if($unknown -or !$parts.Count){$parts+=@('unknown')}
+    $parts -join ' + '
+}
+function HarborTable($lines,$categoryGroups,$supply){
+    if($supply){
+        $lines.Add('| Название | Вместимость хранилищ, припасы | Состав, припасы | Пополнение, мин. | Пополнение за цикл, припасы | Координаты X Y Z, м |')
+        $lines.Add('| --- | ---: | --- | ---: | ---: | --- |')
+    }else{
+        $lines.Add('| Объект | Координаты X Y Z, м |')
+        $lines.Add('| --- | --- |')
+    }
+    foreach($group in $categoryGroups){
+        $row=$rows[$group.anchorObjectId]
+        if($supply){$lines.Add("| $(Text $row.name) | $(Value $row.capacitySupplies $row.capacityStatus) | $(HarborComposition $group $row) | $(Value $row.arrivalIntervalMinutes $row.valueStatus.arrivalInterval) | $(Value $row.supplyIncomePerCycle $row.valueStatus.supplyIncomePerCycle) | $(Position $row.worldPositionMeters $row.positionStatus) |")}
+        else{$lines.Add("| $(Text $row.name) | $(Position $row.worldPositionMeters $row.positionStatus) |")}
+    }
+    $lines.Add('')
+}
 foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     $supply=$document.StartsWith('Supplies/');$lines=[Collections.Generic.List[string]]::new();$lines.Add($(if($supply){'# Припасы по группам мира'}else{'# Объекты по группам мира'}));$lines.Add('');$lines.Add('## Цель');$lines.Add('')
     $lines.Add('Сверять группы объектов в мире и находить разбросанные сущности: контрольные точки ConflictControlPoint, Harbors, склады CampaignRemnantsSupplyDepot, города / деревни, остальные допустимые локации и нераспознанные объекты. Соответствующие подписи карты и их готовые списки объединены с контрольными точками. Подтверждённые source-потомки и перенесённые соседи карты различаются в JSON; runtime-сеть не проверялась.');$lines.Add('');$lines.Add('## Summary');$lines.Add('')
@@ -235,6 +267,7 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
         if($category -ceq 'unrecognized'){if($saved.unrecognizedObjects.Count){if($supply){ParentTable $lines $saved.unrecognizedObjects $false}else{$lines.Add('| Объект | Координаты X Y Z, м |');$lines.Add('| --- | --- |');foreach($link in $saved.unrecognizedObjects){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}else{$lines.Add('Нераспознанных объектов нет.');$lines.Add('')};continue}
         $categoryGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
+        if($category -ceq 'harbors'){HarborTable $lines $categoryGroups $supply;continue}
         foreach($group in $categoryGroups){$lines.Add("### $(Text $group.name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
             if($group.mergedMapLocations.Count){$lines.Add("Объекты соответствующей подписи карты перенесены в эту группу справочника. Расстояния ниже рассчитаны до контрольной точки; исходные координаты подписи и расстояния сохранены в JSON. Source-родство перенесённых объектов этим не подтверждается.");$lines.Add('')}
             foreach($merge in ($group.mergedMapLocations | Where-Object correspondenceMethod -ceq 'user_confirmed_nearby_location')){$lines.Add("Подпись **$(Text $merge.name)** связана с этой контрольной точкой по указанию пользователя; расстояние между ними — **$(Distance $merge.anchorDistanceMeters) м** по X/Z.");$lines.Add('')}
