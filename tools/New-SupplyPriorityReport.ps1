@@ -13,7 +13,7 @@ param(
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=100,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0031',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0032',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -32,7 +32,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.13'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.14'
 $commandPostInput=ReadInput $ControlPointStorageReportPath;$commandPosts=$commandPostInput.value
 Assert ($commandPosts.schemaVersion -eq 2 -and $commandPosts.kind -ceq 'control-point-command-post-storage' -and $commandPosts.gameVersion -ceq $version -and $commandPosts.worldPath -ceq $cp.worldPath -and $commandPosts.recordCount -eq 3 -and $commandPosts.records.Count -eq 3 -and !$commandPosts.runtimeMeasured) 'Invalid command-post storage comparison.'
 Assert (Same @($commandPosts.records.variantId | Sort-Object) @('FIA','US','USSR')) 'Missing command-post variant.'
@@ -261,8 +261,13 @@ function CommandPostComposition(){
     }
     $parts -join '; '
 }
-function ParentTable($lines,$links,$showDistance){
-    $header='| Родитель | Вместимость / Изначально | Состав, припасы | Координаты X Y Z, м |';$separator='| --- | --- | --- | --- |';if($showDistance){$header+=' Расстояние, м |';$separator+=' ---: |'};$lines.Add($header);$lines.Add($separator)
+function ParentTable($lines,$links,$showDistance,$commandPost=$null){
+    $nameHeader=$(if($null -ne $commandPost){'Название'}else{'Родитель'});$header="| $nameHeader | Вместимость / Изначально | Состав, припасы | Координаты X Y Z, м |";$separator='| --- | --- | --- | --- |';if($showDistance){$header+=' Расстояние, м |';$separator+=' ---: |'};$lines.Add($header);$lines.Add($separator)
+    if($null -ne $commandPost){
+        $line="| Командный пункт | $(Number $commandPost.commandPostStorage.capacitySupplies) / неизвестно | $(CommandPostComposition) | $(Position $commandPost.worldPositionMeters $commandPost.positionStatus) |"
+        if($showDistance){$line+=" $(Distance 0) |"}
+        $lines.Add($line)
+    }
     foreach($link in $links){
         $row=$rows[$link.objectId]
         $composition=@($row.capacityComposition | ForEach-Object {"$($_.containerCount) × $(Number $_.capacitySupplies)"}) -join ' + '
@@ -341,7 +346,7 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     if($supply){$lines.Add('Канонический граф: [Locations.json](../Locations.json); настройки: [ControlPoints](ControlPoints.json), [OtherContainers](OtherContainers.json), [Harbors](Harbors.json), [SupplyDepots](SupplyDepots.json), [метаданные](../world.json).')}else{$lines.Add('Канонический граф: [Locations.json](Locations.json), [метаданные](world.json), [таблица припасов](Supplies/OtherContainers.md).')};$lines.Add('')
     foreach($category in $categories){$lines.Add("## $($titles[$category])");$lines.Add('')
         if($category -ceq 'unrecognized'){if($saved.unrecognizedObjects.Count){if($supply){ParentTable $lines $saved.unrecognizedObjects $false}else{$lines.Add('| Объект | Координаты X Y Z, м |');$lines.Add('| --- | --- |');foreach($link in $saved.unrecognizedObjects){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}else{$lines.Add('Нераспознанных объектов нет.');$lines.Add('')};continue}
-        if($supply -and $category -ceq 'control_points'){$lines.Add('Строка «Командный пункт» показывает вместимость его собственного хранилища и варианты состава для 5 / 6 контейнеров. Состав рассчитан по конфигу и коду распределения; выбранная игровая фракция не назначена. Это отдельная композиция, а не сумма всех хранилищ базы. [Варианты и происхождение](../Supplies/ControlPointStorage.json).');$lines.Add('')}
+        if($supply -and $category -ceq 'control_points'){$lines.Add('Строка «Командный пункт» показывает вместимость его собственного хранилища и варианты состава для 5 / 6 контейнеров. Состав рассчитан по конфигу и коду распределения; выбранная игровая фракция не назначена. Командный пункт и остальные хранилища показаны в одной таблице. Начальные припасы командного пункта неизвестны; расстояние 0 относится к корню на позиции КП, а не к отдельным контейнерам. Это отдельная композиция, а не сумма всех хранилищ базы. [Варианты и происхождение](../Supplies/ControlPointStorage.json).');$lines.Add('')}
         $categoryGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
         if($category -ceq 'harbors'){HarborTable $lines $categoryGroups $supply;continue}
@@ -351,7 +356,7 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
             foreach($merge in ($group.mergedMapLocations | Where-Object correspondenceMethod -ceq 'user_confirmed_nearby_location')){$lines.Add("Подпись **$(Text $merge.name)** связана с этой контрольной точкой по указанию пользователя; расстояние между ними — **$(Distance $merge.anchorDistanceMeters) м** по X/Z.");$lines.Add('')}
             if($category -ceq 'supply_depots'){$lines.Add("Контейнеры сопоставляются с маркером склада в радиусе **$(Number $RadiusMeters) м** по X/Z. Объекты контрольных точек и Harbors сохраняют приоритет; source-родство отмечается отдельно от близости.");$lines.Add('')}
             if($group.anchorObjectId){$anchor=$rows[$group.anchorObjectId]
-                if($supply -and $category -ceq 'control_points'){$lines.Add('| Название | Вместимость, припасы | Состав, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- | --- |');$lines.Add("| Командный пункт | $(Number $commonCapacities[0]) | $(CommandPostComposition) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
+                if($supply -and $category -ceq 'control_points'){ParentTable $lines $group.members $true $anchor;continue}
                 elseif($supply){$lines.Add('| Название | Пополнение за цикл, припасы | Пополнение, мин. | Вместимость хранилищ, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.name) | $(Value $anchor.supplyIncomePerCycle $anchor.valueStatus.supplyIncomePerCycle) | $(Value $anchor.arrivalIntervalMinutes $anchor.valueStatus.arrivalInterval) | $(Value $anchor.capacitySupplies $anchor.capacityStatus) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 else{$obj=$lookup[$group.anchorObjectId];$lines.Add("Source: **$(Text $obj.name)**; координаты **$(Position $obj.worldPositionMeters $obj.positionStatus)**.");$lines.Add('')}
                 if(!($supply -and $category -ceq 'control_points')){$lines.Add("Подтверждённых физических SUPPLIES-контейнеров в source-потомках: **$($group.physicalDescendantContainers.Count)**. Состав и поля контейнеров сохранены в Locations.json; это отдельная проверка от соседства на карте.");$lines.Add('')}

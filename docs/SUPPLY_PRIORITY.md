@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0031 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0032 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,11 +33,11 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0031 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0032 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0031 `
+  -RevisionId r0032 `
   -DepotRadiusMeters 100 -RadiusMeters 350 `
-  -RevisionReason 'Show common command-post storage capacity with five- and six-container composition variants'
+  -RevisionReason 'Combine command-post storage and other control-point storage in one table'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -93,3 +93,7 @@ r0030 по новому указанию пользователя ставит �
 r0031 показывает у всех 7 КП строку «Командный пункт»: вместимость 1000, состав для 5 контейнеров — 5 × 200, для 6 — 5 × 166 + 1 × 170. Пользователь выбрал общую сумму и оба варианта состава; количество физических контейнеров различается (FIA=5, US=6, USSR=6), виртуальный представитель по одному в каждом варианте исключён. Workbench прочитал наследуемые prefab-источники без создания сущностей / открытия сценария; static slots до действия имеют по 100, целевой максимум 1000 распределяется целочисленно с остатком по установленному коду action. Состав calculated_from_installed_action_code, runtimeMeasured=false, выбранная фракция не назначается. Supplies/ControlPointStorage.json хранит 3 альтернативных prefab-варианта / 17 физических prototype-slots / 3 virtual, флаги / цепочку / происхождение, не мировые объекты. ControlPoints.records.commandPostStorage ссылается на каталог. Старые 250 / 500 и native поля КП остаются в JSON, в основной таблице заменены собственным хранилищем командного пункта; сообщение о нуле editor-source потомков скрыто только здесь. Полная вместимость сети базы / стартовые припасы не измерены; 1000 не прибавляется к сумме мировых каталогов. Все groups / objects / правила / source captures и контейнерные значения r0030 неизменны. Схема 3, supply-priority-architecture-0.13, 11 канонических файлов; текущие root views r0031, r0001–r0030 неизменны.
 
 Новый обязательный вход ControlPointStorageReportPath — проверенный каталог kind=control-point-command-post-storage, schemaVersion 2, с gameVersion / worldPath / точным controlPointPrefab. Он сохранён в Supplies/ControlPointStorage.json.nativeInventory; для повторной генерации извлечь этот nativeInventory в отдельный JSON в exports. Генератор проверяет три варианта FIA / US / USSR, одинаковый resolved максимум, активный флаг действия, число физических слотов и равенство состава установленному правилу целочисленного распределения. Несогласованные данные вызывают отказ до записи файлов. Результат не назначает фракцию и не меняет приоритеты / радиусы.
+
+## Единая таблица контрольной точки — r0032
+
+r0032 объединяет строку «Командный пункт» и остальные хранилища каждой КП в одной таблице: Название → Вместимость / Изначально → Состав, припасы → Координаты X Y Z, м → Расстояние, м. Командный пункт первый; 1000 / неизвестно, прежние два варианта состава, расстояние 0 до корня на позиции КП. Начальный запас не подставлять из компонентных 250 / 500 или исходных prototype-slots. JSON меняет только revision metadata, группировка и все значения прежние. Схема 3, supply-priority-architecture-0.14, 11 канонических файлов; текущие root views r0032, предыдущие ревизии сохранены.

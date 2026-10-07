@@ -44,6 +44,7 @@
 • r0029 removes depot component settings from Markdown, preserves their source values in JSON and defers gameplay investigation to optional TODO work. Physical storage and grouping are unchanged.
 • r0030 locates supply depots first and reserves storage within 100 m before control-point/map classification; all nine depots have 49 parents / 266 containers / 69600 capacity, including Regina 5 / 31 / 7100. Marker-location matching remains 350 m; four parents remain unrecognized.
 • Documented the source of 1000-capacity command-post storage in local game 1.8.0.13 resources (FIA / US / USSR encapsulator actions). Analyzer support and runtime-grid validation remain planned; existing snapshots are unchanged.
+• r0032 combines command-post storage and other control-point storage in a single table per control point; initial command-post supplies remain unknown.
 • r0031 adds a verified command-post prefab catalog and shows capacity 1000 with five-/six-container compositions at all seven control points. Source values and classification are preserved; composition is calculated from configured actions, not a runtime measurement.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
@@ -87,5 +88,6 @@
 • r0029 убирает настройки компонентов складских маркеров из Markdown, сохраняет исходные значения в JSON и откладывает исследование в опциональный TODO. Физические хранилища и группировка прежние.
 • r0030 сначала определяет локации складов и собирает хранилища в 100 м до КП / map этапов: все 9 складов, 49 родителей / 266 контейнеров / 69600 вместимости, Régina — 5 / 31 / 7100. Привязка маркеров к локациям остаётся 350 м; четыре родителя нераспознаны.
 • Найден и описан источник вместимости 1000 у хранилища командного пункта в локальных ресурсах 1.8.0.13: encapsulator actions FIA / US / USSR. Поддержка анализатором и runtime-проверка остаются планом; снимки прежние.
+• r0032 объединяет командный пункт и остальные хранилища каждой КП в одну таблицу; начальные припасы командного пункта явно неизвестны.
 • r0031 добавляет проверенный каталог prefab командного пункта и строки 1000 / состава для 5 и 6 контейнеров у всех 7 КП. Исходные значения и группировка прежние; состав рассчитан по действию, а не измерен в игре.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.
