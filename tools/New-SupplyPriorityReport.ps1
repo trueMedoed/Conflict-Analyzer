@@ -8,8 +8,9 @@ param(
     [Parameter(Mandatory=$true)][string]$HarborsViewPath,
     [Parameter(Mandatory=$true)][string]$WorldContainersReportPath,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
+    [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0020',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0021',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -26,7 +27,10 @@ $cp=$cpInput.value;$oldLocations=$locInput.value;$other=$otherInput.value;$harbo
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.2'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.3'
+$mapLinksInput=ReadInput $ControlPointMapLinksPath
+Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
+$activeMapLinks=@($mapLinksInput.value.rules | Where-Object {$_.gameVersion -ceq $version -and $_.scenarioKey -ceq $scenario})
 Assert ($cp.gameVersion -ceq $version -and $cp.worldPath.EndsWith("/$scenario.ent")) 'Control-point world/version mismatch.'
 foreach($view in @($other,$harbors)){Assert ($view.gameVersion -ceq $version -and $view.scenarioKey -ceq $scenario -and $view.inputs.locations.sha256 -ceq $locInput.hash -and $view.records.Count -eq $view.summary.objectCount) 'Supply seed identity/hash mismatch.'}
 Assert ($inventory.kind -ceq 'world-supply-containers' -and $inventory.schemaVersion -eq 2 -and $inventory.gameVersion -ceq $version -and $inventory.worldPath -ceq $cp.worldPath -and $inventory.editorEntityCountUnchanged -and $inventory.coordinateMismatchCount -eq 0) 'Invalid supply hierarchy inventory.'
@@ -39,6 +43,7 @@ $physicalSlots=@(foreach($resource in $inventory.resources){foreach($slot in $re
 function RevisionPath($source,$file){Assert ($source.snapshotId -match "^$([regex]::Escape($version))/$([regex]::Escape($scenario))/(r[0-9]{4})$") 'Invalid previous snapshot identity.';"../$($Matches[1])/$file"}
 $inputs=[ordered]@{controlPoints=[ordered]@{sha256=$cpInput.hash;capturedAtUTC=$cp.generatedAtUTC;analyzerVersion=$cp.analyzerVersion};locations=[ordered]@{path=(RevisionPath $oldLocations 'Locations.json');sha256=$locInput.hash;capturedAtUTC=$oldLocations.capturedAtUTC};otherContainers=[ordered]@{path=(RevisionPath $other 'Supplies/OtherContainers.json');sha256=$otherInput.hash;originalSupplies=$other.inputs.supplies};harbors=[ordered]@{path=(RevisionPath $harbors 'Supplies/Harbors.json');sha256=$harborInput.hash;originalSupplies=$harbors.inputs.supplies}}
 $inputs.worldContainers=[ordered]@{sha256=$inventoryInput.hash;capturedAtUTC=$inventory.generatedAtUTC;originalOtherContainersSnapshot=$originalOtherInput.value.snapshotId;originalOtherContainersPath=(RevisionPath $originalOtherInput.value 'Supplies/OtherContainers.json');originalOtherContainersSha256=$originalOtherInput.hash}
+$inputs.controlPointMapLinks=[ordered]@{kind=$mapLinksInput.value.kind;sha256=$mapLinksInput.hash;rules=$activeMapLinks}
 function CfgInteger($record,$componentClass,$fieldName){$fields=@($record.components | Where-Object className -ceq $componentClass | ForEach-Object fields | Where-Object name -ceq $fieldName);if($fields.Count -ne 1 -or $fields[0].status -cne 'resolved'){return [ordered]@{value=$null;status='unknown'}};[ordered]@{value=[int]::Parse($fields[0].value,$culture);status='resolved'}}
 $controlRecords=@(foreach($record in ($cp.records | Sort-Object displayName,sourceId)){
     Assert ($record.prefab -match '/ConflictControlPoint[^/]*\.et$') 'Unexpected control-point prefab.'
@@ -83,15 +88,23 @@ function HorizontalDistance($a,$b){$dx=[double]$a[0]-[double]$b[0];$dz=[double]$
 function NormalizedName($name){([regex]::Replace(([string]$name).Trim(),'\s+',' ')).ToUpperInvariant()}
 $mapMerges=[Collections.Generic.List[object]]::new()
 $usedMarkers=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach($rule in $activeMapLinks){
+    Assert ($rule.approval -ceq 'user_instruction' -and ![string]::IsNullOrWhiteSpace($rule.id)) 'Unconfirmed explicit link.'
+    Assert (@($controlRecords | Where-Object {$_.sourceId -ceq $rule.controlPointSourceId -and $_.rawName -ceq $rule.controlPointRawName}).Count -eq 1) 'Explicit link control point is missing or ambiguous.'
+    Assert (@($mapInventory | Where-Object id -ceq $rule.mapLocationId).Count -eq 1) 'Explicit link map label is missing or ambiguous.'
+}
 foreach($control in $controlRecords){
     $target=@($groups | Where-Object anchorObjectId -CEQ $control.objectId)[0]
+    $explicitLinks=@($activeMapLinks | Where-Object controlPointSourceId -ceq $control.sourceId)
+    Assert ($explicitLinks.Count -le 1) 'Multiple explicit links for one control point.'
     $candidates=@(foreach($marker in $mapInventory){
         if($marker.descriptorType -notin ($settlementTypes+$otherTypes) -or $control.nameStatus -cne 'resolved' -or $marker.nameStatus -cne 'resolved'){continue}
         if(!(ValidPosition $control.worldPositionMeters $control.positionStatus) -or !(ValidPosition $marker.worldPositionMeters $marker.positionStatus)){continue}
         $dx=[double]$control.worldPositionMeters[0]-[double]$marker.worldPositionMeters[0];$dz=[double]$control.worldPositionMeters[2]-[double]$marker.worldPositionMeters[2]
         if($dx*$dx+$dz*$dz -gt $RadiusMeters*$RadiusMeters){continue}
         $method=$null
-        if(![string]::IsNullOrWhiteSpace($control.name) -and (NormalizedName $control.name) -ceq (NormalizedName $marker.name)){$method='normalized_display_name'}
+        if($explicitLinks.Count){if($marker.id -ceq $explicitLinks[0].mapLocationId){$method='user_confirmed_nearby_location'}}
+        elseif(![string]::IsNullOrWhiteSpace($control.name) -and (NormalizedName $control.name) -ceq (NormalizedName $marker.name)){$method='normalized_display_name'}
         elseif($control.rawName -cmatch '^#AR-Campaign_MapLocation_(.+)$'){
             $keyIdentity=$Matches[1]
             $prefabIdentity=[regex]::Replace([IO.Path]::GetFileNameWithoutExtension($marker.prefab),'_[0-9]+$','')
@@ -100,12 +113,14 @@ foreach($control in $controlRecords){
         if($method){[pscustomobject]@{marker=$marker;method=$method;distance=[Math]::Sqrt($dx*$dx+$dz*$dz)}}
     })
     Assert ($candidates.Count -le 1) "Ambiguous corresponding map label for $($control.name); review identities before merging."
+    Assert (!$explicitLinks.Count -or $candidates.Count -eq 1) 'Explicit link lacks resolved eligible positions/names or exceeds the anchor radius.'
     if(!$candidates.Count){continue}
     $candidate=$candidates[0];$marker=$candidate.marker
     Assert ($usedMarkers.Add($marker.id)) 'One map label corresponds to multiple control points; review before merging.'
     $source=@($groups | Where-Object id -ceq "map/$($marker.id)")[0]
     $transferred=@($source.members)
     $merge=[ordered]@{mapLocationId=$marker.id;sourceGroupId=$source.id;targetGroupId=$target.id;name=$marker.name;descriptorType=$marker.descriptorType;worldPositionMeters=$marker.worldPositionMeters;positionStatus=$marker.positionStatus;correspondenceMethod=$candidate.method;anchorDistanceMeters=$candidate.distance;controlPointRawName=$control.rawName;mapLocationPrefab=$marker.prefab;originalCategory=$source.category;transferredObjectIds=@($transferred | ForEach-Object objectId);sourceParentEstablished=$false;ownershipEstablished=$false}
+    if($explicitLinks.Count){$merge.userDecision=$explicitLinks[0]}
     $mapMerges.Add($merge);$target.mergedMapLocations+=@($merge);$source.mergedIntoGroupId=$target.id;$source.members=@()
     foreach($link in $transferred){
         $obj=@($objects | Where-Object id -ceq $link.objectId)[0]
@@ -129,7 +144,7 @@ $unrecognized=@($remaining | Sort-Object name,sourceId | ForEach-Object {[ordere
 $stageSummary.unrecognized=[ordered]@{parentCount=$unrecognized.Count}
 $visible=@($groups | Where-Object {$_.anchorObjectId -or $_.members.Count})
 $policy=[ordered]@{order=$categories;radiusMeters=$RadiusMeters;radiusScope='map_location_stages_only';scope='remaining_other_supply_parents';sourceAnchorRule='confirmed_source_parent_hierarchy';anchorInventoryRule='all_control_points_and_source_bases_are_shown_once_in_their_own_category';withinStage='all_matches';settlementDescriptorTypes=$settlementTypes;otherDescriptorTypes=$otherTypes;otherMapTypes='excluded';ownershipEstablished=$false}
-$policy.controlPointMapGroupMerge=[ordered]@{phase='after_source_and_map_classification';correspondenceMethods=@('normalized_display_name','localization_key_prefab_identity');maximumAnchorDistanceMeters=$RadiusMeters;ambiguousMatch='reject';memberRule='transfer_existing_map_group_members_and_remove_from_lower_categories';radiusOrigin='original_map_label';displayDistanceOrigin='control_point_source';sourceParentEstablished=$false;ownershipEstablished=$false}
+$policy.controlPointMapGroupMerge=[ordered]@{phase='after_source_and_map_classification';correspondenceMethods=@('normalized_display_name','localization_key_prefab_identity','user_confirmed_nearby_location');explicitLinkPriority='before_automatic_identity_matching_for_that_control_point';explicitLinkScope='exact_game_version_scenario_and_source_ids';maximumAnchorDistanceMeters=$RadiusMeters;ambiguousMatch='reject';memberRule='transfer_existing_map_group_members_and_remove_from_lower_categories';radiusOrigin='original_map_label';displayDistanceOrigin='control_point_source';sourceParentEstablished=$false;ownershipEstablished=$false}
 $policy.radiusScope='map_location_matching_and_control_point_label_correspondence'
 $warnings=@('Control points are selected by prefab, source bases by their previous verified catalog; named map labels are a separate source.','Control-point component supplies/max are configured fields, not measured physical capacity or runtime stock.','Control-point and Harbor members require confirmed source hierarchy; the 350 m radius applies only to the remaining map-location stages.','Each remaining OtherContainers root parent belongs only to its first matching category; all matches within that category are retained.','Control-point and Harbor source entities remain inventory anchors in their own category.','Source parenting and map proximity do not establish runtime resource-grid membership; unknown remains unknown.')
 $warnings[2]='After hierarchy and map classification, uniquely corresponding map-label groups are merged into their control-point report group. Transferred map neighbors are not confirmed source children.'
@@ -174,6 +189,7 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
         foreach($group in $categoryGroups){$lines.Add("### $(Text $group.name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
             if($group.mergedMapLocations.Count){$lines.Add("Объекты соответствующей подписи карты перенесены в эту группу справочника. Расстояния ниже рассчитаны до контрольной точки; исходные координаты подписи и расстояния сохранены в JSON. Source-родство перенесённых объектов этим не подтверждается.");$lines.Add('')}
+            foreach($merge in ($group.mergedMapLocations | Where-Object correspondenceMethod -ceq 'user_confirmed_nearby_location')){$lines.Add("Подпись **$(Text $merge.name)** связана с этой контрольной точкой по указанию пользователя; расстояние между ними — **$(Distance $merge.anchorDistanceMeters) м** по X/Z.");$lines.Add('')}
             if($group.anchorObjectId){$anchor=$rows[$group.anchorObjectId]
                 if($supply -and $category -ceq 'control_points'){$lines.Add('| Source | Припасы компонента в конфиге | Максимум компонента, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.sourceName) | $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 elseif($supply){$lines.Add('| Название | Пополнение за цикл, припасы | Пополнение, мин. | Вместимость хранилищ, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.name) | $(Value $anchor.supplyIncomePerCycle $anchor.valueStatus.supplyIncomePerCycle) | $(Value $anchor.arrivalIntervalMinutes $anchor.valueStatus.arrivalInterval) | $(Value $anchor.capacitySupplies $anchor.capacityStatus) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
