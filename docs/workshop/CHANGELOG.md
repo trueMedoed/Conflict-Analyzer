@@ -32,6 +32,7 @@
 • r0017 adds separate location-grouped OtherContainers and Harbors views using existing Locations links, preserving supply values, unknown capacities and earlier snapshots.
 • r0018 combines supply tables into OtherContainers with Harbors as the final category; all values, locations, separate JSON catalogs and earlier revisions are preserved.
 • r0019 adds targeted control-point settings and source-hierarchy-first classification, followed by settlement and other map locations; remaining objects are explicit.
+• r0020 merges six corresponding map groups into control points (35 parents, including all five CALVARY HILL objects), preserving original proximity evidence and physical supply values.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -62,4 +63,5 @@
 • r0017 добавляет отдельные представления OtherContainers и Harbors по готовым связям Locations; значения припасов, неизвестные вместимости и прежние снимки сохранены.
 • r0018 объединяет таблицы припасов в OtherContainers, Harbors идёт последней категорией; значения, локации, раздельные JSON-каталоги и прежние ревизии сохранены.
 • r0019 добавляет целевые настройки КП и приоритет подтверждённой source-иерархии, затем населённых пунктов / остальных подписей; нераспознанные показаны явно.
+• r0020 объединяет шесть соответствующих групп карты с КП (35 родителей, включая все пять CALVARY HILL), сохраняя исходные связи близости и физические значения припасов.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

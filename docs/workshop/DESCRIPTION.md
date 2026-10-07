@@ -19,10 +19,10 @@ Current status
 • Added a storage-capacity column for all 18 source bases: 49 unique physical containers, 15 resolved descendant capacities and three unknown ownership cases. Income retains its earlier verified capture; nearby detached caches are not assigned by distance.
 • Added a targeted world supplies inventory and OtherContainers report: 568 additional physical slots in 129 groups, 190700 configured capacity. Previously reported base containers are excluded after identity checks; 129 other virtual views remain separate. Detached cache ownership and runtime spawning remain unverified.
 • OtherContainers now groups 568 physical slots into 124 root-parent rows, retaining individual records and separate prefab instances in JSON.
-• Matching within 350 m uses settlements, islands and hills with equal first-stage priority, then Name Generic for remaining objects: 62 objects in the first stage, 61 in the second, and 19 left for review. All source objects and labels remain in JSON; matching uses map-label positions rather than geographic boundaries.
-• Simplified Locations Markdown to 31 populated location lists; descriptor types, location IDs and all 170 source labels remain in JSON.
-• Locations supports manual world-group review with location positions in headings and object positions / distances in each list. The unified report ends with an Ungrouped objects category containing the 19 remaining objects; a separate UngroupedObjects table is no longer generated.
-• The report now uses five categories: source control points, Harbors, settlements, other locations and unrecognized objects. Seven control points expose separate configured supply settings. Source hierarchy verifies the first two categories; remaining objects use a 350 m map-label radius. Previous values and unknowns are preserved.
+• After source-hierarchy checks, remaining objects match settlements within 350 m, then Name Generic / Island / Hill. Corresponding map groups merge into control points: 35 parents under control points, 27 under settlements, 47 under other locations and 15 unrecognized. Source positions and values are preserved.
+• Locations shows 44 groups: seven control points, 18 Harbors, seven settlements and 12 other locations. All 170 original labels remain in JSON.
+• Locations supports manual world-group review with group positions in headings and object positions / distances in each list; the final Unrecognized category contains 15 remaining parents. No separate UngroupedObjects table is generated.
+• Five report categories cover control points, Harbors, settlements, other locations and unrecognized objects. Seven control points expose supply settings; six corresponding map labels and their object lists merge into them without duplicate lower groups. JSON distinguishes source hierarchy from transferred map neighbors.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 Planned features

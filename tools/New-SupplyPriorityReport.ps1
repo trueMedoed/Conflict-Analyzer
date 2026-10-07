@@ -9,7 +9,7 @@ param(
     [Parameter(Mandatory=$true)][string]$WorldContainersReportPath,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0019',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0020',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -26,7 +26,7 @@ $cp=$cpInput.value;$oldLocations=$locInput.value;$other=$otherInput.value;$harbo
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.1'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.2'
 Assert ($cp.gameVersion -ceq $version -and $cp.worldPath.EndsWith("/$scenario.ent")) 'Control-point world/version mismatch.'
 foreach($view in @($other,$harbors)){Assert ($view.gameVersion -ceq $version -and $view.scenarioKey -ceq $scenario -and $view.inputs.locations.sha256 -ceq $locInput.hash -and $view.records.Count -eq $view.summary.objectCount) 'Supply seed identity/hash mismatch.'}
 Assert ($inventory.kind -ceq 'world-supply-containers' -and $inventory.schemaVersion -eq 2 -and $inventory.gameVersion -ceq $version -and $inventory.worldPath -ceq $cp.worldPath -and $inventory.editorEntityCountUnchanged -and $inventory.coordinateMismatchCount -eq 0) 'Invalid supply hierarchy inventory.'
@@ -52,7 +52,7 @@ foreach($type in @('control_points','harbors','other_containers')){
 $settlementTypes=@('Name City','Name Town','Name Village','Name Settlement');$otherTypes=@('Name Generic','Name Island','Name Hill')
 $categories=@('control_points','harbors','settlements','other','unrecognized')
 $groups=[Collections.Generic.List[object]]::new()
-function AddGroup($id,$category,$name,$p,$status,$anchorObjectId,$origin){$groups.Add([pscustomobject][ordered]@{id=$id;category=$category;name=$name;worldPositionMeters=@($p);positionStatus=$status;anchorObjectId=$anchorObjectId;origin=$origin;members=@();physicalDescendantContainers=@()})}
+function AddGroup($id,$category,$name,$p,$status,$anchorObjectId,$origin){$groups.Add([pscustomobject][ordered]@{id=$id;category=$category;name=$name;worldPositionMeters=@($p);positionStatus=$status;anchorObjectId=$anchorObjectId;origin=$origin;members=@();physicalDescendantContainers=@();mergedMapLocations=@();mergedIntoGroupId=$null})}
 foreach($record in $controlRecords){AddGroup "control-point/$($record.sourceId)" 'control_points' $record.name $record.worldPositionMeters $record.positionStatus $record.objectId 'ConflictControlPoint_prefab'}
 foreach($record in ($harbors.records | Sort-Object name,sourceId)){AddGroup "harbor/$($record.sourceId)" 'harbors' $record.name $record.worldPositionMeters $record.positionStatus $record.objectId 'supply_source_base'}
 foreach($group in $groups){$sourceId=($objects | Where-Object id -ceq $group.anchorObjectId).sourceId;$group.physicalDescendantContainers=@($physicalSlots | Where-Object {IsDescendant $_.sourceId $sourceId})}
@@ -77,12 +77,67 @@ foreach($category in $categories[0..3]){
     $stageSummary[$category]=[ordered]@{anchorCount=$stageGroups.Count;assignedParentCount=$assigned.Count;associationCount=$links;populatedGroupCount=@($stageGroups | Where-Object {$_.members.Count -gt 0}).Count}
     $remaining=@($next.ToArray())
 }
+# Consolidate existing map groups after classification: retain their membership evidence,
+# rather than applying a new radius around the control-point source position.
+function HorizontalDistance($a,$b){$dx=[double]$a[0]-[double]$b[0];$dz=[double]$a[2]-[double]$b[2];[Math]::Sqrt($dx*$dx+$dz*$dz)}
+function NormalizedName($name){([regex]::Replace(([string]$name).Trim(),'\s+',' ')).ToUpperInvariant()}
+$mapMerges=[Collections.Generic.List[object]]::new()
+$usedMarkers=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach($control in $controlRecords){
+    $target=@($groups | Where-Object anchorObjectId -CEQ $control.objectId)[0]
+    $candidates=@(foreach($marker in $mapInventory){
+        if($marker.descriptorType -notin ($settlementTypes+$otherTypes) -or $control.nameStatus -cne 'resolved' -or $marker.nameStatus -cne 'resolved'){continue}
+        if(!(ValidPosition $control.worldPositionMeters $control.positionStatus) -or !(ValidPosition $marker.worldPositionMeters $marker.positionStatus)){continue}
+        $dx=[double]$control.worldPositionMeters[0]-[double]$marker.worldPositionMeters[0];$dz=[double]$control.worldPositionMeters[2]-[double]$marker.worldPositionMeters[2]
+        if($dx*$dx+$dz*$dz -gt $RadiusMeters*$RadiusMeters){continue}
+        $method=$null
+        if(![string]::IsNullOrWhiteSpace($control.name) -and (NormalizedName $control.name) -ceq (NormalizedName $marker.name)){$method='normalized_display_name'}
+        elseif($control.rawName -cmatch '^#AR-Campaign_MapLocation_(.+)$'){
+            $keyIdentity=$Matches[1]
+            $prefabIdentity=[regex]::Replace([IO.Path]::GetFileNameWithoutExtension($marker.prefab),'_[0-9]+$','')
+            if($keyIdentity -ceq $prefabIdentity){$method='localization_key_prefab_identity'}
+        }
+        if($method){[pscustomobject]@{marker=$marker;method=$method;distance=[Math]::Sqrt($dx*$dx+$dz*$dz)}}
+    })
+    Assert ($candidates.Count -le 1) "Ambiguous corresponding map label for $($control.name); review identities before merging."
+    if(!$candidates.Count){continue}
+    $candidate=$candidates[0];$marker=$candidate.marker
+    Assert ($usedMarkers.Add($marker.id)) 'One map label corresponds to multiple control points; review before merging.'
+    $source=@($groups | Where-Object id -ceq "map/$($marker.id)")[0]
+    $transferred=@($source.members)
+    $merge=[ordered]@{mapLocationId=$marker.id;sourceGroupId=$source.id;targetGroupId=$target.id;name=$marker.name;descriptorType=$marker.descriptorType;worldPositionMeters=$marker.worldPositionMeters;positionStatus=$marker.positionStatus;correspondenceMethod=$candidate.method;anchorDistanceMeters=$candidate.distance;controlPointRawName=$control.rawName;mapLocationPrefab=$marker.prefab;originalCategory=$source.category;transferredObjectIds=@($transferred | ForEach-Object objectId);sourceParentEstablished=$false;ownershipEstablished=$false}
+    $mapMerges.Add($merge);$target.mergedMapLocations+=@($merge);$source.mergedIntoGroupId=$target.id;$source.members=@()
+    foreach($link in $transferred){
+        $obj=@($objects | Where-Object id -ceq $link.objectId)[0]
+        $distance=$(if((ValidPosition $obj.worldPositionMeters $obj.positionStatus) -and (ValidPosition $target.worldPositionMeters $target.positionStatus)){HorizontalDistance $obj.worldPositionMeters $target.worldPositionMeters}else{$null})
+        $target.members+=@([ordered]@{objectId=$link.objectId;distanceMeters=$distance;method='merged_map_location_group';sourceParentEstablished=$false;ownershipEstablished=$false;mapLocationEvidence=[ordered]@{mapLocationId=$marker.id;sourceGroupId=$source.id;distanceMeters=$link.distanceMeters;method=$link.method;originalCategory=$source.category}})
+    }
+    $target.members=@($target.members | ForEach-Object {[pscustomobject]$_} | Sort-Object distanceMeters,objectId)
+}
+# A transferred object cannot remain in a lower category, including overlap lists.
+$transferredIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach($merge in $mapMerges){foreach($id in $merge.transferredObjectIds){$null=$transferredIds.Add($id)}}
+foreach($group in ($groups | Where-Object {$_.category -in @('settlements','other')})){$group.members=@($group.members | Where-Object {!$transferredIds.Contains($_.objectId)})}
+foreach($category in $categories[0..3]){
+    $stageGroups=@($groups | Where-Object {$_.category -ceq $category -and !$_.mergedIntoGroupId})
+    $members=@(foreach($group in $stageGroups){foreach($member in $group.members){$member}})
+    $memberIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach($member in $members){$null=$memberIds.Add($member.objectId)}
+    $stageSummary[$category]=[ordered]@{anchorCount=$stageGroups.Count;assignedParentCount=$memberIds.Count;associationCount=$members.Count;populatedGroupCount=@($stageGroups | Where-Object {$_.members.Count -gt 0}).Count}
+}
 $unrecognized=@($remaining | Sort-Object name,sourceId | ForEach-Object {[ordered]@{objectId=$_.objectId;reason=$(if(ValidPosition $_.worldPositionMeters $_.positionStatus){'no_source_anchor_or_map_location_within_radius'}else{'position_unknown_or_invalid'})}})
 $stageSummary.unrecognized=[ordered]@{parentCount=$unrecognized.Count}
 $visible=@($groups | Where-Object {$_.anchorObjectId -or $_.members.Count})
 $policy=[ordered]@{order=$categories;radiusMeters=$RadiusMeters;radiusScope='map_location_stages_only';scope='remaining_other_supply_parents';sourceAnchorRule='confirmed_source_parent_hierarchy';anchorInventoryRule='all_control_points_and_source_bases_are_shown_once_in_their_own_category';withinStage='all_matches';settlementDescriptorTypes=$settlementTypes;otherDescriptorTypes=$otherTypes;otherMapTypes='excluded';ownershipEstablished=$false}
+$policy.controlPointMapGroupMerge=[ordered]@{phase='after_source_and_map_classification';correspondenceMethods=@('normalized_display_name','localization_key_prefab_identity');maximumAnchorDistanceMeters=$RadiusMeters;ambiguousMatch='reject';memberRule='transfer_existing_map_group_members_and_remove_from_lower_categories';radiusOrigin='original_map_label';displayDistanceOrigin='control_point_source';sourceParentEstablished=$false;ownershipEstablished=$false}
+$policy.radiusScope='map_location_matching_and_control_point_label_correspondence'
 $warnings=@('Control points are selected by prefab, source bases by their previous verified catalog; named map labels are a separate source.','Control-point component supplies/max are configured fields, not measured physical capacity or runtime stock.','Control-point and Harbor members require confirmed source hierarchy; the 350 m radius applies only to the remaining map-location stages.','Each remaining OtherContainers root parent belongs only to its first matching category; all matches within that category are retained.','Control-point and Harbor source entities remain inventory anchors in their own category.','Source parenting and map proximity do not establish runtime resource-grid membership; unknown remains unknown.')
+$warnings[2]='After hierarchy and map classification, uniquely corresponding map-label groups are merged into their control-point report group. Transferred map neighbors are not confirmed source children.'
+$warnings+='Transferred members retain original map-label proximity evidence; displayed distances use the control-point source position and can exceed the map-label radius.'
 $catalog=[ordered]@{schemaVersion=3;kind='priority-location-catalog';snapshotId=$snapshotId;status='partial';gameVersion=$version;scenarioKey=$scenario;normalizerVersion=$normalizer;inputs=$inputs;matchingPolicy=$policy;summary=[ordered]@{objectCount=$objects.Count;controlPointCount=$controlRecords.Count;sourceBaseCount=$harbors.records.Count;otherParentCount=$other.records.Count;recognizedParentCount=$other.records.Count-$unrecognized.Count;unrecognizedParentCount=$unrecognized.Count;associationCount=($stageSummary.Values | Where-Object {$_ -is [System.Collections.IDictionary] -and $_.Contains('associationCount')} | ForEach-Object {$_.associationCount} | Measure-Object -Sum).Sum;visibleGroupCount=$visible.Count;stages=$stageSummary};objects=@($objects.ToArray());groups=@($groups.ToArray());unrecognizedObjects=$unrecognized;mapLocationInventory=$mapInventory;warnings=$warnings}
+$catalog.mapGroupMerges=@($mapMerges.ToArray())
+$catalog.summary.mergedMapLocationCount=$mapMerges.Count
+$catalog.summary.transferredParentCount=$transferredIds.Count
 $world=[ordered]@{schemaVersion=3;snapshotId=$snapshotId;revisionId=$RevisionId;revisionReason=$RevisionReason;status='partial';gameVersion=$version;scenarioKey=$scenario;worldPath=$cp.worldPath;normalizerVersion=$normalizer;inputs=$inputs;controlPointCapture=$cp;matchingPolicy=$policy;warnings=$warnings}
 $index=[ordered]@{schemaVersion=3;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{locations=[ordered]@{path='Locations.json';table='Locations.md'};supplies=[ordered]@{catalog='Locations.json';table='Supplies/OtherContainers.md';controlPoints='Supplies/ControlPoints.json';otherContainers='Supplies/OtherContainers.json';harbors='Supplies/Harbors.json';order=$categories};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
 $null=New-Item -ItemType Directory -Path (Join-Path $output 'Supplies')
@@ -106,25 +161,26 @@ function ParentTable($lines,$links,$showDistance){
 }
 foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     $supply=$document.StartsWith('Supplies/');$lines=[Collections.Generic.List[string]]::new();$lines.Add($(if($supply){'# Припасы по группам мира'}else{'# Объекты по группам мира'}));$lines.Add('');$lines.Add('## Цель');$lines.Add('')
-    $lines.Add('Сверять группы объектов в мире: сначала реальные контрольные точки ConflictControlPoint и их подтверждённые потомки, затем Harbors и их вложенные хранилища, города / деревни, остальные допустимые локации и нераспознанные объекты. По родительским ID определяется source-иерархия; оставшиеся объекты сопоставляются с подписями карты. Это помогает ручной проверке, runtime-сеть не проверялась.');$lines.Add('');$lines.Add('## Summary');$lines.Add('')
+    $lines.Add('Сверять группы объектов в мире и находить разбросанные сущности: контрольные точки ConflictControlPoint, Harbors, города / деревни, остальные допустимые локации и нераспознанные объекты. Соответствующие подписи карты и их готовые списки объединены с контрольными точками. Подтверждённые source-потомки и перенесённые соседи карты различаются в JSON; runtime-сеть не проверялась.');$lines.Add('');$lines.Add('## Summary');$lines.Add('')
     $lines.Add("Игра **$version**, мир ``$scenario.ent``, ревизия ``$RevisionId``. Радиус для городов / деревень и остальных подписей: **$(Number $RadiusMeters) м** по X/Z включительно. Контрольных точек: **$($saved.summary.controlPointCount)**; Harbors: **$($saved.summary.sourceBaseCount)**; остальных корневых родителей: **$($saved.summary.otherParentCount)**. По приоритетам распознано **$($saved.summary.recognizedParentCount)** родителей, нераспознанных — **$($saved.summary.unrecognizedParentCount)**. Статус **partial**.");$lines.Add('')
     $lines.Add('| Категория | Родителей из OtherContainers | Связей |');$lines.Add('| --- | ---: | ---: |');foreach($category in $categories[0..3]){$summary=$saved.summary.stages.$category;$lines.Add("| $($titles[$category]) | $($summary.assignedParentCount) | $($summary.associationCount) |")};$lines.Add('')
     if($supply){$lines.Add("Итоги исходных каталогов по уникальным записям: OtherContainers — **$($other.sourceSummary.physicalContainerCount)** физических контейнеров / **$(Number $other.sourceSummary.capacitySupplies)** вместимости; Harbors — **$(Number $harbors.sourceSummary.physicalContainerCount)** / **$(Number $harbors.sourceSummary.knownCapacitySubtotalSupplies)** известного подытога, **$($harbors.sourceSummary.unknownCapacityBaseCount)** вместимости unknown. Настройки компонента припасов контрольных точек учитываются отдельно; они не прибавляются к физической вместимости. Повторные строки локаций не суммируются.");$lines.Add('')}
     $lines.Add('## Откуда берутся данные');$lines.Add('')
-    $lines.Add('| Данные | Источник |');$lines.Add('| --- | --- |');$lines.Add('| Контрольная точка / название / позиция | Целевой экспорт ConflictControlPoint prefab; m_sBaseName переведено WidgetManager.Translate, координаты source проверены Workbench. |');$lines.Add('| Припасы точки / максимум компонента | SCR_CampaignSuppliesComponent.m_iSupplies / m_iSuppliesMax; это настройки компонента, они учитываются отдельно от физических контейнеров. |');$lines.Add('| Подтверждённые вложенные контейнеры | Родительские ID полного экспорта world-supply-containers; физические SCR_ResourceContainer, SUPPLIES. Виртуальные представления не суммируются. |');$lines.Add('| Harbors | Настройки и физическая вместимость прежнего каталога баз-источников; интервал в минутах = исходные секунды / 60. |');$lines.Add('| Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |');$lines.Add('| Разбивка | Сначала подтверждённая source-иерархия контрольных точек / Harbors; затем первые совпадения оставшихся объектов с городами / деревнями и остальными разрешёнными подписями в 350 м. Внутри выбранного этапа сохраняются все совпадения. |');$lines.Add('')
+    $lines.Add('| Данные | Источник |');$lines.Add('| --- | --- |');$lines.Add('| Контрольная точка / название / позиция | Целевой экспорт ConflictControlPoint prefab; m_sBaseName переведено WidgetManager.Translate, координаты source проверены Workbench. |');$lines.Add('| Припасы точки / максимум компонента | SCR_CampaignSuppliesComponent.m_iSupplies / m_iSuppliesMax; это настройки компонента, они учитываются отдельно от физических контейнеров. |');$lines.Add('| Подтверждённые вложенные контейнеры | Родительские ID полного экспорта world-supply-containers; физические SCR_ResourceContainer, SUPPLIES. Виртуальные представления не суммируются. |');$lines.Add('| Harbors | Настройки и физическая вместимость прежнего каталога баз-источников; интервал в минутах = исходные секунды / 60. |');$lines.Add('| Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |');$lines.Add('| Разбивка | Сначала подтверждённая source-иерархия контрольных точек / Harbors; затем совпадения оставшихся объектов с городами / деревнями и остальными разрешёнными подписями в радиусе карты. После этого группы соответствующих подписей переносятся к КП и исключаются ниже. Внутри одного этапа сохраняются все совпадения. |');$lines.Add('')
     if($supply){$lines.Add('Канонический граф: [Locations.json](../Locations.json); настройки: [ControlPoints](ControlPoints.json), [OtherContainers](OtherContainers.json), [Harbors](Harbors.json), [метаданные](../world.json).')}else{$lines.Add('Канонический граф: [Locations.json](Locations.json), [метаданные](world.json), [таблица припасов](Supplies/OtherContainers.md).')};$lines.Add('')
     foreach($category in $categories){$lines.Add("## $($titles[$category])");$lines.Add('')
         if($category -ceq 'unrecognized'){if($saved.unrecognizedObjects.Count){if($supply){ParentTable $lines $saved.unrecognizedObjects $false}else{$lines.Add('| Объект | Координаты X Y Z, м |');$lines.Add('| --- | --- |');foreach($link in $saved.unrecognizedObjects){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}else{$lines.Add('Нераспознанных объектов нет.');$lines.Add('')};continue}
         $categoryGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
         foreach($group in $categoryGroups){$lines.Add("### $(Text $group.name) - $(Position $group.worldPositionMeters $group.positionStatus)");$lines.Add('')
+            if($group.mergedMapLocations.Count){$lines.Add("Объекты соответствующей подписи карты перенесены в эту группу справочника. Расстояния ниже рассчитаны до контрольной точки; исходные координаты подписи и расстояния сохранены в JSON. Source-родство перенесённых объектов этим не подтверждается.");$lines.Add('')}
             if($group.anchorObjectId){$anchor=$rows[$group.anchorObjectId]
                 if($supply -and $category -ceq 'control_points'){$lines.Add('| Source | Припасы компонента в конфиге | Максимум компонента, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.sourceName) | $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 elseif($supply){$lines.Add('| Название | Пополнение за цикл, припасы | Пополнение, мин. | Вместимость хранилищ, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.name) | $(Value $anchor.supplyIncomePerCycle $anchor.valueStatus.supplyIncomePerCycle) | $(Value $anchor.arrivalIntervalMinutes $anchor.valueStatus.arrivalInterval) | $(Value $anchor.capacitySupplies $anchor.capacityStatus) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 else{$obj=$lookup[$group.anchorObjectId];$lines.Add("Source: **$(Text $obj.name)**; координаты **$(Position $obj.worldPositionMeters $obj.positionStatus)**.");$lines.Add('')}
                 $lines.Add("Подтверждённых физических SUPPLIES-контейнеров в source-потомках: **$($group.physicalDescendantContainers.Count)**. Состав и поля контейнеров сохранены в Locations.json; это отдельная проверка от соседства на карте.");$lines.Add('')
             }
-            if($group.members.Count){if($supply){ParentTable $lines $group.members $true}else{$lines.Add('| Объект | Расстояние, м | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- |');foreach($link in $group.members){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Distance $link.distanceMeters) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}elseif($supply){$lines.Add('Других корневых родителей, подтверждённых по source-иерархии, нет.');$lines.Add('')}
+            if($group.members.Count){if($supply){ParentTable $lines $group.members $true}else{$lines.Add('| Объект | Расстояние, м | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- |');foreach($link in $group.members){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Distance $link.distanceMeters) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}elseif($supply){$lines.Add('Других корневых родителей в этой группе справочника нет.');$lines.Add('')}
         }
     }
     [IO.File]::WriteAllText((Join-Path $output $document),($lines -join "`n").TrimEnd([char]13,[char]10)+"`n",[Text.UTF8Encoding]::new($false))
