@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0021 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0022 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -30,10 +30,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0021 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0022 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0021 `
-  -RevisionReason 'Group Provins and its existing objects under Transformer Station by explicit user instruction'
+  -RevisionId r0022 `
+  -RevisionReason 'Simplify supply parent tables: remove Source ID and container count, place combined capacity / initial values before composition'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -47,3 +47,7 @@ Normalizer supply-priority-architecture-0.2, схема 3. mapGroupMerges и mer
 ## Явная связь Provins / Transformer Station — r0021
 
 [ControlPointMapLinks.json](../tools/config/ControlPointMapLinks.json) — проверяемый список решений пользователя, а не игровой экспорт. Правило ограничено версией 1.8.0.13 / CTI_Campaign_HQC_Eden и конкретными ID обоих источников; новое имя / близость других локаций не создаёт новые правила. Сохраняются SHA-256 и активные rules в inputs.controlPointMapLinks; mergedMapLocations / mapGroupMerges содержит correspondenceMethod=user_confirmed_nearby_location и userDecision. Явное решение имеет приоритет перед автоматическим соответствием этой КП; тип подписи, resolved-позиции и радиус 350 м всё равно проверяются. Несуществующий / неоднозначный ID вызывает отказ до записи результата. Правило другой версии / сценария не применяется. Расстояние между КП и Provins — 231.365 м; пять объектов теперь в 24.719–83.671 м от КП. Исходные расстояния до Provins остаются в mapLocationEvidence, sourceParentEstablished / ownershipEstablished остаются false. Normalizer supply-priority-architecture-0.3, schemaVersion 3; старые шесть объединений и source-вместимости неизменны.
+
+## Компактные таблицы родителей — r0022
+
+Порядок: Родитель → Вместимость / Изначально → Состав, припасы → Координаты X Y Z, м → Расстояние, м. Последнего столбца нет у нераспознанных. Вместимость / Изначально читается из capacitySupplies / configuredInitialSupplies, значения выводятся как `2000 / 2000`; статусы проверяются независимо, unknown не заменяется нулём. Состав следует после суммы: например `2 × 1000`. Отдельные Source ID и Контейнеров не показываются в Markdown; полные sourceId / physicalContainerCount / capacityComposition остаются в JSON. Настройки компонентов КП и исходных Harbors сохраняют свои отдельные таблицы. Это изменение представления, без пересчёта / переименования JSON-полей или назначения групп; normalizer supply-priority-architecture-0.4, schemaVersion 3.

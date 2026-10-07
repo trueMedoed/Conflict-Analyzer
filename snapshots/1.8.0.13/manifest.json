@@ -1073,6 +1073,113 @@
           "ownershipEstablished": false
         }
       }
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0022",
+      "revisionId": "r0022",
+      "schemaVersion": 3,
+      "status": "partial",
+      "normalizerVersion": "supply-priority-architecture-0.4",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/data.json",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Locations.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Supplies/ControlPoints.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Supplies/OtherContainers.json",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Supplies/Harbors.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Locations.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Supplies.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0022/Supplies/OtherContainers.md"
+      ],
+      "summary": {
+        "objectCount": 149,
+        "controlPointCount": 7,
+        "sourceBaseCount": 18,
+        "otherParentCount": 124,
+        "recognizedParentCount": 109,
+        "unrecognizedParentCount": 15,
+        "associationCount": 119.0,
+        "visibleGroupCount": 43,
+        "stages": {
+          "control_points": {
+            "anchorCount": 7,
+            "assignedParentCount": 40,
+            "associationCount": 40,
+            "populatedGroupCount": 7
+          },
+          "harbors": {
+            "anchorCount": 18,
+            "assignedParentCount": 0,
+            "associationCount": 0,
+            "populatedGroupCount": 0
+          },
+          "settlements": {
+            "anchorCount": 31,
+            "assignedParentCount": 22,
+            "associationCount": 22,
+            "populatedGroupCount": 6
+          },
+          "other": {
+            "anchorCount": 48,
+            "assignedParentCount": 47,
+            "associationCount": 57,
+            "populatedGroupCount": 12
+          },
+          "unrecognized": {
+            "parentCount": 15
+          }
+        },
+        "mergedMapLocationCount": 7,
+        "transferredParentCount": 40
+      },
+      "matchingPolicy": {
+        "order": [
+          "control_points",
+          "harbors",
+          "settlements",
+          "other",
+          "unrecognized"
+        ],
+        "radiusMeters": 350.0,
+        "radiusScope": "map_location_matching_and_control_point_label_correspondence",
+        "scope": "remaining_other_supply_parents",
+        "sourceAnchorRule": "confirmed_source_parent_hierarchy",
+        "anchorInventoryRule": "all_control_points_and_source_bases_are_shown_once_in_their_own_category",
+        "withinStage": "all_matches",
+        "settlementDescriptorTypes": [
+          "Name City",
+          "Name Town",
+          "Name Village",
+          "Name Settlement"
+        ],
+        "otherDescriptorTypes": [
+          "Name Generic",
+          "Name Island",
+          "Name Hill"
+        ],
+        "otherMapTypes": "excluded",
+        "ownershipEstablished": false,
+        "controlPointMapGroupMerge": {
+          "phase": "after_source_and_map_classification",
+          "correspondenceMethods": [
+            "normalized_display_name",
+            "localization_key_prefab_identity",
+            "user_confirmed_nearby_location"
+          ],
+          "explicitLinkPriority": "before_automatic_identity_matching_for_that_control_point",
+          "explicitLinkScope": "exact_game_version_scenario_and_source_ids",
+          "maximumAnchorDistanceMeters": 350.0,
+          "ambiguousMatch": "reject",
+          "memberRule": "transfer_existing_map_group_members_and_remove_from_lower_categories",
+          "radiusOrigin": "original_map_label",
+          "displayDistanceOrigin": "control_point_source",
+          "sourceParentEstablished": false,
+          "ownershipEstablished": false
+        }
+      }
     }
   ],
   "warnings": [

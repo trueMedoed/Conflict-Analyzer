@@ -10,7 +10,7 @@ param(
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0021',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0022',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -27,7 +27,7 @@ $cp=$cpInput.value;$oldLocations=$locInput.value;$other=$otherInput.value;$harbo
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.3'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.4'
 $mapLinksInput=ReadInput $ControlPointMapLinksPath
 Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
 $activeMapLinks=@($mapLinksInput.value.rules | Where-Object {$_.gameVersion -ceq $version -and $_.scenarioKey -ceq $scenario})
@@ -171,8 +171,17 @@ function Distance($d){if($null -eq $d){return 'unknown'};([double]$d).ToString('
 function Value($v,$status){if($status -cne 'resolved'){return 'unknown'};Number $v}
 $titles=@{control_points='Контрольные точки';harbors='Harbors';settlements='Города и деревни';other='Остальные объекты';unrecognized='Нераспознанные'}
 function ParentTable($lines,$links,$showDistance){
-    $header='| Родитель | Контейнеров | Состав, припасы | Вместимость, припасы | Начальные припасы в конфиге | Координаты X Y Z, м | Source ID |';$separator='| --- | ---: | --- | ---: | ---: | --- | --- |';if($showDistance){$header+=' Расстояние, м |';$separator+=' ---: |'};$lines.Add($header);$lines.Add($separator)
-    foreach($link in $links){$row=$rows[$link.objectId];$composition=@($row.capacityComposition | ForEach-Object {"$($_.containerCount) × $(Number $_.capacitySupplies)"}) -join ' + ';if(!$composition){$composition='unknown'};$line="| $(Text $row.name) | $($row.physicalContainerCount) | $composition | $(Value $row.capacitySupplies $row.capacityStatus) | $(Value $row.configuredInitialSupplies $row.configuredInitialStatus) | $(Position $row.worldPositionMeters $row.positionStatus) | $(Text $row.sourceId) |";if($showDistance){$line+=" $(Distance $link.distanceMeters) |"};$lines.Add($line)};$lines.Add('')
+    $header='| Родитель | Вместимость / Изначально | Состав, припасы | Координаты X Y Z, м |';$separator='| --- | --- | --- | --- |';if($showDistance){$header+=' Расстояние, м |';$separator+=' ---: |'};$lines.Add($header);$lines.Add($separator)
+    foreach($link in $links){
+        $row=$rows[$link.objectId]
+        $composition=@($row.capacityComposition | ForEach-Object {"$($_.containerCount) × $(Number $_.capacitySupplies)"}) -join ' + '
+        if(!$composition){$composition='unknown'}
+        $capacityAndInitial="$(Value $row.capacitySupplies $row.capacityStatus) / $(Value $row.configuredInitialSupplies $row.configuredInitialStatus)"
+        $line="| $(Text $row.name) | $capacityAndInitial | $composition | $(Position $row.worldPositionMeters $row.positionStatus) |"
+        if($showDistance){$line+=" $(Distance $link.distanceMeters) |"}
+        $lines.Add($line)
+    }
+    $lines.Add('')
 }
 foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     $supply=$document.StartsWith('Supplies/');$lines=[Collections.Generic.List[string]]::new();$lines.Add($(if($supply){'# Припасы по группам мира'}else{'# Объекты по группам мира'}));$lines.Add('');$lines.Add('## Цель');$lines.Add('')

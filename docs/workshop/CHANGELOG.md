@@ -34,6 +34,7 @@
 • r0019 adds targeted control-point settings and source-hierarchy-first classification, followed by settlement and other map locations; remaining objects are explicit.
 • r0020 merges six corresponding map groups into control points (35 parents, including all five CALVARY HILL objects), preserving original proximity evidence and physical supply values.
 • r0021 links Provins and its five objects to Transformer Station by an explicit version/scenario/source rule; values and prior grouping are preserved.
+• r0022 simplifies parent supply tables: capacity / initial values precede composition; Source ID and container-count columns are hidden, with complete data retained in JSON.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -66,4 +67,5 @@
 • r0019 добавляет целевые настройки КП и приоритет подтверждённой source-иерархии, затем населённых пунктов / остальных подписей; нераспознанные показаны явно.
 • r0020 объединяет шесть соответствующих групп карты с КП (35 родителей, включая все пять CALVARY HILL), сохраняя исходные связи близости и физические значения припасов.
 • r0021 связывает Provins и его пять объектов с Transformer Station по явному правилу версии / сценария / источников; значения и прежние группы сохранены.
+• r0022 упрощает таблицы родителей с припасами: вместимость / начальные припасы перед составом, Source ID и счётчик контейнеров скрыты, полные данные остаются в JSON.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

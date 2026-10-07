@@ -27,6 +27,8 @@ Current status
 
 • Provins and its five objects are linked to Transformer Station by explicit user instruction; the rule is limited to the exact pair, scenario and game version.
 
+• Container tables now show combined capacity / initial values before composition; source IDs and separate container counts remain in JSON.
+
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
 • Supply points and storage counts, initial supplies, capacity, replenishment amount and interval.
