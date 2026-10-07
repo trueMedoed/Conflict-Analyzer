@@ -19,10 +19,10 @@ Current status
 • Added a storage-capacity column for all 18 source bases: 49 unique physical containers, 15 resolved descendant capacities and three unknown ownership cases. Income retains its earlier verified capture; nearby detached caches are not assigned by distance.
 • Added a targeted world supplies inventory and OtherContainers report: 568 additional physical slots in 129 groups, 190700 configured capacity. Previously reported base containers are excluded after identity checks; 129 other virtual views remain separate. Detached cache ownership and runtime spawning remain unverified.
 • OtherContainers now groups 568 physical slots into 124 root-parent rows, retaining individual records and separate prefab instances in JSON.
-• After source checks and control-point map merges, remaining parents within 350 m of CampaignRemnantsSupplyDepot form a category after Harbors. Counts: 40 under control points, 47 under depots, 13 under settlements, 23 under other locations and one unrecognized; values are preserved.
+• CampaignRemnantsSupplyDepot markers receive named locations within 350 m first; storage within 100 m of a marker is then reserved before later stages. Counts: 49 under depots, 35 under control points, 13 under settlements, 23 under other locations and four unrecognized; source values are preserved.
 • Locations shows 45 groups: seven control points, 18 Harbors, nine depots, four settlements and seven other locations. All 170 original named labels remain in JSON.
-• Locations supports manual world-group review; the final Unrecognized category contains StartingPos21. Group/object coordinates and distances are preserved.
-• Six categories cover control points, Harbors, supply depots, settlements, other locations and unrecognized objects. A targeted export verifies nine CampaignRemnantsSupplyDepot markers; control points and Harbors retain priority, with proximity distinguished from source hierarchy.
+• Locations supports manual world-group review; four objects remain in the final Unrecognized category. Location/object coordinates and distances are preserved.
+• Six categories cover supply depots, control points, Harbors, settlements, other locations and unrecognized objects. Depot priority restores five storage parents / 31 containers / 7100 capacity at Regina; proximity remains distinct from source hierarchy.
 • Complete gameplay reports and version comparison are not implemented yet. This is an unpublished prototype.
 
 • Provins and its five objects are linked to Transformer Station by explicit user instruction; the rule is limited to the exact pair, scenario and game version.
@@ -31,7 +31,7 @@ Current status
 
 • Harbors now uses one 18-row table: capacity and physical composition next to the name, then replenishment interval / amount and coordinates. Repeated base headings and source notes are removed; unknown values are preserved.
 
-• Supply depots are displayed under named locations: settlements within 350 m first, then the nearest other permitted label. Seven markers are located and two remain explicitly unlocated; container assignments, values and priorities are unchanged.
+• Supply depots are displayed under named locations: settlements within 350 m first, then the nearest other permitted label. Seven markers are located and two remain explicitly unlocated; location names and source values are preserved; container assignments use the new depot-first priority and 100 m radius.
 
 • Current table and heading coordinates use three decimal places, with X Y Z separated by spaces for pasting into Workbench; JSON and geographic calculations retain the original precision.
 

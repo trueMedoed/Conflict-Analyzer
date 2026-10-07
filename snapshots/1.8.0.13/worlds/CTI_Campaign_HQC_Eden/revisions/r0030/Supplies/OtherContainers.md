@@ -32,7 +32,7 @@
 | Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |
 | Разбивка | Сначала маркеры складов связываются с именованными локациями, затем хранилища в радиусе маркера исключаются из дальнейшего распределения. После этого проверяются source-иерархия КП / Harbors, города / деревни и остальные разрешённые подписи; соответствующие группы карты переносятся к КП. Внутри одного этапа сохраняются все совпадения. |
 
-Канонический граф: [Locations.json](../revisions/r0030/Locations.json); настройки: [ControlPoints](../revisions/r0030/Supplies/ControlPoints.json), [OtherContainers](../revisions/r0030/Supplies/OtherContainers.json), [Harbors](../revisions/r0030/Supplies/Harbors.json), [SupplyDepots](../revisions/r0030/Supplies/SupplyDepots.json), [метаданные](../revisions/r0030/world.json).
+Канонический граф: [Locations.json](../Locations.json); настройки: [ControlPoints](ControlPoints.json), [OtherContainers](OtherContainers.json), [Harbors](Harbors.json), [SupplyDepots](SupplyDepots.json), [метаданные](../world.json).
 
 ## Склады припасов
 

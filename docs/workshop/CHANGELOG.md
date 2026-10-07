@@ -42,6 +42,7 @@
 • r0027 removes redundant depot subheadings and keeps all nine marker positions in tables under location headings; settings, container lists and JSON values are preserved.
 • r0028 hides depot marker coordinates in Markdown; location/object coordinates, settings, container lists and canonical positions are preserved.
 • r0029 removes depot component settings from Markdown, preserves their source values in JSON and defers gameplay investigation to optional TODO work. Physical storage and grouping are unchanged.
+• r0030 locates supply depots first and reserves storage within 100 m before control-point/map classification; all nine depots have 49 parents / 266 containers / 69600 capacity, including Regina 5 / 31 / 7100. Marker-location matching remains 350 m; four parents remain unrecognized.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -82,4 +83,5 @@
 • r0027 убирает повторные подзаголовки складов и сохраняет позиции всех 9 маркеров в таблицах под локациями; настройки, списки контейнеров и JSON-значения прежние.
 • r0028 убирает координаты маркеров складов из Markdown; позиции локаций / объектов, настройки, списки и канонические координаты сохранены.
 • r0029 убирает настройки компонентов складских маркеров из Markdown, сохраняет исходные значения в JSON и откладывает исследование в опциональный TODO. Физические хранилища и группировка прежние.
+• r0030 сначала определяет локации складов и собирает хранилища в 100 м до КП / map этапов: все 9 складов, 49 родителей / 266 контейнеров / 69600 вместимости, Régina — 5 / 31 / 7100. Привязка маркеров к локациям остаётся 350 м; четыре родителя нераспознаны.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.
