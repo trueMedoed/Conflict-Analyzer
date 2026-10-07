@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0022 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0023 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -8,17 +8,18 @@
 2. Для КП и Harbors проверяется цепочка parentSourceId полного ранее проверенного world-supply-containers. Физические SCR_ResourceContainer SUPPLIES перечислены по уникальному ID слота; виртуальные не суммируются. Source-родство подтверждается отдельно от игровой ресурсной сети. Радиус здесь не используется. Сами 7 КП и 18 Harbors всегда показаны как исходные точки своих категорий.
 3. Из ранее агрегированных OtherContainers последовательно отбираются подтверждённые source-потомки КП и Harbors. Остаток проверяется по Name City / Town / Village / Settlement в 350 м X/Z включительно до округления; далее по Name Generic / Island / Hill в том же радиусе. Внутри одного этапа все совпадения сохраняются, между этапами повторов нет. Водоёмы и остальные неутверждённые типы не добавляются автоматически.
 4. После распределения проверить явное пользовательское правило из tools/config/ControlPointMapLinks.json для этой версии / мира / source ID и rawName КП. Если правило есть, использовать только указанный mapLocationId; иначе найти соответствующую подпись карты для КП: разрешённый тип, координаты / имя resolved, расстояние между КП и подписью не более 350 м; одинаковое имя после нормализации регистра / пробелов либо точное совпадение суффикса #AR-Campaign_MapLocation_ с именем prefab без конечного _число (например Levie_Base / Levie_Base_01). При нескольких кандидатах генерация останавливается, при отсутствии подписи КП остаётся самостоятельной. Перенести существующий список группы к КП, убрать её нижний раздел и остальные нижние назначения перенесённых объектов. Это не новый поиск вокруг позиции КП и не изменение мира. Подтверждённые source-потомки, отобранные ранее, сохраняют свой приоритет.
-5. Остаток сохраняется как unrecognizedObjects и отображается в конце. JSON хранит все 170 прежних подписей, все 149 объектов и происхождение. Контейнерные / базовые значения и даты r0018 сохранены; новые настройки КП имеют собственный целевой экспорт и время чтения. Настройки компонента КП учитываются отдельно от физической вместимости. Unknown остаётся unknown.
+5. После готовых КП/map объединений, сохраняя назначенные КП / Harbors ID, проверить оставшиеся OtherContainers у каждого CampaignRemnantsSupplyDepot: подтверждённая source-цепочка либо радиус 350 м X/Z до округления. Перенести совпадения из нижних картографических групп и остатка в категорию складов после Harbors; внутри этой категории сохранить все совпадения. Все девять маркеров остаются отдельными якорями, даже при пустом списке. Настройки компонента не суммируются с физическими контейнерами. [Экспорт / правила](SUPPLY_DEPOTS.md).
+6. Остаток сохраняется как unrecognizedObjects и отображается в конце. JSON хранит все 170 прежних подписей, все 158 объектов и происхождение. Контейнерные / базовые значения и даты r0018 сохранены; новые настройки КП имеют собственный целевой экспорт и время чтения. Настройки компонента КП учитываются отдельно от физической вместимости. Unknown остаётся unknown.
 
 ## Проверенный результат
 
 7 КП: Calvary Hill, Île-aux-Saules, Military Base Levie, Montignac, Power Plant, Régina, Transformer Station. У каждой в конфиге m_iSupplies=250 и m_iSuppliesMax=500. Поля этого компонента представлены в [официальном Script API](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/interfaceSCR__CampaignSuppliesComponent.html); значения взяты из локального экспорта версии 1.8.0.13.
 
-В полном экспорте физических SUPPLIES-потомков КП не найдено; это остаётся отдельным фактом от групп справочника. Harbors сохраняет 49 подтверждённых физических контейнеров / 40500 известного подытога, три вместимости unknown. Из 124 OtherContainers (568 контейнеров / 190700 вместимости) **40** перенесены к 7 КП, **22** у 6 населённых пунктов, **47** у 12 остальных локаций, **15** нераспознанных. Всего 119 связей и 43 видимые группы. Calvary Hill — 5, Montignac — 6, Régina — 9, Power Plant — 4, Île-aux-Saules — 4, Military Base Levie — 7; Transformer Station — все 5 объектов прежнего Provins, связан по прямому указанию пользователя.
+Физические source-потомки КП / маркеров складов не найдены; это отдельный факт от групп справочника. Harbors сохраняет 49 подтверждённых физических контейнеров / 40500 известного подытога, три полные вместимости unknown. 124 OtherContainers: **40** у 7 КП, **47** у 9 складов (8 непустых), **13** у 4 населённых пунктов, **23** у 7 остальных локаций, **1** нераспознанный StartingPos21. 127 связей, 45 видимых групп. Все семь КП/map объединений r0021 сохранены; склад рядом с Régina показан без собственного списка, потому что соседние объекты принадлежат более приоритетной группе справочника КП.
 
 ## Экспорт КП и генерация
 
-Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SOURCE_DIAGNOSTICS.md), плагин ME_CA_ControlPointsPlugin, -ME_CA_World=worlds/MP/CTI_Campaign_HQC_Eden.ent -ME_CA_LogJson=1. После завершения именно этого процесса извлечь его журнал:
+Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SOURCE_DIAGNOSTICS.md), плагин ME_CA_ControlPointsPlugin, -ME_CA_World=worlds/MP/CTI_Campaign_HQC_Eden.ent -ME_CA_LogJson=1. После завершения именно этого процесса извлечь его журнал. Целевой экспорт складов выполнить по [SUPPLY_DEPOTS.md](SUPPLY_DEPOTS.md):
 
 ```powershell
 .\tools\Convert-DiagnosticsLog.ps1 -LogPath '<console.log этого запуска>' `
@@ -26,19 +27,20 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
 
 .\tools\New-SupplyPriorityReport.ps1 `
   -ControlPointsReportPath .\exports\HQC_Eden_ControlPoints_1.8.0.13.json `
+  -SupplyDepotsReportPath .\exports\HQC_Eden_SupplyDepots_1.8.0.13.json `
   -LocationsReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0016\Locations.json `
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0022 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0023 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0022 `
-  -RevisionReason 'Simplify supply parent tables: remove Source ID and container count, place combined capacity / initial values before composition'
+  -RevisionId r0023 `
+  -RevisionReason 'Add all CampaignRemnantsSupplyDepot markers after Harbors, grouping remaining supply parents within 350 m while preserving control-point and Harbor priority'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
 
-В ревизии девять файлов: world.json, data.json, Supplies.md, Locations.json / .md, Supplies/ControlPoints.json, Supplies/OtherContainers.json / .md, Supplies/Harbors.json. Native КП сохранён внутри метаданных и ControlPoints.json; полный старый ресурсный экспорт проверяется по SHA-256 исходного OtherContainers r0006. Сравнение версий по editor ID и runtime-принадлежность пока не проверены. [VALIDATION.md](VALIDATION.md).
+В ревизии десять файлов: world.json, data.json, Supplies.md, Locations.json / .md, Supplies/ControlPoints.json, Supplies/OtherContainers.json / .md, Supplies/Harbors.json, Supplies/SupplyDepots.json. Native КП и складов сохраняются внутри метаданных и отдельных ControlPoints.json / SupplyDepots.json; полный старый ресурсный экспорт проверяется по SHA-256 исходного OtherContainers r0006. Сравнение версий по editor ID и runtime-принадлежность пока не проверены. [VALIDATION.md](VALIDATION.md).
 
 ## Происхождение объединений — r0020
 
@@ -51,3 +53,7 @@ Normalizer supply-priority-architecture-0.2, схема 3. mapGroupMerges и mer
 ## Компактные таблицы родителей — r0022
 
 Порядок: Родитель → Вместимость / Изначально → Состав, припасы → Координаты X Y Z, м → Расстояние, м. Последнего столбца нет у нераспознанных. Вместимость / Изначально читается из capacitySupplies / configuredInitialSupplies, значения выводятся как `2000 / 2000`; статусы проверяются независимо, unknown не заменяется нулём. Состав следует после суммы: например `2 × 1000`. Отдельные Source ID и Контейнеров не показываются в Markdown; полные sourceId / physicalContainerCount / capacityComposition остаются в JSON. Настройки компонентов КП и исходных Harbors сохраняют свои отдельные таблицы. Это изменение представления, без пересчёта / переименования JSON-полей или назначения групп; normalizer supply-priority-architecture-0.4, schemaVersion 3.
+
+## Категория складов — r0023
+
+SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.supplyDepotCapture и отдельный Supplies/SupplyDepots.json сохраняют свежий целевой экспорт и его дату / SHA-256. MatchingPolicy.supplyDepotRule задаёт радиус / защищённые КП-Harbors / source-chain-or-proximity, distanceOrigin=supply_depot_marker. 47 родителей дают 242 контейнера / 68000 вместимости по уникальным ID; настройки маркеров 50000 / 50000 учитываются отдельно, операционный радиус 20 м не заменяет радиус справочника 350 м. [Подробности](SUPPLY_DEPOTS.md).
