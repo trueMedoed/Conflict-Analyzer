@@ -33,6 +33,8 @@ Current status
 
 • Supply depots are displayed under named locations: settlements within 350 m first, then the nearest other permitted label. Seven markers are located and two remain explicitly unlocated; container assignments, values and priorities are unchanged.
 
+• Current table and heading coordinates use three decimal places, with X Y Z separated by spaces for pasting into Workbench; JSON and geographic calculations retain the original precision.
+
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.
 • Supply points and storage counts, initial supplies, capacity, replenishment amount and interval.

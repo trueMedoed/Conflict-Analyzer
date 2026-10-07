@@ -38,6 +38,7 @@
 • r0023 adds nine CampaignRemnantsSupplyDepot markers after Harbors and groups 47 remaining parents within 350 m; control-point/Harbor assignments and source values are preserved, with one unrecognized object left.
 • r0024 consolidates Harbors into one table with physical capacity / composition before replenishment settings; source values, unknowns and grouping are preserved.
 • r0025 groups depot markers under named locations within 350 m with settlement priority; seven markers are located and two remain unlocated, preserving all original containers and values.
+• r0026 rounds displayed coordinates to three decimal places for Workbench; canonical positions, distances, groups and previous revisions are unchanged.
 • Complete gameplay reports and version comparison remain in development; diagnostics are marked partial.
 
 ### Русский — перевод для сверки
@@ -74,4 +75,5 @@
 • r0023 добавляет 9 CampaignRemnantsSupplyDepot после Harbors и 47 родителей в 350 м; КП / Harbors и исходные значения сохранены, нераспознанным остался один объект.
 • r0024 объединяет Harbors в одну таблицу: вместимость / состав перед пополнением; исходные значения, unknown и распределение сохранены.
 • r0025 группирует маркеры складов по именованным локациям в 350 м с приоритетом поселений: 7 связаны, 2 без привязки, исходные контейнеры / значения сохранены.
+• r0026 округляет координаты в таблицах и заголовках до трёх знаков после точки для Workbench; исходные позиции, расстояния, группы и прежние ревизии сохранены.
 • Полные игровые отчёты и сравнение версий ещё разрабатываются; диагностика помечена partial.

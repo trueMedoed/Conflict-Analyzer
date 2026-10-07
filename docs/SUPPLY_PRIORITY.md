@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0025 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0026 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0025 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0026 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0025 `
-  -RevisionReason 'Group supply-depot markers under named locations within 350 m, prioritizing settlements and retaining unlocated depots'
+  -RevisionId r0026 `
+  -RevisionReason 'Round displayed world coordinates to three decimal places for Workbench, preserving canonical positions and grouping'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -65,3 +65,7 @@ SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.s
 ## Локация → склад → контейнеры — r0025
 
 Привязка самого маркера выполняется отдельно от неизменённой привязки физических родителей к складу. SupplyDepotLocationRule: 350 м X/Z, сначала населённые пункты, затем Name Generic / Island / Hill; ближайший в первом подходящем этапе, равные расстояния — по ID. DepotLocationGrouping содержит locations / unlocatedDepots / associations и всех кандидатов; в каждом новом заголовке — имя / позиция подписи, внутри — позиция маркера и его прежние контейнеры. 7 маркеров связаны с 7 локациями, 2 остаются без привязки. Радиус не увеличен ради Levie / Figari. Все исходные groups / objects / records / captures и приоритеты не меняются. Normalizer supply-priority-architecture-0.7, schemaVersion 3, десять файлов. [Подробности](SUPPLY_DEPOTS.md).
+
+## Координаты для Workbench — r0026
+
+Координаты заголовков и строк обоих текущих справочников отображаются с тремя знаками после точки, разделены пробелами: `4943.125 28.594 11793.299`. Формат 0.000 не зависит от языка системы. Округляется только отображение; JSON хранит исходную точность и используется для расчёта расстояний / радиуса до округления. Интервалы, припасы, расстояния и группы не меняются. Normalizer supply-priority-architecture-0.8, schemaVersion 3; r0001–r0025 сохранены.
