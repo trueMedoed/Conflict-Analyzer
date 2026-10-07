@@ -76,3 +76,5 @@
 Ревизия **r0026**: [справочник](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0026/Locations.md), [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0026/Supplies/OtherContainers.md). Все отображаемые координаты округлены до трёх знаков после точки, X Y Z через пробел для Workbench. Исходная точность JSON, группы, расстояния и старые ревизии сохранены. Текущие root views r0026.
 
 Ревизия **r0027**: [справочник](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0027/Locations.md), [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0027/Supplies/OtherContainers.md). Повторные подзаголовки складов убраны; собственные позиции всех девяти маркеров показаны в таблицах, настройки / списки / JSON прежние. Текущие root views r0027.
+
+Ревизия **r0028**: [справочник](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0028/Locations.md), [таблица припасов](1.8.0.13/worlds/CTI_Campaign_HQC_Eden/revisions/r0028/Supplies/OtherContainers.md). Координаты маркеров складов убраны из Markdown; координаты локаций / объектов, настройки, списки и полные JSON-позиции сохраняются. Текущие root views r0028.

@@ -35,7 +35,7 @@ Current status
 
 • Current table and heading coordinates use three decimal places, with X Y Z separated by spaces for pasting into Workbench; JSON and geographic calculations retain the original precision.
 
-• Supply depots use the location heading without a redundant depot subheading; each marker position remains in a table with its original container list.
+• Supply depots use the location heading without a redundant depot subheading or marker coordinates; location/object coordinates and container lists are preserved. Full marker positions remain in JSON.
 
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.

@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0027 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
+В r0028 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: контрольные точки, Harbors, склады припасов, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -32,10 +32,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0027 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0028 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0027 `
-  -RevisionReason 'Remove redundant supply depot subheadings and show marker coordinates in tables under locations'
+  -RevisionId r0028 `
+  -RevisionReason 'Hide supply depot marker coordinates in Markdown, preserving location and object coordinates and canonical data'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
@@ -73,3 +73,7 @@ SchemaVersion 3, supply-priority-architecture-0.5. inputs.supplyDepots / world.s
 ## Склады без повторных подзаголовков — r0027
 
 r0027 убирает отдельные подзаголовки «Склад - X Y Z» из Locations.md и Supplies/OtherContainers.md по указанию пользователя. Остаётся заголовок именованной локации с её координатами; собственная позиция маркера показана в таблице «Координаты склада X Y Z, м», в отчёте припасов рядом с прежними настройками компонента. В текущих семи именованных группах по одному складу; отдельные подзаголовки не вводятся. Два маркера без локации показываются последовательными таблицами позиций / настроек и своими прежними списками. Все девять маркеров, пустой список Régina, 47 родителей / 242 контейнера / 68000 вместимости, расстояния и формат 0.000 сохраняются. JSON меняют только revision metadata; normalizer supply-priority-architecture-0.9, schemaVersion 3, десять файлов. Текущие root views r0027; r0001–r0026 неизменны.
+
+## Без координат маркеров складов — r0028
+
+r0028 убирает из обоих текущих Markdown координаты маркеров CampaignRemnantsSupplyDepot по прямому уточнению пользователя. Не переносить их в другие таблицы / строки этих документов. Заголовки локаций и собственные координаты контейнерных родителей остаются, формат 0.000 прежний. Настройки компонентов, расстояния, списки всех складов и остатки сохраняются. Полные позиции всех девяти маркеров остаются в каноническом JSON для расчётов и происхождения; JSON меняют только revision metadata. Десять файлов, schemaVersion 3, supply-priority-architecture-0.10; текущие root views r0028, r0001–r0027 неизменны.
