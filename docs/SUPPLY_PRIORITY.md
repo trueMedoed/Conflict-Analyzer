@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0030 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0031 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -28,20 +28,21 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
 .\tools\New-SupplyPriorityReport.ps1 `
   -ControlPointsReportPath .\exports\HQC_Eden_ControlPoints_1.8.0.13.json `
   -SupplyDepotsReportPath .\exports\HQC_Eden_SupplyDepots_1.8.0.13.json `
+  -ControlPointStorageReportPath .\exports\HQC_Eden_CommandPostStorage_1.8.0.13.json `
   -LocationsReportPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0016\Locations.json `
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0030 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0031 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0030 `
+  -RevisionId r0031 `
   -DepotRadiusMeters 100 -RadiusMeters 350 `
-  -RevisionReason 'Locate supply depots first and reserve storage within 100 m before control-point and map classification'
+  -RevisionReason 'Show common command-post storage capacity with five- and six-container composition variants'
 ```
 
 Выходные пути должны быть свободны. До переноса проверить данные и обновить manifest; старые ревизии не перезаписывать. Предыдущий New-LocationSupplyReports.ps1 сохраняется для воспроизведения r0017 / r0018.
 
-В ревизии десять файлов: world.json, data.json, Supplies.md, Locations.json / .md, Supplies/ControlPoints.json, Supplies/OtherContainers.json / .md, Supplies/Harbors.json, Supplies/SupplyDepots.json. Native КП и складов сохраняются внутри метаданных и отдельных ControlPoints.json / SupplyDepots.json; полный старый ресурсный экспорт проверяется по SHA-256 исходного OtherContainers r0006. Сравнение версий по editor ID и runtime-принадлежность пока не проверены. [VALIDATION.md](VALIDATION.md).
+В ревизии одиннадцать файлов: world.json, data.json, Supplies.md, Locations.json / .md, Supplies/ControlPoints.json, Supplies/OtherContainers.json / .md, Supplies/Harbors.json, Supplies/SupplyDepots.json, Supplies/ControlPointStorage.json. Native КП и складов сохраняются внутри метаданных и отдельных ControlPoints.json / SupplyDepots.json; полный старый ресурсный экспорт проверяется по SHA-256 исходного OtherContainers r0006. Сравнение версий по editor ID и runtime-принадлежность пока не проверены. [VALIDATION.md](VALIDATION.md).
 
 ## Происхождение объединений — r0020
 
@@ -86,3 +87,9 @@ r0029 убирает таблицы настроек SCR_CampaignSuppliesCompone
 ## Склады первым этапом — r0030
 
 r0030 по новому указанию пользователя ставит склады первым этапом. Сначала каждый CampaignRemnantsSupplyDepot связывается с именованной локацией по прежнему радиусу 350 м: поселения, затем Generic / Island / Hill, ближайшая в подходящем этапе. Затем по мировым X/Z корневых родителей OtherContainers собираются все хранилища в отдельном радиусе DepotRadiusMeters=100 м включительно до округления. Их ID исключаются из всех дальнейших КП / Harbor / map этапов и объединений подписей с КП. Source-иерархия / правила соответствия имен для оставшихся объектов прежние; все совпадения внутри этапа сохраняются, proximity не означает source-родство или runtime-сеть. Порядок обработки и отображения: склады → КП → Harbors → города / деревни → остальные → нераспознанные. У всех 9 складов есть списки: 49 родителей / 266 физических контейнеров / 69600 вместимости; Régina — 5 / 31 / 7100, эти 5 удалены из КП Régina. Остальные категории: 35 / 0 / 13 / 23 / 4 родителей; 158 объектов / 124 связи / 45 видимых групп, 7 именованных локаций складов / 2 без локации. Семь соответствий КП/map прежние, transferredParentCount=35. Настройки / позиции маркеров остаются скрыты в Markdown; исходные records / captures / SHA-256 / физическая иерархия неизменны. SchemaVersion 3, десять файлов, supply-priority-architecture-0.12; текущие root views r0030, r0001–r0029 неизменны.
+
+## Хранилище командного пункта — r0031
+
+r0031 показывает у всех 7 КП строку «Командный пункт»: вместимость 1000, состав для 5 контейнеров — 5 × 200, для 6 — 5 × 166 + 1 × 170. Пользователь выбрал общую сумму и оба варианта состава; количество физических контейнеров различается (FIA=5, US=6, USSR=6), виртуальный представитель по одному в каждом варианте исключён. Workbench прочитал наследуемые prefab-источники без создания сущностей / открытия сценария; static slots до действия имеют по 100, целевой максимум 1000 распределяется целочисленно с остатком по установленному коду action. Состав calculated_from_installed_action_code, runtimeMeasured=false, выбранная фракция не назначается. Supplies/ControlPointStorage.json хранит 3 альтернативных prefab-варианта / 17 физических prototype-slots / 3 virtual, флаги / цепочку / происхождение, не мировые объекты. ControlPoints.records.commandPostStorage ссылается на каталог. Старые 250 / 500 и native поля КП остаются в JSON, в основной таблице заменены собственным хранилищем командного пункта; сообщение о нуле editor-source потомков скрыто только здесь. Полная вместимость сети базы / стартовые припасы не измерены; 1000 не прибавляется к сумме мировых каталогов. Все groups / objects / правила / source captures и контейнерные значения r0030 неизменны. Схема 3, supply-priority-architecture-0.13, 11 канонических файлов; текущие root views r0031, r0001–r0030 неизменны.
+
+Новый обязательный вход ControlPointStorageReportPath — проверенный каталог kind=control-point-command-post-storage, schemaVersion 2, с gameVersion / worldPath / точным controlPointPrefab. Он сохранён в Supplies/ControlPointStorage.json.nativeInventory; для повторной генерации извлечь этот nativeInventory в отдельный JSON в exports. Генератор проверяет три варианта FIA / US / USSR, одинаковый resolved максимум, активный флаг действия, число физических слотов и равенство состава установленному правилу целочисленного распределения. Несогласованные данные вызывают отказ до записи файлов. Результат не назначает фракцию и не меняет приоритеты / радиусы.

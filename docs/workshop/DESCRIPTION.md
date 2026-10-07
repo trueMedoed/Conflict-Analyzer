@@ -39,7 +39,7 @@ Current status
 
 • Depot marker component settings are hidden in Markdown and retained in JSON; their gameplay effect is deferred for later investigation. Physical container tables, capacity/composition and grouping are unchanged.
 
-• Local resource research identified the 1000-capacity setting of the spawned control-point command-post storage: an encapsulator action in its prefab. Resolving this chain in the regular analyzer and validating the complete runtime grid remain future work.
+• Seven control points now show command-post storage capacity 1000 and both compositions: 5 × 200 or 5 × 166 + 1 × 170. Workbench verifies FIA=5 / US=6 / USSR=6 physical slots, excluding the virtual representative; composition is calculated from installed code, with the runtime grid unmeasured.
 
 Planned features
 • AI spawn points, group types, faction, group composition and soldier counts, with random options and presence probabilities shown separately.

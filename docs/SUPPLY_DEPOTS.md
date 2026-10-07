@@ -1,6 +1,6 @@
 # Склады припасов CampaignRemnantsSupplyDepot
 
-В r0030 категория **«Склады припасов»** стоит первой в Locations.md и Supplies/OtherContainers.md. В HQC Eden 1.8.0.13 целевой экспорт нашёл **9** экземпляров CampaignRemnantsSupplyDepot. Их SCR_MapDescriptorComponent имеет MainType=87 / Icon (generic), DisplayName пустой: эти маркеры не входят в прежние 170 именованных подписей.
+В r0031 категория **«Склады припасов»** стоит первой в Locations.md и Supplies/OtherContainers.md. В HQC Eden 1.8.0.13 целевой экспорт нашёл **9** экземпляров CampaignRemnantsSupplyDepot. Их SCR_MapDescriptorComponent имеет MainType=87 / Icon (generic), DisplayName пустой: эти маркеры не входят в прежние 170 именованных подписей.
 
 ## Что читается
 
@@ -40,7 +40,7 @@
 
 Конвертер требует полный успешный отчёт, проверяет UTF-8-байты, уникальные source ID / точный prefab / счётчики и не перезаписывает существующий файл. Генерация шести категорий — [SUPPLY_PRIORITY.md](SUPPLY_PRIORITY.md); новый параметр SupplyDepotsReportPath обязателен.
 
-Supplies/SupplyDepots.json сохраняет выбранные настройки и полный узкий native-экспорт девяти маркеров, world.json — его метаданные. inputs.supplyDepots хранит отдельную capture-дату / SHA-256; даты контейнеров / Harbors / КП / подписей сохраняются прежними. В r0030 десять файлов, schemaVersion 3, normalizer supply-priority-architecture-0.12; старые ревизии неизменны. Статус partial, runtime-сеть и сравнение версий остаются для проверки. [VALIDATION.md](VALIDATION.md).
+Supplies/SupplyDepots.json сохраняет выбранные настройки и полный узкий native-экспорт девяти маркеров, world.json — его метаданные. inputs.supplyDepots хранит отдельную capture-дату / SHA-256; даты контейнеров / Harbors / КП / подписей сохраняются прежними. В r0031 одиннадцать файлов, schemaVersion 3, normalizer supply-priority-architecture-0.13; старые ревизии неизменны. Статус partial, runtime-сеть и сравнение версий остаются для проверки. [VALIDATION.md](VALIDATION.md).
 
 ## Отображение без подзаголовков склада — r0027
 
@@ -57,3 +57,5 @@ r0029 убирает таблицы настроек SCR_CampaignSuppliesCompone
 ## Склады первым этапом — r0030
 
 r0030 по новому указанию пользователя ставит склады первым этапом. Сначала каждый CampaignRemnantsSupplyDepot связывается с именованной локацией по прежнему радиусу 350 м: поселения, затем Generic / Island / Hill, ближайшая в подходящем этапе. Затем по мировым X/Z корневых родителей OtherContainers собираются все хранилища в отдельном радиусе DepotRadiusMeters=100 м включительно до округления. Их ID исключаются из всех дальнейших КП / Harbor / map этапов и объединений подписей с КП. Source-иерархия / правила соответствия имен для оставшихся объектов прежние; все совпадения внутри этапа сохраняются, proximity не означает source-родство или runtime-сеть. Порядок обработки и отображения: склады → КП → Harbors → города / деревни → остальные → нераспознанные. У всех 9 складов есть списки: 49 родителей / 266 физических контейнеров / 69600 вместимости; Régina — 5 / 31 / 7100, эти 5 удалены из КП Régina. Остальные категории: 35 / 0 / 13 / 23 / 4 родителей; 158 объектов / 124 связи / 45 видимых групп, 7 именованных локаций складов / 2 без локации. Семь соответствий КП/map прежние, transferredParentCount=35. Настройки / позиции маркеров остаются скрыты в Markdown; исходные records / captures / SHA-256 / физическая иерархия неизменны. SchemaVersion 3, десять файлов, supply-priority-architecture-0.12; текущие root views r0030, r0001–r0029 неизменны.
+
+В r0031 этот раздел складов / его контейнерные назначения не меняется. Добавлен отдельный каталог хранилища командного пункта КП: [исследование](experiments/CONTROL_POINT_STORAGE_1.8.0.13.md).

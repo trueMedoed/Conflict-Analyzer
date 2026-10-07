@@ -4,6 +4,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$ControlPointsReportPath,
     [Parameter(Mandatory=$true)][string]$SupplyDepotsReportPath,
+    [Parameter(Mandatory=$true)][string]$ControlPointStorageReportPath,
     [Parameter(Mandatory=$true)][string]$LocationsReportPath,
     [Parameter(Mandatory=$true)][string]$OtherContainersViewPath,
     [Parameter(Mandatory=$true)][string]$HarborsViewPath,
@@ -12,7 +13,7 @@ param(
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=100,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0030',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0031',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -31,7 +32,21 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.12'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.13'
+$commandPostInput=ReadInput $ControlPointStorageReportPath;$commandPosts=$commandPostInput.value
+Assert ($commandPosts.schemaVersion -eq 2 -and $commandPosts.kind -ceq 'control-point-command-post-storage' -and $commandPosts.gameVersion -ceq $version -and $commandPosts.worldPath -ceq $cp.worldPath -and $commandPosts.recordCount -eq 3 -and $commandPosts.records.Count -eq 3 -and !$commandPosts.runtimeMeasured) 'Invalid command-post storage comparison.'
+Assert (Same @($commandPosts.records.variantId | Sort-Object) @('FIA','US','USSR')) 'Missing command-post variant.'
+foreach($storage in $commandPosts.records){
+    Assert ($storage.capacityStatus -ceq 'resolved' -and $storage.maximumAction.m_bShouldChangeMaximum -and $storage.maximumAction.m_fResourceValueMax -eq $storage.capacitySupplies) 'Unresolved or disabled command-post capacity action.'
+    Assert ($storage.physicalContainerCount -eq @($storage.physicalSlotsBeforeAction | Where-Object className -ceq 'SCR_ResourceContainer').Count -and $storage.virtualContainerCount -eq @($storage.virtualSlotsBeforeAction | Where-Object className -ceq 'SCR_ResourceContainerVirtual').Count -and $storage.physicalContainerCount -gt 0) 'Command-post physical count differs.'
+    $total=0;$count=0;foreach($part in $storage.capacityComposition){$total+=$part.containerCount*$part.capacitySupplies;$count+=$part.containerCount}
+    Assert ($total -eq $storage.capacitySupplies -and $count -eq $storage.physicalContainerCount) 'Command-post composition does not equal capacity/count.'
+    $ordinary=[int][Math]::Floor($storage.capacitySupplies/$storage.physicalContainerCount);$remainder=$storage.capacitySupplies-$ordinary*($storage.physicalContainerCount-1)
+    $expected=$(if($ordinary -eq $remainder){@([ordered]@{containerCount=$storage.physicalContainerCount;capacitySupplies=$ordinary})}else{@([ordered]@{containerCount=$storage.physicalContainerCount-1;capacitySupplies=$ordinary},[ordered]@{containerCount=1;capacitySupplies=$remainder})})
+    Assert (Same $storage.capacityComposition $expected) 'Command-post allocation differs from installed action rule.'
+}
+$commonCapacities=@($commandPosts.records.capacitySupplies | Sort-Object -Unique)
+Assert ($commonCapacities.Count -eq 1) 'Command-post variant capacities differ; review display before using one capacity.'
 Assert ($depots.gameVersion -ceq $version -and $depots.worldPath -ceq $cp.worldPath) 'Supply-depot world/version mismatch.'
 $mapLinksInput=ReadInput $ControlPointMapLinksPath
 Assert ($mapLinksInput.value.schemaVersion -eq 1 -and $mapLinksInput.value.kind -ceq 'user-confirmed-control-point-map-links') 'Invalid explicit control-point/map links.'
@@ -54,7 +69,8 @@ function CfgInteger($record,$componentClass,$fieldName){$fields=@($record.compon
 function CfgValue($record,$componentClass,$fieldName,$type){$fields=@($record.components | Where-Object className -ceq $componentClass | ForEach-Object fields | Where-Object name -ceq $fieldName);if($fields.Count -ne 1 -or $fields[0].status -cne 'resolved'){return [ordered]@{value=$null;status='unknown'}};$value=$(if($type -ceq 'bool'){[bool]::Parse($fields[0].value)}else{[double]::Parse($fields[0].value,$culture)});[ordered]@{value=$value;status='resolved'}}
 $controlRecords=@(foreach($record in ($cp.records | Sort-Object displayName,sourceId)){
     Assert ($record.prefab -match '/ConflictControlPoint[^/]*\.et$') 'Unexpected control-point prefab.'
-    [ordered]@{objectId="control_point/$($record.sourceId)";sourceId=$record.sourceId;sourceName=$record.sourceName;name=$record.displayName;nameStatus=$record.nameStatus;worldPositionMeters=@($record.worldPositionMeters);positionStatus=$record.positionStatus;prefab=$record.prefab;configuredComponentSupplies=(CfgInteger $record 'SCR_CampaignSuppliesComponent' 'm_iSupplies');configuredComponentSuppliesMax=(CfgInteger $record 'SCR_CampaignSuppliesComponent' 'm_iSuppliesMax');runtimeResourceGridCapacityStatus='not_analyzed';rawName=$record.rawName;nameMethod=$record.nameMethod;language=$cp.language;provenance=$record.components}
+    Assert ($record.prefab -ceq $commandPosts.controlPointPrefab) 'Control-point prefab differs from the verified command-post scope.'
+    [ordered]@{objectId="control_point/$($record.sourceId)";sourceId=$record.sourceId;sourceName=$record.sourceName;name=$record.displayName;nameStatus=$record.nameStatus;worldPositionMeters=@($record.worldPositionMeters);positionStatus=$record.positionStatus;prefab=$record.prefab;configuredComponentSupplies=(CfgInteger $record 'SCR_CampaignSuppliesComponent' 'm_iSupplies');configuredComponentSuppliesMax=(CfgInteger $record 'SCR_CampaignSuppliesComponent' 'm_iSuppliesMax');runtimeResourceGridCapacityStatus='not_analyzed';rawName=$record.rawName;nameMethod=$record.nameMethod;language=$cp.language;provenance=$record.components;commandPostStorage=[ordered]@{catalog='ControlPointStorage.json';capacitySupplies=$commonCapacities[0];capacityStatus='resolved';capacityScope='command_post_storage_composition';variantIds=@($commandPosts.records.variantId);selectedVariantStatus='not_determined';runtimeMeasured=$false}}
 })
 $depotRecords=@(foreach($record in ($depots.records | Sort-Object sourceId)){
     Assert ($record.prefab -cmatch '/CampaignRemnantsSupplyDepot\.et$') 'Unexpected supply-depot prefab.'
@@ -215,11 +231,16 @@ $world=[ordered]@{schemaVersion=3;snapshotId=$snapshotId;revisionId=$RevisionId;
 $world.supplyDepotCapture=$depots
 $index=[ordered]@{schemaVersion=3;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{locations=[ordered]@{path='Locations.json';table='Locations.md'};supplies=[ordered]@{catalog='Locations.json';table='Supplies/OtherContainers.md';controlPoints='Supplies/ControlPoints.json';otherContainers='Supplies/OtherContainers.json';harbors='Supplies/Harbors.json';order=$categories};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
 $index.sections.supplies.supplyDepots='Supplies/SupplyDepots.json'
+$index.sections.supplies.controlPointStorage='Supplies/ControlPointStorage.json'
+$world.commandPostStorageCapture=$commandPosts
+$world.inputs.commandPostStorage=[ordered]@{sha256=$commandPostInput.hash;capturedAtUTC=$commandPosts.generatedAtUTC;analyzerVersion=$commandPosts.analyzerVersion}
+$catalog.inputs.commandPostStorage=$world.inputs.commandPostStorage
 $null=New-Item -ItemType Directory -Path (Join-Path $output 'Supplies')
 function WriteJson($path,$value){[IO.File]::WriteAllText((Join-Path $output $path),($value | ConvertTo-Json -Depth 45)+"`n",[Text.UTF8Encoding]::new($false))}
 WriteJson 'world.json' $world;WriteJson 'data.json' $index;WriteJson 'Locations.json' $catalog
 WriteJson 'Supplies/ControlPoints.json' ([ordered]@{schemaVersion=3;kind='control-point-source-settings';snapshotId=$snapshotId;normalizerVersion=$normalizer;sourceSha256=$cpInput.hash;capturedAtUTC=$cp.generatedAtUTC;records=$controlRecords;nativeInventory=$cp})
 WriteJson 'Supplies/SupplyDepots.json' ([ordered]@{schemaVersion=3;kind='supply-depot-marker-settings';snapshotId=$snapshotId;normalizerVersion=$normalizer;sourceSha256=$depotInput.hash;capturedAtUTC=$depots.generatedAtUTC;records=$depotRecords;nativeInventory=$depots})
+WriteJson 'Supplies/ControlPointStorage.json' ([ordered]@{schemaVersion=3;kind='command-post-storage-variants';snapshotId=$snapshotId;normalizerVersion=$normalizer;sourceSha256=$commandPostInput.hash;capturedAtUTC=$commandPosts.generatedAtUTC;commonCapacitySupplies=$commonCapacities[0];records=$commandPosts.records;nativeInventory=$commandPosts;status='partial';runtimeMeasured=$false})
 foreach($type in @('OtherContainers','Harbors')){$source=$(if($type -ceq 'OtherContainers'){$other}else{$harbors});WriteJson "Supplies/$type.json" ([ordered]@{schemaVersion=3;kind='supply-settings-view';report=$type;snapshotId=$snapshotId;normalizerVersion=$normalizer;sourceInputs=$source.inputs;sourceSummary=$source.sourceSummary;records=$source.records;classificationCatalog='../Locations.json';warnings=$warnings})}
 # Render both documents from the saved canonical graph and settings.
 $saved=Get-Content -LiteralPath (Join-Path $output 'Locations.json') -Raw -Encoding utf8 | ConvertFrom-Json
@@ -231,6 +252,15 @@ function Position($p,$status){if(!(ValidPosition $p $status)){return 'unknown'};
 function Distance($d){if($null -eq $d){return 'unknown'};([double]$d).ToString('0.###',$culture)}
 function Value($v,$status){if($status -cne 'resolved'){return 'unknown'};Number $v}
 $titles=@{control_points='Контрольные точки';harbors='Harbors';supply_depots='Склады припасов';settlements='Города и деревни';other='Остальные объекты';unrecognized='Нераспознанные'}
+function CommandPostComposition(){
+    $parts=[Collections.Generic.List[string]]::new();$seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach($storage in $commandPosts.records){
+        $composition=@($storage.capacityComposition | ForEach-Object {"$($_.containerCount) × $(Number $_.capacitySupplies)"}) -join ' + '
+        $key="$($storage.physicalContainerCount)/$composition"
+        if($seen.Add($key)){$parts.Add("$($storage.physicalContainerCount) контейнеров: $composition")}
+    }
+    $parts -join '; '
+}
 function ParentTable($lines,$links,$showDistance){
     $header='| Родитель | Вместимость / Изначально | Состав, припасы | Координаты X Y Z, м |';$separator='| --- | --- | --- | --- |';if($showDistance){$header+=' Расстояние, м |';$separator+=' ---: |'};$lines.Add($header);$lines.Add($separator)
     foreach($link in $links){
@@ -307,10 +337,11 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
     $lines.Add('| Категория | Родителей из OtherContainers | Связей |');$lines.Add('| --- | ---: | ---: |');foreach($category in ($categories | Where-Object {$_ -cne 'unrecognized'})){$summary=$saved.summary.stages.$category;$lines.Add("| $($titles[$category]) | $($summary.assignedParentCount) | $($summary.associationCount) |")};$lines.Add('')
     if($supply){$lines.Add("Итоги исходных каталогов по уникальным записям: OtherContainers — **$($other.sourceSummary.physicalContainerCount)** физических контейнеров / **$(Number $other.sourceSummary.capacitySupplies)** вместимости; Harbors — **$(Number $harbors.sourceSummary.physicalContainerCount)** / **$(Number $harbors.sourceSummary.knownCapacitySubtotalSupplies)** известного подытога, **$($harbors.sourceSummary.unknownCapacityBaseCount)** вместимости unknown. Настройки компонентов припасов контрольных точек и складов учитываются отдельно; они не прибавляются к физической вместимости. Повторные строки локаций не суммируются.");$lines.Add('')}
     $lines.Add('Координаты X Y Z округлены до трёх знаков после точки и разделены пробелами для вставки в Workbench. JSON сохраняет полную исходную точность; расстояния и группировка рассчитаны до округления.');$lines.Add('');$lines.Add('## Откуда берутся данные');$lines.Add('')
-    $lines.Add('| Данные | Источник |');$lines.Add('| --- | --- |');$lines.Add('| Контрольная точка / название / позиция | Целевой экспорт ConflictControlPoint prefab; m_sBaseName переведено WidgetManager.Translate, координаты source проверены Workbench. |');$lines.Add('| Припасы точки / максимум компонента | SCR_CampaignSuppliesComponent.m_iSupplies / m_iSuppliesMax; это настройки компонента, они учитываются отдельно от физических контейнеров. |');$lines.Add('| Подтверждённые вложенные контейнеры | Родительские ID полного экспорта world-supply-containers; физические SCR_ResourceContainer, SUPPLIES. Виртуальные представления не суммируются. |');$lines.Add('| Склады припасов | CampaignRemnantsSupplyDepot prefab; локация определяется по именованной подписи карты, список контейнеров — по утверждённому радиусу и приоритетам. |');$lines.Add('| Harbors | Настройки и физическая вместимость прежнего каталога баз-источников; интервал в минутах = исходные секунды / 60. |');$lines.Add('| Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |');$lines.Add('| Разбивка | Сначала маркеры складов связываются с именованными локациями, затем хранилища в радиусе маркера исключаются из дальнейшего распределения. После этого проверяются source-иерархия КП / Harbors, города / деревни и остальные разрешённые подписи; соответствующие группы карты переносятся к КП. Внутри одного этапа сохраняются все совпадения. |');$lines.Add('')
+    $lines.Add('| Данные | Источник |');$lines.Add('| --- | --- |');$lines.Add('| Контрольная точка / название / позиция | Целевой экспорт ConflictControlPoint prefab; m_sBaseName переведено WidgetManager.Translate, координаты source проверены Workbench. |');$lines.Add('| Припасы точки / максимум компонента | SCR_CampaignSuppliesComponent.m_iSupplies / m_iSuppliesMax; это настройки компонента, они учитываются отдельно от физических контейнеров. |');$lines.Add('| Хранилище командного пункта КП | Проверенная цепочка фракция → командный пункт → хранилище; количество физических слотов и целевой максимум encapsulator action, состав рассчитан по коду распределения. Канонические варианты: Supplies/ControlPointStorage.json. |');$lines.Add('| Подтверждённые вложенные контейнеры | Родительские ID полного экспорта world-supply-containers; физические SCR_ResourceContainer, SUPPLIES. Виртуальные представления не суммируются. |');$lines.Add('| Склады припасов | CampaignRemnantsSupplyDepot prefab; локация определяется по именованной подписи карты, список контейнеров — по утверждённому радиусу и приоритетам. |');$lines.Add('| Harbors | Настройки и физическая вместимость прежнего каталога баз-источников; интервал в минутах = исходные секунды / 60. |');$lines.Add('| Контейнерные строки | Прежние OtherContainers по ID корневого родителя; состав / вместимость / начальные припасы сохранены. |');$lines.Add('| Разбивка | Сначала маркеры складов связываются с именованными локациями, затем хранилища в радиусе маркера исключаются из дальнейшего распределения. После этого проверяются source-иерархия КП / Harbors, города / деревни и остальные разрешённые подписи; соответствующие группы карты переносятся к КП. Внутри одного этапа сохраняются все совпадения. |');$lines.Add('')
     if($supply){$lines.Add('Канонический граф: [Locations.json](../Locations.json); настройки: [ControlPoints](ControlPoints.json), [OtherContainers](OtherContainers.json), [Harbors](Harbors.json), [SupplyDepots](SupplyDepots.json), [метаданные](../world.json).')}else{$lines.Add('Канонический граф: [Locations.json](Locations.json), [метаданные](world.json), [таблица припасов](Supplies/OtherContainers.md).')};$lines.Add('')
     foreach($category in $categories){$lines.Add("## $($titles[$category])");$lines.Add('')
         if($category -ceq 'unrecognized'){if($saved.unrecognizedObjects.Count){if($supply){ParentTable $lines $saved.unrecognizedObjects $false}else{$lines.Add('| Объект | Координаты X Y Z, м |');$lines.Add('| --- | --- |');foreach($link in $saved.unrecognizedObjects){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}else{$lines.Add('Нераспознанных объектов нет.');$lines.Add('')};continue}
+        if($supply -and $category -ceq 'control_points'){$lines.Add('Строка «Командный пункт» показывает вместимость его собственного хранилища и варианты состава для 5 / 6 контейнеров. Состав рассчитан по конфигу и коду распределения; выбранная игровая фракция не назначена. Это отдельная композиция, а не сумма всех хранилищ базы. [Варианты и происхождение](../Supplies/ControlPointStorage.json).');$lines.Add('')}
         $categoryGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
         if(!$categoryGroups.Count){$lines.Add('Объектов этой категории нет.');$lines.Add('');continue}
         if($category -ceq 'harbors'){HarborTable $lines $categoryGroups $supply;continue}
@@ -320,10 +351,10 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
             foreach($merge in ($group.mergedMapLocations | Where-Object correspondenceMethod -ceq 'user_confirmed_nearby_location')){$lines.Add("Подпись **$(Text $merge.name)** связана с этой контрольной точкой по указанию пользователя; расстояние между ними — **$(Distance $merge.anchorDistanceMeters) м** по X/Z.");$lines.Add('')}
             if($category -ceq 'supply_depots'){$lines.Add("Контейнеры сопоставляются с маркером склада в радиусе **$(Number $RadiusMeters) м** по X/Z. Объекты контрольных точек и Harbors сохраняют приоритет; source-родство отмечается отдельно от близости.");$lines.Add('')}
             if($group.anchorObjectId){$anchor=$rows[$group.anchorObjectId]
-                if($supply -and $category -ceq 'control_points'){$lines.Add('| Source | Припасы компонента в конфиге | Максимум компонента, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.sourceName) | $(Value $anchor.configuredComponentSupplies.value $anchor.configuredComponentSupplies.status) | $(Value $anchor.configuredComponentSuppliesMax.value $anchor.configuredComponentSuppliesMax.status) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
+                if($supply -and $category -ceq 'control_points'){$lines.Add('| Название | Вместимость, припасы | Состав, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- | --- |');$lines.Add("| Командный пункт | $(Number $commonCapacities[0]) | $(CommandPostComposition) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 elseif($supply){$lines.Add('| Название | Пополнение за цикл, припасы | Пополнение, мин. | Вместимость хранилищ, припасы | Координаты X Y Z, м |');$lines.Add('| --- | ---: | ---: | ---: | --- |');$lines.Add("| $(Text $anchor.name) | $(Value $anchor.supplyIncomePerCycle $anchor.valueStatus.supplyIncomePerCycle) | $(Value $anchor.arrivalIntervalMinutes $anchor.valueStatus.arrivalInterval) | $(Value $anchor.capacitySupplies $anchor.capacityStatus) | $(Position $anchor.worldPositionMeters $anchor.positionStatus) |");$lines.Add('')}
                 else{$obj=$lookup[$group.anchorObjectId];$lines.Add("Source: **$(Text $obj.name)**; координаты **$(Position $obj.worldPositionMeters $obj.positionStatus)**.");$lines.Add('')}
-                $lines.Add("Подтверждённых физических SUPPLIES-контейнеров в source-потомках: **$($group.physicalDescendantContainers.Count)**. Состав и поля контейнеров сохранены в Locations.json; это отдельная проверка от соседства на карте.");$lines.Add('')
+                if(!($supply -and $category -ceq 'control_points')){$lines.Add("Подтверждённых физических SUPPLIES-контейнеров в source-потомках: **$($group.physicalDescendantContainers.Count)**. Состав и поля контейнеров сохранены в Locations.json; это отдельная проверка от соседства на карте.");$lines.Add('')}
             }
             if($group.members.Count){if($supply){ParentTable $lines $group.members $true}else{$lines.Add('| Объект | Расстояние, м | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- |');foreach($link in $group.members){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Distance $link.distanceMeters) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}elseif($supply){$lines.Add('Других корневых родителей в этой группе справочника нет.');$lines.Add('')}
         }
