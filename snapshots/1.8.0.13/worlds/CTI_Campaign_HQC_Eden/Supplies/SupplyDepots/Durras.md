@@ -15,4 +15,58 @@
 
 Расстояния рассчитаны до маркера склада.
 
-[Состав расчёта](../../revisions/r0036/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0036/Locations.json).
+## Где находятся контейнеры
+
+Показаны мировые координаты самих физических контейнеров, округлённые до трёх знаков для перехода в Workbench. Виртуальные представления повторно не учитываются.
+
+### SupplyCache_S_FIA_01_Campaign_HQC - 9044.778 124.507 2741.715
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyStack_Large_01_storage | 100 / 100 | 9045.642 124.507 2747.018 |
+| SupplyStack_Large_01_storage | 100 / 100 | 9045.430 124.507 2745.662 |
+| SupplyStack_Large_01_storage | 100 / 100 | 9045.000 124.507 2744.317 |
+| SupplyStack_01_V5_storage_FIA_covered | 100 / 100 | 9048.136 124.507 2744.637 |
+| SupplyStack_01_V6_storage | 100 / 100 | 9044.438 124.507 2747.255 |
+| SupplyStack_01_V1_storage_FIA_covered | 100 / 100 | 9048.210 124.507 2746.147 |
+| SupplyStack_01_V5_storage | 100 / 100 | 9043.619 124.507 2744.866 |
+| SupplyStack_01_V2_storage_FIA_covered | 100 / 100 | 9047.724 124.507 2743.319 |
+| SupplyStack_01_V3_storage | 100 / 100 | 9044.146 124.507 2746.006 |
+
+### SupplyCache_S_FIA_02_Campaign_HQC - 9075.662 118.323 2669.573
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyStack_Large_01_storage | 100 / 100 | 9077.278 118.323 2670.909 |
+| SupplyStack_01_V2_storage | 100 / 100 | 9079.651 118.323 2672.104 |
+| SupplyStack_01_V1_storage | 100 / 100 | 9078.913 118.323 2670.524 |
+| SupplyStack_01_V6_storage | 100 / 100 | 9078.656 118.323 2668.891 |
+| SupplyStack_01_V1_storage_FIA_covered | 100 / 100 | 9079.879 118.323 2669.396 |
+| SupplyStack_01_V5_storage | 100 / 100 | 9080.294 118.323 2670.671 |
+| SupplyStack_01_V3_storage | 100 / 100 | 9077.881 118.323 2669.762 |
+| SupplyStack_01_V3_storage | 100 / 100 | 9078.268 118.323 2671.922 |
+
+### SupplyCache_S_FIA_02_Campaign_HQC - 9038.024 124.563 2746.161
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyStack_Large_01_storage | 100 / 100 | 9035.932 124.563 2746.296 |
+| SupplyStack_01_V2_storage | 100 / 100 | 9033.385 124.563 2747.053 |
+| SupplyStack_01_V1_storage | 100 / 100 | 9035.006 124.563 2747.698 |
+| SupplyStack_01_V6_storage | 100 / 100 | 9036.313 124.563 2748.710 |
+| SupplyStack_01_V1_storage_FIA_covered | 100 / 100 | 9035.076 124.563 2749.181 |
+| SupplyStack_01_V5_storage | 100 / 100 | 9033.899 124.563 2748.538 |
+| SupplyStack_01_V3_storage | 100 / 100 | 9036.279 124.563 2747.544 |
+| SupplyStack_01_V3_storage | 100 / 100 | 9034.518 124.563 2746.237 |
+
+### SupplyCache_S_FIA_03_Campaign_HQC - 9050.172 124.732 2767.866
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 9049.390 124.732 2764.653 |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 9045.541 124.732 2767.953 |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 9050.156 124.732 2767.204 |
+
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0037/Supplies/ContainerDetails.json).
+
+[Состав расчёта](../../revisions/r0037/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0037/Locations.json).

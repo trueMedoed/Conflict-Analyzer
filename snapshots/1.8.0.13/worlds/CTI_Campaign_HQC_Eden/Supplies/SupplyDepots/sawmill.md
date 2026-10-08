@@ -17,4 +17,66 @@
 
 Расстояния рассчитаны до маркера склада.
 
-[Состав расчёта](../../revisions/r0036/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0036/Locations.json).
+## Где находятся контейнеры
+
+Показаны мировые координаты самих физических контейнеров, округлённые до трёх знаков для перехода в Workbench. Виртуальные представления повторно не учитываются.
+
+### SupplyCache_S_FIA_02_Campaign_HQC - 3099.809 117.636 5188.213
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyStack_Large_01_storage | 100 / 100 | 3100.864 117.807 5190.017 |
+| SupplyStack_01_V2_storage | 100 / 100 | 3102.677 118.024 5191.948 |
+| SupplyStack_01_V1_storage | 100 / 100 | 3102.530 117.904 5190.214 |
+| SupplyStack_01_V6_storage | 100 / 100 | 3102.851 117.815 5188.595 |
+| SupplyStack_01_V1_storage_FIA_covered | 100 / 100 | 3103.823 117.922 5189.485 |
+| SupplyStack_01_V5_storage | 100 / 100 | 3103.773 118.007 5190.822 |
+| SupplyStack_01_V3_storage | 100 / 100 | 3101.824 117.799 5189.147 |
+| SupplyStack_01_V3_storage | 100 / 100 | 3101.442 117.920 5191.305 |
+
+### SupplyCache_S_FIA_06_Campaign_HQC - 3054.258 118.562 5207.084
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyShippingContainers_01_10ft | 500 / 500 | 3058.615 118.562 5203.836 |
+| SupplyShippingContainers_01_10ft | 500 / 500 | 3056.627 118.562 5202.118 |
+
+### SupplyCache_S_FIA_03_Campaign_HQC - 3113.860 118.764 5215.264
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3115.977 118.763 5212.724 |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3111.035 118.686 5211.595 |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3114.383 118.766 5214.858 |
+
+### SupplyCache_S_FIA_05_Campaign_HQC - 3075.744 118.469 5232.593
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3077.569 118.469 5233.822 |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3075.603 118.469 5232.118 |
+
+### SupplyCache_S_FIA_04_Campaign_HQC - 3056.594 118.287 5244.140
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyShippingContainers_01_20ft | 1000 / 1000 | 3057.946 118.287 5242.500 |
+| SupplyShippingContainers_01_10ft | 500 / 500 | 3061.167 118.287 5245.587 |
+
+### SupplyCache_S_FIA_01_Campaign_HQC - 3122.970 119.225 5234.888
+
+| Контейнер | Вместимость / Изначально | Координаты X Y Z, м |
+| --- | ---: | --- |
+| SupplyStack_Large_01_storage | 100 / 100 | 3126.436 119.365 5238.992 |
+| SupplyStack_Large_01_storage | 100 / 100 | 3125.557 119.329 5237.937 |
+| SupplyStack_Large_01_storage | 100 / 100 | 3124.498 119.292 5237.005 |
+| SupplyStack_01_V5_storage_FIA_covered | 100 / 100 | 3127.351 119.321 5235.667 |
+| SupplyStack_01_V6_storage | 100 / 100 | 3125.526 119.363 5239.813 |
+| SupplyStack_01_V1_storage_FIA_covered | 100 / 100 | 3128.191 119.360 5236.923 |
+| SupplyStack_01_V5_storage | 100 / 100 | 3123.596 119.297 5238.186 |
+| SupplyStack_01_V2_storage_FIA_covered | 100 / 100 | 3126.321 119.285 5234.749 |
+| SupplyStack_01_V3_storage | 100 / 100 | 3124.633 119.329 5238.892 |
+
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0037/Supplies/ContainerDetails.json).
+
+[Состав расчёта](../../revisions/r0037/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0037/Locations.json).

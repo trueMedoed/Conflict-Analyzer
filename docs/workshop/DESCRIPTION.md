@@ -70,3 +70,5 @@ Unreleased: supply-depot storage matching now uses 200 m; HQC Everon r0034 assig
 Unreleased: separate configured initial-supplies summary by control points, docks, depots, towns and other objects. Deduplicates repeated location links and explicitly retains unknown dock storage; the known subtotal is 231200 in HQC Everon r0035.
 
 Unreleased: five supply category folders now contain category summaries and 46 individual detail pages, linked from the overall summary. Existing configured totals and grouping are preserved.
+
+Unreleased: all 46 detail pages now expose physical supply containers and their world coordinates. Existing totals are preserved; unknown dock storage and unmeasured runtime command-post container positions remain explicit.

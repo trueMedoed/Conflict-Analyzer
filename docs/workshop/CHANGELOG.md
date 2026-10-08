@@ -105,3 +105,5 @@ Unreleased / r0034: increase depot storage radius to 200 m; three additional par
 Unreleased / r0035: add a separate deduplicated initial-supplies summary with explicit unknowns. Добавлена отдельная сводка начальных припасов без повторного учёта объектов, с явными неизвестными значениями.
 
 Unreleased / r0036: category folders, summaries and linked per-group detail pages. Папки категорий, сводки и связанные страницы отдельных групп.
+
+Unreleased / r0037: physical container locations on every detail page. Координаты физических контейнеров на каждой подробной странице.
