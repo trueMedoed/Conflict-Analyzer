@@ -39,3 +39,7 @@
 Выходной каталог должен быть свободен. После проверки перенос в snapshots / обновление корневых Markdown-копий и manifest выполняются вручную. Для следующей обработки выбрать новую ревизию; предыдущие файлы не перезаписывать.
 
 В ревизии шесть файлов: world.json, data.json, Supplies.md, Supplies/OtherContainers.json, Supplies/OtherContainers.md и Supplies/Harbors.json. data.json — индекс: sourceBases.table=Supplies/OtherContainers.md#harbors, ungroupedSection ведёт к #othercontainers-без-группы / #harbors-без-группы в этом же Markdown. world.json хранит происхождение / ограничения; JSON сохраняют свои записи / локации / остаток. Normalizer location-grouped-supplies-0.2. Полный Locations не дублируется, отдельный Harbors.md не создаётся. Подробные проверки — [VALIDATION.md](VALIDATION.md).
+
+## Радиус складов — r0034
+
+r0034: радиус сбора хранилищ около маркеров CampaignRemnantsSupplyDepot увеличен со 100 до 200 м по X/Z включительно. У маркера 4814.289 53.445 5819.508 добавлены три прежних нераспознанных родителя (SupplyCache_S_FIA_03 / 04 / 06); теперь 9 вместо 6. Остальные восемь складов и назначения остальных объектов сохранены. Всего у складов 52 родителя, нераспознанный родитель остался один. Радиус сопоставления с подписями карты — прежние 350 м. normalizerVersion supply-priority-architecture-0.16, схема 3. Исходные captures, их даты и архивные ревизии сохранены; данные мира заново не собирались.

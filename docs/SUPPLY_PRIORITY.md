@@ -1,12 +1,12 @@
 # Приоритеты групп мира
 
-В r0033 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0034 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
 1. Прочитать проверенные каталоги маркеров CampaignRemnantsSupplyDepot, контрольных точек, Harbors, хранилищ и подписей карты. Это чтение исходных фактов; порядок распределения начинается со складов.
 2. Определить локацию каждого маркера склада в прежних 350 м по X/Z: Name City / Town / Village / Settlement, затем Name Generic / Island / Hill. Выбрать ближайшую подпись в первом подходящем этапе; равные расстояния — по ID. Водоёмы / неутверждённые типы не добавлять, маркер без подписи сохранить без локации.
-3. Для каждого маркера собрать корневые хранилища OtherContainers в отдельном радиусе 100 м (DepotRadiusMeters), включительно до округления координат / расстояний. Используются мировые X/Z родительских агрегатов; Y не влияет. Все совпадения внутри этапа сохраняются, ID назначенных родителей исключаются из последующих этапов. Радиус не расширяется из-за source-родства; здесь отбор географический, sourceParentEstablished=false / ownershipEstablished=false.
+3. Для каждого маркера собрать корневые хранилища OtherContainers в отдельном радиусе 200 м (DepotRadiusMeters), включительно до округления координат / расстояний. Используются мировые X/Z родительских агрегатов; Y не влияет. Все совпадения внутри этапа сохраняются, ID назначенных родителей исключаются из последующих этапов. Радиус не расширяется из-за source-родства; здесь отбор географический, sourceParentEstablished=false / ownershipEstablished=false.
 4. Оставшиеся родители проверить по подтверждённой parentSourceId-иерархии ConflictControlPoint, затем Harbors. Сами 7 КП / 18 баз сохраняются как якоря. Их физические source-потомки хранятся отдельно как факт иерархии, не как повторное назначение уже отобранного склада.
 5. Остаток распределить по населённым пунктам, затем Generic / Island / Hill в прежних 350 м по X/Z; внутри этапа сохранить все совпадения. Соответствующие готовые группы карты объединить с КП по прежним точным именам / prefab-ключам или явному правилу ControlPointMapLinks.json; проверка радиуса 350 м и отказ при неоднозначности сохраняются. Назначенные складам ID сюда не попадают и не переносятся обратно к КП.
 6. Несопоставленные родители оставить в Нераспознанные. JSON сохраняет все исходные объекты / подписи / настройки / captures, а Markdown показывает категории в порядке склады → КП → Harbors → города / деревни → остальные → нераспознанные. Координаты маркеров и их компонентные настройки остаются скрыты; позиции локаций / родителей имеют три знака после точки.
@@ -33,10 +33,10 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0033 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0034 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0033 `
-  -DepotRadiusMeters 100 -RadiusMeters 350 `
+  -RevisionId r0034 `
+  -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
 
@@ -103,3 +103,7 @@ r0032 объединяет строку «Командный пункт» и о�
 r0033 подтверждает configuredInitialSupplies=0 у хранилища командного пункта FIA / US / USSR. Workbench разрешил m_fResourceValueCurrent действия и GetValueCurrent в трёх storage и трёх editable HQ: 0, max 1000. После изменения maxima действие потребляет весь агрегированный запас и запрашивает генерацию 0; исходные prototype-slots по 100 не являются запасом после действия. В таблицах семи КП — 1000 / 0, scope command_post_storage_after_encapsulator_action. Отложенный SetInitialSupplies работает с общей сетью базы и добавляет только при нехватке; runtimeInitialSuppliesStatus=not_measured, не объявлять 0 фактическим запасом после инициализации миссии. Прежние captures / группировка / контейнерные значения сохраняются; новый initial capture отдельный. Схема 3, supply-priority-architecture-0.15, 11 канонических файлов; текущие root views r0033, предыдущие ревизии неизменны.
 
 Поле configuredInitialSupplies / status / scope каждой КП ссылается на три варианта каталога; commonConfiguredInitialSupplies=0. Генератор сверяет действие с configuredInitialSupplies, область применения и два разрешённых источника (storage и editable HQ) каждого варианта. Исходные count / capacity capture-даты сохранены, initialSuppliesEvidence содержит новый лог и дату. Запас всей базы после SetInitialSupplies остаётся not_measured. [Подробности](experiments/CONTROL_POINT_STORAGE_1.8.0.13.md).
+
+## Радиус складов — r0034
+
+r0034: радиус сбора хранилищ около маркеров CampaignRemnantsSupplyDepot увеличен со 100 до 200 м по X/Z включительно. У маркера 4814.289 53.445 5819.508 добавлены три прежних нераспознанных родителя (SupplyCache_S_FIA_03 / 04 / 06); теперь 9 вместо 6. Остальные восемь складов и назначения остальных объектов сохранены. Всего у складов 52 родителя, нераспознанный родитель остался один. Радиус сопоставления с подписями карты — прежние 350 м. normalizerVersion supply-priority-architecture-0.16, схема 3. Исходные captures, их даты и архивные ревизии сохранены; данные мира заново не собирались.
