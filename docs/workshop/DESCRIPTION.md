@@ -62,3 +62,5 @@ Limitations
 • Values depend on the world and game version. Missing resources must be reported as unknown rather than zero.
 • Complete object-valued configurations and faction catalogs remain unresolved; the selected-base storage command reads only its required container settings. Found components are not gameplay totals or soldier counts.
 • Runtime diagnostics and an in-game interface are outside the initial proposed scope.
+
+Research update (Unreleased): a separate HQC Everon 1.8.0.13 runtime experiment observed 0 / 1000 supplies in all seven initial FIA command-post storages. The native mission-header run yielded one sample; a direct-world run yielded three stable samples. US / USSR remain unmeasured in gameplay. This is documented research, not an implemented runtime export command.
