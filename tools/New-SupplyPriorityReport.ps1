@@ -452,6 +452,35 @@ function WriteInitialSummary {
     $lines.Add('| Категория | Припасов изначально |');$lines.Add('| --- | ---: |')
     foreach($row in $totals){$suffix=$(if($row.status -ceq 'partial'){' + неизвестно'}else{''});$lines.Add("| $($row.name) | $(Number $row.knownInitialSupplies)$suffix |")}
     $lines.Add('');$lines.Add('«Города» включают города, деревни и поселения. «Другое» — остальные локации и нераспознанные хранилища. Повторные ссылки на один родительский объект не суммируются.');$lines.Add('')
+    foreach($category in $categoryNames.Keys){
+        $lines.Add("## $($categoryNames[$category])");$lines.Add('')
+        $detailGroups=@($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})
+        foreach($group in $detailGroups){
+            $ids=@($group.members | ForEach-Object {$_.objectId} | Sort-Object -Unique)
+            if($category -ceq 'control_points'){$ids+=($group.anchorObjectId+'/command-post')}
+            if($category -ceq 'harbors'){$ids+=@($group.physicalDescendantContainers | ForEach-Object {$_.id});$ids+=($group.anchorObjectId+'/unresolved-storage')}
+            $items=@($entries | Where-Object {$_.id -in $ids})
+            $sum=0.0;foreach($item in $items){$sum+=$item.knownInitialSubtotal}
+            $unknown=@($items | Where-Object {$_.status -cne 'resolved'}).Count
+            $label=$group.name
+            if($category -ceq 'supply_depots'){
+                $region=@($saved.depotLocationGrouping.locations | Where-Object {$_.depots.depotGroupId -contains $group.id})
+                if($region.Count){$label=$region[0].name}else{$label="Склад - $(Position $group.worldPositionMeters $group.positionStatus)"}
+            }
+            $amount=$(if($unknown -and !$sum){'неизвестно'}elseif($unknown){"$(Number $sum) + неизвестно"}else{Number $sum})
+            $lines.Add("### $(Text $label) — $amount");$lines.Add('')
+        }
+        if($category -ceq 'other' -and $saved.unrecognizedObjects.Count){
+            $ids=@($saved.unrecognizedObjects.objectId)
+            $items=@($entries | Where-Object {$_.id -in $ids})
+            $sum=0.0;foreach($item in $items){$sum+=$item.knownInitialSubtotal}
+            $unknown=@($items | Where-Object {$_.status -cne 'resolved'}).Count
+            $amount=$(if($unknown -and !$sum){'неизвестно'}elseif($unknown){"$(Number $sum) + неизвестно"}else{Number $sum})
+            $lines.Add("### Нераспознанные — $amount");$lines.Add('')
+        }
+    }
+    $lines.Add('Один объект может встречаться у нескольких локаций внутри категории. Подзаголовки показывают состав каждой группы, поэтому их суммы могут пересекаться; общий итог и таблица категорий выше учитывают каждый объект один раз.');$lines.Add('')
+
     $lines.Add('Использованы configuredInitialSupplies у родительских хранилищ, m_fResourceValueCurrent физических контейнеров доков и начальное значение после действия префаба командного пункта. Вместимость, доход за цикл, виртуальные контейнеры и агрегаты общей сети базы в сумму не прибавляются. Это сводка настроенных запасов, а не измерение всего мира после запуска миссии.');$lines.Add('')
     $lines.Add('[Состав расчёта и источники](Summary.json) · [Подробные таблицы](OtherContainers.md).')
     [IO.File]::WriteAllText((Join-Path $output 'Supplies/Summary.md'),($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
