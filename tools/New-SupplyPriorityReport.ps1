@@ -322,6 +322,10 @@ function HarborTable($lines,$categoryGroups,$supply){
 }
 function DepotBlock($lines,$assignment,$supply){
     $group=@($saved.groups | Where-Object id -ceq $assignment.depotGroupId)[0]
+    if($assignment.status -cne 'matched'){
+        $marker=$lookup[$assignment.depotObjectId]
+        $lines.Add("#### Склад - $(Position $marker.worldPositionMeters $marker.positionStatus)");$lines.Add('')
+    }
     if($assignment.status -ceq 'matched'){$lines.Add("Расстояние от маркера склада до локации: **$(Distance $assignment.distanceMeters) м** по X/Z.");$lines.Add('')}
     if(!$group.members.Count){return}
     if($supply){ParentTable $lines $group.members $true}
@@ -332,7 +336,7 @@ function DepotBlock($lines,$assignment,$supply){
     }
 }
 function DepotLocationSections($lines,$supply){
-    $lines.Add("Сначала ищется город / деревня / поселение в радиусе **$(Number $RadiusMeters) м**, затем другая допустимая локация в том же радиусе; выбирается ближайшая в первом подходящем этапе. Заголовки локаций содержат их координаты; в списках показаны собственные координаты объектов. Координаты маркеров складов не выводятся. Хранилища собираются в радиусе **$(Number $DepotRadiusMeters) м** по X/Z от маркера до распределения остальных объектов. Они исключаются из следующих этапов КП / Harbors / локаций; расстояния в таблице отсчитываются до маркера склада.")
+    $lines.Add("Сначала ищется город / деревня / поселение в радиусе **$(Number $RadiusMeters) м**, затем другая допустимая локация в том же радиусе; выбирается ближайшая в первом подходящем этапе. Заголовки локаций содержат их координаты; в списках показаны собственные координаты объектов. Координаты маркеров показаны только у складов без привязки к локации. Хранилища собираются в радиусе **$(Number $DepotRadiusMeters) м** по X/Z от маркера до распределения остальных объектов. Они исключаются из следующих этапов КП / Harbors / локаций; расстояния в таблице отсчитываются до маркера склада.")
     $lines.Add('')
     foreach($location in $saved.depotLocationGrouping.locations){
         $lines.Add("### $(Text $location.name) - $(Position $location.worldPositionMeters $location.positionStatus)");$lines.Add('')
