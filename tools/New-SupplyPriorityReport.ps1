@@ -13,7 +13,7 @@ param(
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=200,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0034',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0035',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -32,7 +32,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.16'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.17'
 $commandPostInput=ReadInput $ControlPointStorageReportPath;$commandPosts=$commandPostInput.value
 Assert ($commandPosts.schemaVersion -eq 2 -and $commandPosts.kind -ceq 'control-point-command-post-storage' -and $commandPosts.gameVersion -ceq $version -and $commandPosts.worldPath -ceq $cp.worldPath -and $commandPosts.recordCount -eq 3 -and $commandPosts.records.Count -eq 3 -and !$commandPosts.runtimeMeasured) 'Invalid command-post storage comparison.'
 Assert (Same @($commandPosts.records.variantId | Sort-Object) @('FIA','US','USSR')) 'Missing command-post variant.'
@@ -240,6 +240,8 @@ $world.supplyDepotCapture=$depots
 $index=[ordered]@{schemaVersion=3;kind='conflict-world-index';snapshotId=$snapshotId;status='partial';worldMetadata='world.json';sections=[ordered]@{locations=[ordered]@{path='Locations.json';table='Locations.md'};supplies=[ordered]@{catalog='Locations.json';table='Supplies/OtherContainers.md';controlPoints='Supplies/ControlPoints.json';otherContainers='Supplies/OtherContainers.json';harbors='Supplies/Harbors.json';order=$categories};aiGroups=[ordered]@{status='not_analyzed'};startingBases=[ordered]@{status='not_analyzed'};vehicleSpawns=[ordered]@{status='not_analyzed'}}}
 $index.sections.supplies.supplyDepots='Supplies/SupplyDepots.json'
 $index.sections.supplies.controlPointStorage='Supplies/ControlPointStorage.json'
+$index.sections.supplies.summary='Supplies/Summary.json'
+$index.sections.supplies.summaryTable='Supplies/Summary.md'
 $world.commandPostStorageCapture=$commandPosts
 $world.inputs.commandPostStorage=[ordered]@{sha256=$commandPostInput.hash;capturedAtUTC=$commandPosts.generatedAtUTC;analyzerVersion=$commandPosts.analyzerVersion}
 if($commandPosts.evidence.PSObject.Properties.Name -contains 'initialSupplies'){$world.inputs.commandPostStorage.initialSuppliesCapturedAtUTC=$commandPosts.evidence.initialSupplies.capturedAtUTC}
@@ -377,7 +379,81 @@ foreach($document in @('Locations.md','Supplies/OtherContainers.md')){
             if($group.members.Count){if($supply){ParentTable $lines $group.members $true}else{$lines.Add('| Объект | Расстояние, м | Координаты X Y Z, м |');$lines.Add('| --- | ---: | --- |');foreach($link in $group.members){$obj=$lookup[$link.objectId];$lines.Add("| $(Text $obj.name) | $(Distance $link.distanceMeters) | $(Position $obj.worldPositionMeters $obj.positionStatus) |")};$lines.Add('')}}elseif($supply){$lines.Add('Других корневых родителей в этой группе справочника нет.');$lines.Add('')}
         }
     }
+    if($supply){
+        $summaryStart=$lines.IndexOf('## Summary');$summaryEnd=$lines.IndexOf('## Откуда берутся данные')
+        Assert ($summaryStart -ge 0 -and $summaryEnd -gt $summaryStart) 'Missing summary section.'
+        $lines.RemoveRange($summaryStart,$summaryEnd-$summaryStart)
+        $lines.Insert($summaryStart,'[Всего припасов изначально и разбивка по категориям](Summary.md).')
+        $lines.Insert($summaryStart+1,'')
+    }
     [IO.File]::WriteAllText((Join-Path $output $document),($lines -join "`n").TrimEnd([char]13,[char]10)+"`n",[Text.UTF8Encoding]::new($false))
 }
-[IO.File]::WriteAllText((Join-Path $output 'Supplies.md'),"# Припасы по приоритетам`n`n[Единая таблица](Supplies/OtherContainers.md): склады припасов → контрольные точки → Harbors → города / деревни → остальные объекты → нераспознанные. [Справочник объектов](Locations.md), [индекс](data.json), [метаданные](world.json).`n",[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $output 'Supplies.md'),"# Припасы по приоритетам`n`n[Начальные припасы](Supplies/Summary.md). [Единая таблица](Supplies/OtherContainers.md): склады припасов → контрольные точки → Harbors → города / деревни → остальные объекты → нераспознанные. [Справочник объектов](Locations.md), [индекс](data.json), [метаданные](world.json).`n",[Text.UTF8Encoding]::new($false))
 $catalog.summary
+
+function WriteInitialSummary {
+    $categoryNames=[ordered]@{control_points='Контрольные точки';harbors='Доки';supply_depots='Склады';settlements='Города';other='Другое'}
+    $entries=[Collections.Generic.List[object]]::new()
+    $parentCategory=@{}
+    foreach($group in $saved.groups){
+        foreach($member in $group.members){
+            if($parentCategory.ContainsKey($member.objectId)){Assert ($parentCategory[$member.objectId] -ceq $group.category) 'Summary: parent assigned across categories.'}
+            else{$parentCategory[$member.objectId]=$group.category}
+        }
+    }
+    foreach($item in $saved.unrecognizedObjects){Assert (!$parentCategory.ContainsKey($item.objectId)) 'Summary: unrecognized parent already assigned.';$parentCategory[$item.objectId]='other'}
+    foreach($parent in $other.records){
+        Assert ($parentCategory.ContainsKey($parent.objectId)) 'Summary: unclassified parent.'
+        $status=$parent.configuredInitialStatus
+        $value=$parent.configuredInitialSupplies
+        $known=$parent.knownConfiguredInitialSubtotalSupplies
+        Assert ($null -ne $known -and $known -ge 0) 'Summary: invalid parent known subtotal.'
+        if($status -ceq 'resolved'){Assert ($null -ne $value -and $value -ge 0 -and $value -eq $known) 'Summary: initial value/subtotal mismatch.'}
+        $entries.Add([ordered]@{id=$parent.objectId;category=$parentCategory[$parent.objectId];name=$parent.name;initialSupplies=$value;knownInitialSubtotal=$known;status=$status;source='Supplies/OtherContainers.json';field='configuredInitialSupplies';unrecognized=($parent.objectId -in @($saved.unrecognizedObjects.objectId))})
+    }
+    $seenSlots=@{}
+    foreach($group in ($saved.groups | Where-Object category -ceq 'harbors')){
+        $anchor=$rows[$group.anchorObjectId];$known=0.0;$unknown=0
+        foreach($slot in $group.physicalDescendantContainers){
+            Assert (!$seenSlots.ContainsKey($slot.id)) 'Summary: duplicate harbor physical slot.';$seenSlots[$slot.id]=$true
+            $field=@($slot.fields | Where-Object name -ceq 'm_fResourceValueCurrent')
+            $value=$null;$status='unknown'
+            if($field.Count -eq 1 -and $field[0].status -ceq 'resolved'){
+                $value=[double]::Parse($field[0].value,$culture)
+                Assert (![double]::IsNaN($value) -and ![double]::IsInfinity($value) -and $value -ge 0) 'Summary: invalid harbor initial value.'
+                $known+=$value;$status='resolved'
+            }else{$unknown++}
+            $entries.Add([ordered]@{id=$slot.id;category='harbors';anchorObjectId=$group.anchorObjectId;initialSupplies=$value;knownInitialSubtotal=$(if($null -eq $value){0}else{$value});status=$status;source='Locations.json';field='groups.physicalDescendantContainers.fields.m_fResourceValueCurrent'})
+        }
+        if(!$group.physicalDescendantContainers.Count){
+            $entries.Add([ordered]@{id=$group.anchorObjectId+'/unresolved-storage';category='harbors';name=$anchor.name;initialSupplies=$null;knownInitialSubtotal=0;status='unknown';source='Supplies/Harbors.json';reason='No confirmed physical descendant storage; initial supplies unknown.'})
+        }
+    }
+    foreach($point in $controlRecords){
+        $s=$point.commandPostStorage
+        $entries.Add([ordered]@{id=$point.objectId+'/command-post';category='control_points';name=$point.name;initialSupplies=$s.configuredInitialSupplies;knownInitialSubtotal=$(if($s.configuredInitialStatus -ceq 'resolved'){$s.configuredInitialSupplies}else{0});status=$s.configuredInitialStatus;source='Supplies/ControlPoints.json';field='commandPostStorage.configuredInitialSupplies';scope=$s.configuredInitialScope})
+    }
+    $totals=@(foreach($category in $categoryNames.Keys){
+        $selected=@($entries | Where-Object {$_.category -ceq $category})
+        $sum=0.0;foreach($entry in $selected){$sum+=$entry.knownInitialSubtotal}
+        $unknown=@($selected | Where-Object {$_.status -cne 'resolved'}).Count
+        [ordered]@{category=$category;name=$categoryNames[$category];knownInitialSupplies=$sum;status=$(if($unknown){'partial'}else{'resolved'});unknownEntryCount=$unknown;uniqueEntryCount=$selected.Count}
+    })
+    $total=0.0;foreach($row in $totals){$total+=$row.knownInitialSupplies}
+    $unknownCount=@($entries | Where-Object {$_.status -cne 'resolved'}).Count
+    $result=[ordered]@{schemaVersion=1;kind='initial-supplies-summary';snapshotId=$snapshotId;scope='configured_initial_supplies_in_catalogued_storage';status=$(if($unknownCount){'partial'}else{'resolved'});runtimeWorldTotalMeasured=$false;knownInitialSupplies=$total;unknownEntryCount=$unknownCount;categories=$totals;entries=@($entries);deduplication='Unique OtherContainers parent per category and unique harbor physical slot; command-post composition counted once per control point.';otherIncludesUnrecognized=$true;sources=@('Locations.json','Supplies/OtherContainers.json','Supplies/Harbors.json','Supplies/ControlPoints.json')}
+    WriteJson 'Supplies/Summary.json' $result
+    $lines=[Collections.Generic.List[string]]::new()
+    $lines.Add('# Начальные припасы');$lines.Add('')
+    $lines.Add("Игра **$version**, мир ``$scenario``, ревизия ``$RevisionId``.");$lines.Add('')
+    $lines.Add('## Всего припасов изначально');$lines.Add('')
+    $lines.Add("**$(Number $total)** — известная сумма по конфигам хранилищ.");$lines.Add('')
+    if($unknownCount){$lines.Add("Полный итог пока неизвестен: записей с неопределённым начальным запасом — **$unknownCount**. Они не приравниваются к нулю; сумма выше включает только известные значения.");$lines.Add('')}
+    $lines.Add('| Категория | Припасов изначально |');$lines.Add('| --- | ---: |')
+    foreach($row in $totals){$suffix=$(if($row.status -ceq 'partial'){' + неизвестно'}else{''});$lines.Add("| $($row.name) | $(Number $row.knownInitialSupplies)$suffix |")}
+    $lines.Add('');$lines.Add('«Города» включают города, деревни и поселения. «Другое» — остальные локации и нераспознанные хранилища. Повторные ссылки на один родительский объект не суммируются.');$lines.Add('')
+    $lines.Add('Использованы configuredInitialSupplies у родительских хранилищ, m_fResourceValueCurrent физических контейнеров доков и начальное значение после действия префаба командного пункта. Вместимость, доход за цикл, виртуальные контейнеры и агрегаты общей сети базы в сумму не прибавляются. Это сводка настроенных запасов, а не измерение всего мира после запуска миссии.');$lines.Add('')
+    $lines.Add('[Состав расчёта и источники](Summary.json) · [Подробные таблицы](OtherContainers.md).')
+    [IO.File]::WriteAllText((Join-Path $output 'Supplies/Summary.md'),($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
+}
+WriteInitialSummary

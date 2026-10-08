@@ -66,3 +66,5 @@ Limitations
 Research update (Unreleased): a separate HQC Everon 1.8.0.13 runtime experiment observed 0 / 1000 supplies in all seven initial FIA command-post storages. The native mission-header run yielded one sample; a direct-world run yielded three stable samples. US / USSR remain unmeasured in gameplay. This is documented research, not an implemented runtime export command.
 
 Unreleased: supply-depot storage matching now uses 200 m; HQC Everon r0034 assigns three previously ungrouped storage parents to one depot. Other depot memberships are unchanged.
+
+Unreleased: separate configured initial-supplies summary by control points, docks, depots, towns and other objects. Deduplicates repeated location links and explicitly retains unknown dock storage; the known subtotal is 231200 in HQC Everon r0035.

@@ -101,3 +101,5 @@ English: recorded per-session initial FIA command-post storage and base-grid sup
 Русский: сохранены измерения стартовых хранилищ КП FIA и общих сетей баз HQC Everon 1.8.0.13 с привязкой к сессиям и явным ограничением повторных проб штатного сценария. Новая функция runtime-экспорта не выпускается.
 
 Unreleased / r0034: increase depot storage radius to 200 m; three additional parents at one depot. Радиус складов увеличен до 200 м, у одного склада добавлены три родителя.
+
+Unreleased / r0035: add a separate deduplicated initial-supplies summary with explicit unknowns. Добавлена отдельная сводка начальных припасов без повторного учёта объектов, с явными неизвестными значениями.

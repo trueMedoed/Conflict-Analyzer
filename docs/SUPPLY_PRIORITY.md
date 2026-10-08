@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0034 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0035 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0034 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0035 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0034 `
+  -RevisionId r0035 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -107,3 +107,7 @@ r0033 подтверждает configuredInitialSupplies=0 у хранилища
 ## Радиус складов — r0034
 
 r0034: радиус сбора хранилищ около маркеров CampaignRemnantsSupplyDepot увеличен со 100 до 200 м по X/Z включительно. У маркера 4814.289 53.445 5819.508 добавлены три прежних нераспознанных родителя (SupplyCache_S_FIA_03 / 04 / 06); теперь 9 вместо 6. Остальные восемь складов и назначения остальных объектов сохранены. Всего у складов 52 родителя, нераспознанный родитель остался один. Радиус сопоставления с подписями карты — прежние 350 м. normalizerVersion supply-priority-architecture-0.16, схема 3. Исходные captures, их даты и архивные ревизии сохранены; данные мира заново не собирались.
+
+## Сводка начальных припасов — r0035
+
+r0035 добавляет Supplies/Summary.md и Summary.json: известный начальный запас 231200, категории Контрольные точки 48100, Доки 40500 + неизвестно, Склады 75100, Города 24500, Другое 43000. В Другое входят нераспознанные; один родитель учитывается один раз при нескольких связях. У доков читается current физических слотов, не maximum и не доход. Семь командных пунктов добавляют 0 после действия префаба; runtime-агрегаты сетей исключены. У трёх доков хранилища неизвестны, статус partial. Это сумма конфигов исследованных хранилищ, не измерение всего мира после запуска. Граф и группировка r0034 сохранены, радиусы 200 / 350 м. Схема основного снимка 3, сводки 1, normalizerVersion supply-priority-architecture-0.17; 13 канонических файлов. Прежние ревизии и даты captures неизменны.
