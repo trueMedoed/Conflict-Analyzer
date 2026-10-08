@@ -68,3 +68,5 @@ Research update (Unreleased): a separate HQC Everon 1.8.0.13 runtime experiment 
 Unreleased: supply-depot storage matching now uses 200 m; HQC Everon r0034 assigns three previously ungrouped storage parents to one depot. Other depot memberships are unchanged.
 
 Unreleased: separate configured initial-supplies summary by control points, docks, depots, towns and other objects. Deduplicates repeated location links and explicitly retains unknown dock storage; the known subtotal is 231200 in HQC Everon r0035.
+
+Unreleased: five supply category folders now contain category summaries and 46 individual detail pages, linked from the overall summary. Existing configured totals and grouping are preserved.

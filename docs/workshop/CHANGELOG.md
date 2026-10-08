@@ -103,3 +103,5 @@ English: recorded per-session initial FIA command-post storage and base-grid sup
 Unreleased / r0034: increase depot storage radius to 200 m; three additional parents at one depot. Радиус складов увеличен до 200 м, у одного склада добавлены три родителя.
 
 Unreleased / r0035: add a separate deduplicated initial-supplies summary with explicit unknowns. Добавлена отдельная сводка начальных припасов без повторного учёта объектов, с явными неизвестными значениями.
+
+Unreleased / r0036: category folders, summaries and linked per-group detail pages. Папки категорий, сводки и связанные страницы отдельных групп.
