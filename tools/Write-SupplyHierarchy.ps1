@@ -1,6 +1,7 @@
 # Called by New-SupplyPriorityReport.ps1 with the validated graph and summary entries.
 function WriteSupplyHierarchy($entries,$totals){
     InitializePhysicalSupplyDetails
+    InitializeHarborNeighbors
     $folders=[ordered]@{control_points='ControlPoints';harbors='Harbors';supply_depots='SupplyDepots';settlements='Settlements';other='Other'}
     $names=@{control_points='Контрольные точки';harbors='Доки';supply_depots='Склады';settlements='Города';other='Другое'}
     $pages=[Collections.Generic.List[object]]::new()
@@ -85,6 +86,7 @@ function WriteSupplyHierarchy($entries,$totals){
                 $detail.Add($(if($category -ceq 'supply_depots'){'Расстояния рассчитаны до маркера склада.'}else{'Расстояния рассчитаны до подписи локации.'}));$detail.Add('')
             }
             AddPhysicalSupplyDetails $detail $page
+            AddHarborNeighbors $detail $page $pages
             $detail.Add('[Состав расчёта](../Summary.json) · [Группы и происхождение](../../Locations.json).')
             SaveHierarchyPage $page.file $detail
         }

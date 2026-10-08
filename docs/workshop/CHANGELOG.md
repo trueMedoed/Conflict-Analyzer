@@ -107,3 +107,5 @@ Unreleased / r0035: add a separate deduplicated initial-supplies summary with ex
 Unreleased / r0036: category folders, summaries and linked per-group detail pages. Папки категорий, сводки и связанные страницы отдельных групп.
 
 Unreleased / r0037: physical container locations on every detail page. Координаты физических контейнеров на каждой подробной странице.
+
+Unreleased / r0038: harbor neighbor distance bands without reclassification. Списки соседних хранилищ доков по расстоянию без смены категорий.

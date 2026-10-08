@@ -13,7 +13,7 @@ param(
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=200,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0037',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0038',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -32,7 +32,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.19'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.20'
 $commandPostInput=ReadInput $ControlPointStorageReportPath;$commandPosts=$commandPostInput.value
 Assert ($commandPosts.schemaVersion -eq 2 -and $commandPosts.kind -ceq 'control-point-command-post-storage' -and $commandPosts.gameVersion -ceq $version -and $commandPosts.worldPath -ceq $cp.worldPath -and $commandPosts.recordCount -eq 3 -and $commandPosts.records.Count -eq 3 -and !$commandPosts.runtimeMeasured) 'Invalid command-post storage comparison.'
 Assert (Same @($commandPosts.records.variantId | Sort-Object) @('FIA','US','USSR')) 'Missing command-post variant.'
@@ -242,6 +242,7 @@ $index.sections.supplies.supplyDepots='Supplies/SupplyDepots.json'
 $index.sections.supplies.controlPointStorage='Supplies/ControlPointStorage.json'
 $index.sections.supplies.summary='Supplies/Summary.json'
 $index.sections.supplies.containerDetails='Supplies/ContainerDetails.json'
+$index.sections.supplies.harborNeighbors='Supplies/HarborNeighbors.json'
 $index.sections.supplies.summaryTable='Supplies/Summary.md'
 $world.commandPostStorageCapture=$commandPosts
 $world.inputs.commandPostStorage=[ordered]@{sha256=$commandPostInput.hash;capturedAtUTC=$commandPosts.generatedAtUTC;analyzerVersion=$commandPosts.analyzerVersion}
@@ -488,6 +489,7 @@ function WriteInitialSummary {
     [IO.File]::WriteAllText((Join-Path $output 'Supplies/Summary.md'),($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
     WriteSupplyHierarchy $entries $totals
 }
+. (Join-Path $PSScriptRoot 'HarborNeighbors.ps1')
 . (Join-Path $PSScriptRoot 'PhysicalSupplyDetails.ps1')
 . (Join-Path $PSScriptRoot 'Write-SupplyHierarchy.ps1')
 WriteInitialSummary

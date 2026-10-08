@@ -76,6 +76,6 @@
 | SupplyStack_01_V2_storage_FIA_covered | 100 / 100 | 7079.227 156.687 2048.511 |
 | SupplyStack_01_V3_storage | 100 / 100 | 7074.785 156.700 2049.049 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0037/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
 
-[Состав расчёта](../../revisions/r0037/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0037/Locations.json).
+[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).

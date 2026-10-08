@@ -2,7 +2,7 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0037`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0038`.
 
 Начальных припасов по конфигам: **40500 + неизвестно**. Итог учитывает каждый объект один раз.
 
@@ -27,4 +27,4 @@
 | [SP_T3H_SpaniardsBay](SP_T3H_SpaniardsBay.md) | 3000 |
 | [SP_T3H_Thollevast](SP_T3H_Thollevast.md) | 1500 |
 
-[Состав расчёта и неизвестные значения](../../revisions/r0037/Supplies/Summary.json).
+[Состав расчёта и неизвестные значения](../../revisions/r0038/Supplies/Summary.json).

@@ -72,3 +72,5 @@ Unreleased: separate configured initial-supplies summary by control points, dock
 Unreleased: five supply category folders now contain category summaries and 46 individual detail pages, linked from the overall summary. Existing configured totals and grouping are preserved.
 
 Unreleased: all 46 detail pages now expose physical supply containers and their world coordinates. Existing totals are preserved; unknown dock storage and unmeasured runtime command-post container positions remain explicit.
+
+Unreleased: harbor pages list detached storage within 100 m and between 100 and 200 m, with links to existing groups. This is a proximity overlay; categories, totals and runtime uncertainty are preserved.

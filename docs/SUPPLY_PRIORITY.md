@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0037 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0038 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0037 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0038 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0037 `
+  -RevisionId r0038 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -125,3 +125,10 @@ Write-SupplyHierarchy.ps1 вызывается основным генерато
 ## Координаты физических контейнеров — r0037
 
 r0037 раскрывает физические контейнеры на всех 46 подробных страницах: мировые позиции, вместимость / начальные припасы и родительское хранилище. Для аэропорта — SupplyCache_S_FIA_03 с тремя контейнерами по 1000 и SupplyCache_S_FIA_06 с двумя по 500. Supplies/ContainerDetails.json сохраняет 617 уникальных физических SUPPLIES-слотов, исходные поля, точные мировые координаты и цепочки родителей из проверенной выгрузки; даты / SHA исходного чтения сохранены. На страницах хранилища группируются по подтверждённой source-иерархии. Три неизвестных дока не получают выдуманных контейнеров; координаты динамических ящиков командного пункта не измерены и явно отделены от сохранённых объектов мира. Суммы, граф и радиусы прежние. Основная схема 3, каталог контейнеров 1, normalizerVersion supply-priority-architecture-0.19; 65 канонических файлов. Исторические ревизии сохранены.
+
+
+Write-SupplyHierarchy.ps1 вызывается основным генератором автоматически; вместе с PhysicalSupplyDetails.ps1 и HarborNeighbors.ps1 все четыре файла должны находиться в tools.
+
+## Хранилища рядом с доками — r0038
+
+r0038 добавляет на страницы всех 18 доков справочные списки отдельно стоящих хранилищ до 100 м и дальше 100 до 200 м включительно, с координатами, припасами и ссылками на прежние группы. Найдено 28 соседств у 8 доков: 14 в ближней полосе и 14 в дальней. По явному выбору пользователя категории НЕ изменены, никакие припасы повторно не прибавлены; итог 231200 и три unknown прежние. Расстояния здесь трёхмерные X/Y/Z до корней хранилищ, не прежняя X/Z-группировка. 100 м соответствует m_fStorageRange прочитанного ConflictSourceBase.et, но параметры экземпляров, проверки ResourceGrid и фактическое пополнение не измерены; обе полосы — только справочная близость. Supplies/HarborNeighbors.json сохраняет измерения и исходные назначения. Основная схема 3, соседства 1, normalizerVersion supply-priority-architecture-0.20; 66 канонических файлов. Прежние ревизии, captures, граф групп и исходные запасы сохранены.
