@@ -14,7 +14,7 @@
 
 Подтверждённые вложенные физические хранилища не найдены. Их расположение и запас остаются неизвестными.
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
 ## Хранилища рядом с доком
 
@@ -31,10 +31,6 @@
 | SupplyCache_S_FIA_06 | 1000 / 1000 | 4313.670 1.125 9491.603 | 25.439 | [Meaux](../Settlements/Meaux.md) |
 | SupplyCache_S_FIA_03 | 3000 / 3000 | 4317.285 1.125 9563.502 | 46.605 | [Meaux](../Settlements/Meaux.md) |
 
-### Дальше 100 м, до 200 м включительно
+[Расстояния и исходные назначения](../../revisions/r0039/Supplies/HarborNeighbors.json).
 
-Отдельно стоящих хранилищ в этом диапазоне не найдено.
-
-[Расстояния и исходные назначения](../../revisions/r0038/Supplies/HarborNeighbors.json).
-
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).

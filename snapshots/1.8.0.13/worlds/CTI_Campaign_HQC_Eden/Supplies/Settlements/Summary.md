@@ -2,7 +2,7 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0038`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0039`.
 
 Начальных припасов по конфигам: **24500**. Итог учитывает каждый объект один раз.
 
@@ -13,4 +13,4 @@
 | [Morton](Morton.md) | 2000 |
 | [Saint-Pierre](Saint-Pierre.md) | 9500 |
 
-[Состав расчёта и неизвестные значения](../../revisions/r0038/Supplies/Summary.json).
+[Состав расчёта и неизвестные значения](../../revisions/r0039/Supplies/Summary.json).

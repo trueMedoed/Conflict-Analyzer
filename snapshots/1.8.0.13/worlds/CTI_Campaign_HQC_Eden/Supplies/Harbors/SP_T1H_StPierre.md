@@ -14,7 +14,7 @@
 
 Подтверждённые вложенные физические хранилища не найдены. Их расположение и запас остаются неизвестными.
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
 ## Хранилища рядом с доком
 
@@ -31,14 +31,6 @@
 | SupplyCache_S_FIA_05 | 2000 / 2000 | 9941.110 2.541 1562.344 | 45.075 | [Saint-Pierre](../Settlements/Saint-Pierre.md) |
 | SupplyCache_S_FIA_05 | 2000 / 2000 | 10028.925 2.687 1594.854 | 96.65 | [Saint-Pierre](../Settlements/Saint-Pierre.md) |
 
-### Дальше 100 м, до 200 м включительно
+[Расстояния и исходные назначения](../../revisions/r0039/Supplies/HarborNeighbors.json).
 
-Расположены рядом с доком, но дальше 100 м. Пополнение от этого дока не подтверждено.
-
-| Хранилище | Вместимость / Изначально | Координаты X Y Z, м | Расстояние, м | Где уже учтено |
-| --- | ---: | --- | ---: | --- |
-| SupplyCache_S_FIA_06 | 1000 / 1000 | 9922.700 3.750 1648.255 | 131.444 | [Saint-Pierre](../Settlements/Saint-Pierre.md) |
-
-[Расстояния и исходные назначения](../../revisions/r0038/Supplies/HarborNeighbors.json).
-
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).

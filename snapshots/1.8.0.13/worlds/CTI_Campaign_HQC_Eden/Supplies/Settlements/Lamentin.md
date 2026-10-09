@@ -39,6 +39,6 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 1015.898 2.857 6049.004 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 1013.318 2.857 6049.336 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).

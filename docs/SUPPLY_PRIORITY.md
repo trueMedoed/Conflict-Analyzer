@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0038 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0039 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0038 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0039 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0038 `
+  -RevisionId r0039 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -132,3 +132,10 @@ Write-SupplyHierarchy.ps1 вызывается основным генерато
 ## Хранилища рядом с доками — r0038
 
 r0038 добавляет на страницы всех 18 доков справочные списки отдельно стоящих хранилищ до 100 м и дальше 100 до 200 м включительно, с координатами, припасами и ссылками на прежние группы. Найдено 28 соседств у 8 доков: 14 в ближней полосе и 14 в дальней. По явному выбору пользователя категории НЕ изменены, никакие припасы повторно не прибавлены; итог 231200 и три unknown прежние. Расстояния здесь трёхмерные X/Y/Z до корней хранилищ, не прежняя X/Z-группировка. 100 м соответствует m_fStorageRange прочитанного ConflictSourceBase.et, но параметры экземпляров, проверки ResourceGrid и фактическое пополнение не измерены; обе полосы — только справочная близость. Supplies/HarborNeighbors.json сохраняет измерения и исходные назначения. Основная схема 3, соседства 1, normalizerVersion supply-priority-architecture-0.20; 66 канонических файлов. Прежние ревизии, captures, граф групп и исходные запасы сохранены.
+
+
+Write-SupplyHierarchy.ps1 вызывается основным генератором автоматически; вместе с PhysicalSupplyDetails.ps1 и HarborNeighbors.ps1 все четыре файла должны находиться в tools.
+
+## Предел сбора доков 100 м — r0039
+
+r0039 ограничивает сбор отдельно стоящих хранилищ рядом с доками дистанцией 100 м включительно по X/Y/Z до корня хранилища. Все 14 записей из прежней полосы 100–200 м исключены из HarborNeighbors.json и страниц доков; осталось 14 соседств у 5 доков. Категории и общий запас 231200 не изменены согласно прежнему выбору пользователя, три unknown сохранены. Все 49 подтверждённых физических контейнеров доков также находятся не далее 100 м. Радиус складов CampaignRemnantsSupplyDepot остаётся 200 м, привязка к локациям — 350 м. Близость не подтверждает фактическое игровое пополнение. Обновлены пояснения в сводке доков и генератор. normalizerVersion supply-priority-architecture-0.21; 66 канонических файлов, архивные ревизии и captures сохранены.

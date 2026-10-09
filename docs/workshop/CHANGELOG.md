@@ -109,3 +109,5 @@ Unreleased / r0036: category folders, summaries and linked per-group detail page
 Unreleased / r0037: physical container locations on every detail page. Координаты физических контейнеров на каждой подробной странице.
 
 Unreleased / r0038: harbor neighbor distance bands without reclassification. Списки соседних хранилищ доков по расстоянию без смены категорий.
+
+Unreleased / r0039: limit harbor neighbors to 100 m without reclassification. Ограничение соседей доков 100 метрами без смены категорий.

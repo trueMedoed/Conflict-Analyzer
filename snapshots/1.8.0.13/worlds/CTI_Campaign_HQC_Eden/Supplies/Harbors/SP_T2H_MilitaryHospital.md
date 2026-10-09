@@ -22,7 +22,7 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 3745.137 1.312 8542.817 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 3743.102 1.312 8547.027 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
 ## Хранилища рядом с доком
 
@@ -36,14 +36,6 @@
 | --- | ---: | --- | ---: | --- |
 | SupplyCache_S_FIA_03 | 3000 / 3000 | 3722.218 1.281 8513.858 | 22.069 | [military site - 3901.866 15.249 8450.660](../Other/military-site-1603197e.md) |
 
-### Дальше 100 м, до 200 м включительно
+[Расстояния и исходные назначения](../../revisions/r0039/Supplies/HarborNeighbors.json).
 
-Расположены рядом с доком, но дальше 100 м. Пополнение от этого дока не подтверждено.
-
-| Хранилище | Вместимость / Изначально | Координаты X Y Z, м | Расстояние, м | Где уже учтено |
-| --- | ---: | --- | ---: | --- |
-| SupplyCache_S_FIA_06 | 1000 / 1000 | 3892.086 15.243 8417.533 | 191.637 | [military site - 3901.866 15.249 8450.660](../Other/military-site-1603197e.md) |
-
-[Расстояния и исходные назначения](../../revisions/r0038/Supplies/HarborNeighbors.json).
-
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).

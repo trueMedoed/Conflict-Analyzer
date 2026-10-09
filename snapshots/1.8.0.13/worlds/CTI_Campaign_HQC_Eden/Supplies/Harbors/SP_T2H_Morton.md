@@ -28,7 +28,7 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 4979.007 2.188 3845.783 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 4981.169 2.188 3844.337 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
 ## Хранилища рядом с доком
 
@@ -40,14 +40,6 @@
 
 Отдельно стоящих хранилищ в этом диапазоне не найдено.
 
-### Дальше 100 м, до 200 м включительно
+[Расстояния и исходные назначения](../../revisions/r0039/Supplies/HarborNeighbors.json).
 
-Расположены рядом с доком, но дальше 100 м. Пополнение от этого дока не подтверждено.
-
-| Хранилище | Вместимость / Изначально | Координаты X Y Z, м | Расстояние, м | Где уже учтено |
-| --- | ---: | --- | ---: | --- |
-| SupplyCache_S_FIA_05 | 2000 / 2000 | 5022.725 15.375 3946.365 | 107.589 | [Morton](../Settlements/Morton.md) |
-
-[Расстояния и исходные назначения](../../revisions/r0038/Supplies/HarborNeighbors.json).
-
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).

@@ -22,7 +22,7 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 3386.552 1.093 7218.711 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 3389.517 1.093 7222.590 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0038/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
 
 ## Хранилища рядом с доком
 
@@ -34,10 +34,6 @@
 
 Отдельно стоящих хранилищ в этом диапазоне не найдено.
 
-### Дальше 100 м, до 200 м включительно
+[Расстояния и исходные назначения](../../revisions/r0039/Supplies/HarborNeighbors.json).
 
-Отдельно стоящих хранилищ в этом диапазоне не найдено.
-
-[Расстояния и исходные назначения](../../revisions/r0038/Supplies/HarborNeighbors.json).
-
-[Состав расчёта](../../revisions/r0038/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0038/Locations.json).
+[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).
