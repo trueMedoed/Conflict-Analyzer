@@ -81,8 +81,8 @@
 | Название | Припасов изначально |
 | --- | ---: |
 | [Airport](Other/Airport.md) | 7000 |
-| [Lamentin](Other/Lamentin.md) | 4000 |
-| [StPhillipe](Other/StPhillipe.md) | 10000 |
+| [Lamentin](Harbors/Lamentin.md) | 4000 |
+| [StPhillipe](Harbors/StPhillipe.md) | 10000 |
 | [military site - 7447.122 7.894 6704.909](Other/military-site-382919a3.md) | 2000 |
 | [military site - 3901.866 15.249 8450.660](Other/military-site-1603197e.md) | 7500 |
 | [military site - 4936.765 28.261 11921.946](Other/military-site-dc7d1177.md) | 7000 |

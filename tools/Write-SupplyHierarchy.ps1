@@ -51,7 +51,7 @@ function WriteSupplyHierarchy($entries,$totals){
             $hash=[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($page.id))).Substring(0,8).ToLowerInvariant()
             $slug+='-'+$hash;$page.label+=" - $(Position $page.position $page.positionStatus)"
         }
-        $page.file="$($folders[$page.category])/$slug.md"
+        $pageFolder=if($page.harborLocationBinding){'Harbors'}else{$folders[$page.category]};$page.file="$pageFolder/$slug.md"
         Assert ($paths.Add($page.file)) 'Hierarchy: filename collision.'
         $items=@($entries | Where-Object {$_.id -in $page.entryIds})
         $page.entryIds=@($items | ForEach-Object {$_.id})
@@ -108,10 +108,10 @@ function WriteSupplyHierarchy($entries,$totals){
         }
         $cat.Add('| Название | Припасов изначально |');$cat.Add('| --- | ---: |')
         foreach($page in $categoryPages){
-            $filename=Split-Path $page.file -Leaf
+            $filename=if($page.harborLocationBinding){"../$($page.file)"}else{Split-Path $page.file -Leaf}
             $main.Add("| [$(Text $page.label)]($($page.file)) | $($page.amount) |")
             $cat.Add("| [$(Text $page.label)]($filename) | $($page.amount) |")
-            $detail=[Collections.Generic.List[string]]::new();$detail.Add("# $(Text $page.label)");$detail.Add('');$detail.Add("[$name — сводка](Summary.md) · [Все категории](../Summary.md)");$detail.Add('')
+            $detail=[Collections.Generic.List[string]]::new();$detail.Add("# $(Text $page.label)");$detail.Add('');$detail.Add("[$name — сводка](../$folder/Summary.md) · [Все категории](../Summary.md)");$detail.Add('')
             $detail.Add("Координаты X Y Z: **$(Position $page.position $page.positionStatus)**.");$detail.Add('')
             $detail.Add("Припасов изначально по конфигам: **$($page.amount)**.");$detail.Add('')
             if($page.unrecognized){$detail.Add('Объект пока не отнесён к распознанной группе.');$detail.Add('');ParentTable $detail $page.group.members $false}
@@ -139,6 +139,14 @@ function WriteSupplyHierarchy($entries,$totals){
             SaveHierarchyPage $page.file $detail
         }
         $main.Add('');$cat.Add('');$cat.Add('[Состав расчёта и неизвестные значения](../Summary.json).')
+        if($category -ceq 'harbors'){
+            $cat.Add('## Хранилища локаций доков');$cat.Add('')
+            foreach($location in @($pages | Where-Object {$_.harborLocationBinding})){
+                $leaf=Split-Path $location.file -Leaf
+                $cat.Add("- [$(Text $location.label)]($leaf)")
+            }
+            $cat.Add('');$cat.Add('Это географические группы, включая хранилища вне радиуса пополнения. Их суммы пока учитываются в категории «Другое».');$cat.Add('')
+        }
         SaveHierarchyPage "$folder/Summary.md" $cat
     }
     $text=$previous.Substring(0,$start)+($main -join "`n")+"`n"+$previous.Substring($end)
