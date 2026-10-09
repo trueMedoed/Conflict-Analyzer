@@ -25,28 +25,30 @@
 
 ## Начальные припасы по докам
 
+Пополнение указано по конфигам: количество — m_iRegularSuppliesIncomeBase, интервал — m_iSuppliesArrivalInterval / 60 (секунды переведены в минуты). Источник: [Harbors.json](../../revisions/r0044/Supplies/Harbors.json). Это настройки, а не измеренный объём фактического пополнения.
+
 В скобках: **состав дока + потенциальное расширение**, припасы изначально по конфигам. Состав определяется измеренными условиями подключения; фактический цикл пополнения не подтверждён.
 
-| Название | Припасов изначально |
-| --- | ---: |
-| [EveronAirport](EveronAirport.md) | 11000 (6500 + 4500) |
-| [StPhillipe](StPhillipe.md) | 13500 (3500 + 10000) |
-| [StPierre](StPierre.md) | 9500 (8500 + 1000) |
-| [FishermansBay](FishermansBay.md) | 7000 (5000 + 2000) |
-| [Lamentin](Lamentin.md) | 9500 (5500 + 4000) |
-| [Meaux](Meaux.md) | 7500 (7500 + 0) |
-| [MilitaryHospital](MilitaryHospital.md) | 10500 (6000 + 4500) |
-| [Morton](Morton.md) | 5500 (3500 + 2000) |
-| [GoatBay](GoatBay.md) | 2500 (2500 + 0) |
-| [Gravette](Gravette.md) | 1500 (1500 + 0) |
-| [HalcyonStrait](HalcyonStrait.md) | 1500 (1500 + 0) |
-| [Kermovan](Kermovan.md) | 2500 (2500 + 0) |
-| [Lancre](Lancre.md) | 1000 (1000 + 0) |
-| [Laruns](Laruns.md) | 1500 (1500 + 0) |
-| [LeBosc](LeBosc.md) | 3000 (3000 + 0) |
-| [Perelle](Perelle.md) | 3500 (3500 + 0) |
-| [SpaniardsBay](SpaniardsBay.md) | 3000 (3000 + 0) |
-| [Thollevast](Thollevast.md) | 1500 (1500 + 0) |
+| Название | Припасов изначально | Пополнение за цикл, припасы | Пополнение, мин. |
+| --- | ---: | ---: | ---: |
+| [EveronAirport](EveronAirport.md) | 11000 (6500 + 4500) | 2000 | 10 |
+| [StPhillipe](StPhillipe.md) | 13500 (3500 + 10000) | 3000 | 15 |
+| [StPierre](StPierre.md) | 9500 (8500 + 1000) | 3000 | 15 |
+| [FishermansBay](FishermansBay.md) | 7000 (5000 + 2000) | 2000 | 15 |
+| [Lamentin](Lamentin.md) | 9500 (5500 + 4000) | 2000 | 15 |
+| [Meaux](Meaux.md) | 7500 (7500 + 0) | 2000 | 15 |
+| [MilitaryHospital](MilitaryHospital.md) | 10500 (6000 + 4500) | 2000 | 15 |
+| [Morton](Morton.md) | 5500 (3500 + 2000) | 2000 | 15 |
+| [GoatBay](GoatBay.md) | 2500 (2500 + 0) | 1000 | 10 |
+| [Gravette](Gravette.md) | 1500 (1500 + 0) | 1000 | 10 |
+| [HalcyonStrait](HalcyonStrait.md) | 1500 (1500 + 0) | 1000 | 10 |
+| [Kermovan](Kermovan.md) | 2500 (2500 + 0) | 1000 | 10 |
+| [Lancre](Lancre.md) | 1000 (1000 + 0) | 1000 | 10 |
+| [Laruns](Laruns.md) | 1500 (1500 + 0) | 1000 | 10 |
+| [LeBosc](LeBosc.md) | 3000 (3000 + 0) | 1000 | 10 |
+| [Perelle](Perelle.md) | 3500 (3500 + 0) | 1000 | 10 |
+| [SpaniardsBay](SpaniardsBay.md) | 3000 (3000 + 0) | 1000 | 10 |
+| [Thollevast](Thollevast.md) | 1500 (1500 + 0) | 1000 | 10 |
 
 [Состав расчёта и источники](../../revisions/r0044/Supplies/Summary.json).
 

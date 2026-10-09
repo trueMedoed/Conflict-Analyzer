@@ -431,20 +431,29 @@ function WriteEligibleHarborGroups($pages,$entries){
         [IO.File]::WriteAllText($path,($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
         $reports.Add([ordered]@{groupId=$page.id;name=$page.group.name;path=$page.file;eligibleInitialSupplies=$activeSum;potentialExpansionInitialSupplies=$restSum;totalInitialSupplies=$sum;physicalSlots=@($parts | ForEach-Object {[ordered]@{id=$_.slot.id;group=$_.group;configuredInitialSupplies=$_.slot.configuredInitialSupplies;eligibilityEvidenceIds=$_.evidenceIds}})})
     }
-    WriteHarborSummaryBreakdown (Join-Path $output 'Supplies/Harbors/Summary.md') @($reports)
+    WriteHarborSummaryBreakdown (Join-Path $output 'Supplies/Harbors/Summary.md') @($reports) ((Get-Content -LiteralPath (Join-Path $output 'Supplies/Harbors.json') -Raw | ConvertFrom-Json).records)
     $index.sections.supplies.harborStorageGroups='Supplies/HarborStorageGroups.json'
     WriteJson 'Supplies/HarborStorageGroups.json' ([ordered]@{schemaVersion=1;snapshotId=$snapshotId;method='measured_eligible_physical_or_source_ancestor_virtual';runtimeRefillConfirmed=$false;evidence='HarborNeighbors.json';records=@($reports)})
 }
 
-function WriteHarborSummaryBreakdown($summaryPath,$records){
+function WriteHarborSummaryBreakdown($summaryPath,$records,$harborRecords){
     $text=[IO.File]::ReadAllText($summaryPath)
     foreach($record in $records){
         $leaf=Split-Path $record.path -Leaf
-        $pattern='(?m)^(\| \[[^\r\n]+\]\('+[regex]::Escape($leaf)+'\) \| )[^|]+( \|)\r?$'
+        $pattern='(?m)^(\| \[[^\r\n]+\]\('+[regex]::Escape($leaf)+'\) \| )[^|]+( \|)(?:[^\r\n]*)\r?$'
         Assert ([regex]::Matches($text,$pattern).Count -eq 1) 'Missing or repeated harbor summary row.'
         $value="$(Number $record.totalInitialSupplies) ($(Number $record.eligibleInitialSupplies) + $(Number $record.potentialExpansionInitialSupplies))"
-        $text=[regex]::Replace($text,$pattern,[Text.RegularExpressions.MatchEvaluator]{param($m) $m.Groups[1].Value+$value+$m.Groups[2].Value})
+        $source=@($harborRecords | Where-Object name -ceq $record.name)
+        Assert ($source.Count -eq 1) 'Missing or repeated harbor refill source.'
+        $source=$source[0]
+        $income=if($source.valueStatus.supplyIncomePerCycle -ceq 'resolved'){Number $source.supplyIncomePerCycle}else{'неизвестно'}
+        $minutes=if($source.valueStatus.arrivalInterval -ceq 'resolved'){Number ($source.arrivalIntervalSeconds / 60.0)}else{'неизвестно'}
+        $text=[regex]::Replace($text,$pattern,[Text.RegularExpressions.MatchEvaluator]{param($m) $m.Groups[1].Value+$value+" | $income | $minutes |"})
     }
+    $text=[regex]::Replace($text,'(?m)^\| Название \| Припасов изначально \|\r?$','| Название | Припасов изначально | Пополнение за цикл, припасы | Пополнение, мин. |')
+    $text=[regex]::Replace($text,'(?m)^\| --- \| ---: \|\r?$','| --- | ---: | ---: | ---: |')
+    $refillNote='Пополнение указано по конфигам: количество — m_iRegularSuppliesIncomeBase, интервал — m_iSuppliesArrivalInterval / 60 (секунды переведены в минуты). Источник: [Harbors.json](../Harbors.json). Это настройки, а не измеренный объём фактического пополнения.'
+    if(!$text.Contains($refillNote)){$text=$text.Replace('## Начальные припасы по докам',"## Начальные припасы по докам`n`n$refillNote")}
     $legend='В скобках: **состав дока + потенциальное расширение**, припасы изначально по конфигам. Состав определяется измеренными условиями подключения; фактический цикл пополнения не подтверждён.'
     if(!$text.Contains($legend)){$text=$text.Replace('## Начальные припасы по докам',"## Начальные припасы по докам`n`n$legend")}
     $text=[regex]::Replace($text,'(?m)^У StPierre, Lamentin и Meaux «неизвестно»[^\r\n]*\r?\n','')
