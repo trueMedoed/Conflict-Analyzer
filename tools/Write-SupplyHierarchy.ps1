@@ -431,6 +431,22 @@ function WriteEligibleHarborGroups($pages,$entries){
         [IO.File]::WriteAllText($path,($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
         $reports.Add([ordered]@{groupId=$page.id;name=$page.group.name;path=$page.file;eligibleInitialSupplies=$activeSum;potentialExpansionInitialSupplies=$restSum;totalInitialSupplies=$sum;physicalSlots=@($parts | ForEach-Object {[ordered]@{id=$_.slot.id;group=$_.group;configuredInitialSupplies=$_.slot.configuredInitialSupplies;eligibilityEvidenceIds=$_.evidenceIds}})})
     }
+    WriteHarborSummaryBreakdown (Join-Path $output 'Supplies/Harbors/Summary.md') @($reports)
     $index.sections.supplies.harborStorageGroups='Supplies/HarborStorageGroups.json'
     WriteJson 'Supplies/HarborStorageGroups.json' ([ordered]@{schemaVersion=1;snapshotId=$snapshotId;method='measured_eligible_physical_or_source_ancestor_virtual';runtimeRefillConfirmed=$false;evidence='HarborNeighbors.json';records=@($reports)})
+}
+
+function WriteHarborSummaryBreakdown($summaryPath,$records){
+    $text=[IO.File]::ReadAllText($summaryPath)
+    foreach($record in $records){
+        $leaf=Split-Path $record.path -Leaf
+        $pattern='(?m)^(\| \[[^\r\n]+\]\('+[regex]::Escape($leaf)+'\) \| )[^|]+( \|)\r?$'
+        Assert ([regex]::Matches($text,$pattern).Count -eq 1) 'Missing or repeated harbor summary row.'
+        $value="$(Number $record.totalInitialSupplies) ($(Number $record.eligibleInitialSupplies) + $(Number $record.potentialExpansionInitialSupplies))"
+        $text=[regex]::Replace($text,$pattern,[Text.RegularExpressions.MatchEvaluator]{param($m) $m.Groups[1].Value+$value+$m.Groups[2].Value})
+    }
+    $legend='В скобках: **состав дока + потенциальное расширение**, припасы изначально по конфигам. Состав определяется измеренными условиями подключения; фактический цикл пополнения не подтверждён.'
+    if(!$text.Contains($legend)){$text=$text.Replace('## Начальные припасы по докам',"## Начальные припасы по докам`n`n$legend")}
+    $text=[regex]::Replace($text,'(?m)^У StPierre, Lamentin и Meaux «неизвестно»[^\r\n]*\r?\n','')
+    [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
 }

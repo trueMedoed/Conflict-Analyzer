@@ -22,30 +22,31 @@
 - Виртуальные представления хранилищ показаны отдельно от физических ящиков и не добавляются к суммам. Исходные запасы и принадлежность по source-иерархии сохраняются. Связанные группы потенциального расширения включены в категорию сводки «Доки». Динамически созданные объекты, отсутствующие в editor source, остаются в runtime-отчёте без придуманной привязки.
 
 
-У StPierre, Lamentin и Meaux «неизвестно» означает отсутствие подтверждённых вложенных хранилищ в используемом отчёте, а не нулевой запас и не доказанную остановку пополнения. Припасы отдельно стоящих соседей уже учтены в других категориях.
 
 ## Начальные припасы по докам
 
+В скобках: **состав дока + потенциальное расширение**, припасы изначально по конфигам. Состав определяется измеренными условиями подключения; фактический цикл пополнения не подтверждён.
+
 | Название | Припасов изначально |
 | --- | ---: |
-| [EveronAirport](EveronAirport.md) | 11000 |
-| [StPhillipe](StPhillipe.md) | 13500 |
-| [StPierre](StPierre.md) | 9500 |
-| [FishermansBay](FishermansBay.md) | 7000 |
-| [Lamentin](Lamentin.md) | 9500 |
-| [Meaux](Meaux.md) | 7500 |
-| [MilitaryHospital](MilitaryHospital.md) | 10500 |
-| [Morton](Morton.md) | 5500 |
-| [GoatBay](GoatBay.md) | 2500 |
-| [Gravette](Gravette.md) | 1500 |
-| [HalcyonStrait](HalcyonStrait.md) | 1500 |
-| [Kermovan](Kermovan.md) | 2500 |
-| [Lancre](Lancre.md) | 1000 |
-| [Laruns](Laruns.md) | 1500 |
-| [LeBosc](LeBosc.md) | 3000 |
-| [Perelle](Perelle.md) | 3500 |
-| [SpaniardsBay](SpaniardsBay.md) | 3000 |
-| [Thollevast](Thollevast.md) | 1500 |
+| [EveronAirport](EveronAirport.md) | 11000 (6500 + 4500) |
+| [StPhillipe](StPhillipe.md) | 13500 (3500 + 10000) |
+| [StPierre](StPierre.md) | 9500 (8500 + 1000) |
+| [FishermansBay](FishermansBay.md) | 7000 (5000 + 2000) |
+| [Lamentin](Lamentin.md) | 9500 (5500 + 4000) |
+| [Meaux](Meaux.md) | 7500 (7500 + 0) |
+| [MilitaryHospital](MilitaryHospital.md) | 10500 (6000 + 4500) |
+| [Morton](Morton.md) | 5500 (3500 + 2000) |
+| [GoatBay](GoatBay.md) | 2500 (2500 + 0) |
+| [Gravette](Gravette.md) | 1500 (1500 + 0) |
+| [HalcyonStrait](HalcyonStrait.md) | 1500 (1500 + 0) |
+| [Kermovan](Kermovan.md) | 2500 (2500 + 0) |
+| [Lancre](Lancre.md) | 1000 (1000 + 0) |
+| [Laruns](Laruns.md) | 1500 (1500 + 0) |
+| [LeBosc](LeBosc.md) | 3000 (3000 + 0) |
+| [Perelle](Perelle.md) | 3500 (3500 + 0) |
+| [SpaniardsBay](SpaniardsBay.md) | 3000 (3000 + 0) |
+| [Thollevast](Thollevast.md) | 1500 (1500 + 0) |
 
 [Состав расчёта и источники](../../revisions/r0044/Supplies/Summary.json).
 
