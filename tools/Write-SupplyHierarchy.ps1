@@ -240,6 +240,10 @@ $expansionBody
             if($file.FullName -ceq $oldPath){continue}
             $body=[IO.File]::ReadAllText($file.FullName)
             $updated=$body.Replace($oldLeaf+')',$newLeaf+'#dock-storage)')
+            if($file.FullName -ceq (Join-Path $supplies 'Harbors/Summary.md')){
+                $displayName=[IO.Path]::GetFileNameWithoutExtension($newLeaf)
+                $updated=$updated.Replace("[$(Text $dock.label)]($newLeaf#dock-storage)","[$(Text $displayName)]($newLeaf#dock-storage)")
+            }
             if($updated -cne $body){[IO.File]::WriteAllText($file.FullName,$updated,[Text.UTF8Encoding]::new($false))}
         }
         [IO.File]::Delete($oldPath)

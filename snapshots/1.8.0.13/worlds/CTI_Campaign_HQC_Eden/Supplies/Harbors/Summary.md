@@ -28,24 +28,24 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [SP_A_EveronAirport](EveronAirport.md#dock-storage) | 4000 |
-| [SP_T1H_StPhillipe](StPhillipe.md#dock-storage) | 3500 |
-| [SP_T1H_StPierre](StPierre.md#dock-storage) | неизвестно |
-| [SP_T2H_FishermansBay](FishermansBay.md#dock-storage) | 5000 |
-| [SP_T2H_Lamentin](Lamentin.md#dock-storage) | неизвестно |
-| [SP_T2H_Meaux](Meaux.md#dock-storage) | неизвестно |
-| [SP_T2H_MilitaryHospital](MilitaryHospital.md#dock-storage) | 3000 |
-| [SP_T2H_Morton](Morton.md#dock-storage) | 3500 |
-| [SP_T3H_GoatBay](GoatBay.md#dock-storage) | 2500 |
-| [SP_T3H_Gravette](Gravette.md#dock-storage) | 1500 |
-| [SP_T3H_HalcyonStrait](HalcyonStrait.md#dock-storage) | 1500 |
-| [SP_T3H_Kermovan](Kermovan.md#dock-storage) | 2500 |
-| [SP_T3H_Lancre](Lancre.md#dock-storage) | 1000 |
-| [SP_T3H_Laruns](Laruns.md#dock-storage) | 1500 |
-| [SP_T3H_LeBosc](LeBosc.md#dock-storage) | 3000 |
-| [SP_T3H_Perelle](Perelle.md#dock-storage) | 3500 |
-| [SP_T3H_SpaniardsBay](SpaniardsBay.md#dock-storage) | 3000 |
-| [SP_T3H_Thollevast](Thollevast.md#dock-storage) | 1500 |
+| [EveronAirport](EveronAirport.md#dock-storage) | 4000 |
+| [StPhillipe](StPhillipe.md#dock-storage) | 3500 |
+| [StPierre](StPierre.md#dock-storage) | неизвестно |
+| [FishermansBay](FishermansBay.md#dock-storage) | 5000 |
+| [Lamentin](Lamentin.md#dock-storage) | неизвестно |
+| [Meaux](Meaux.md#dock-storage) | неизвестно |
+| [MilitaryHospital](MilitaryHospital.md#dock-storage) | 3000 |
+| [Morton](Morton.md#dock-storage) | 3500 |
+| [GoatBay](GoatBay.md#dock-storage) | 2500 |
+| [Gravette](Gravette.md#dock-storage) | 1500 |
+| [HalcyonStrait](HalcyonStrait.md#dock-storage) | 1500 |
+| [Kermovan](Kermovan.md#dock-storage) | 2500 |
+| [Lancre](Lancre.md#dock-storage) | 1000 |
+| [Laruns](Laruns.md#dock-storage) | 1500 |
+| [LeBosc](LeBosc.md#dock-storage) | 3000 |
+| [Perelle](Perelle.md#dock-storage) | 3500 |
+| [SpaniardsBay](SpaniardsBay.md#dock-storage) | 3000 |
+| [Thollevast](Thollevast.md#dock-storage) | 1500 |
 
 [Состав расчёта и неизвестные значения](../../revisions/r0041/Supplies/Summary.json).
 ## Хранилища локаций доков
