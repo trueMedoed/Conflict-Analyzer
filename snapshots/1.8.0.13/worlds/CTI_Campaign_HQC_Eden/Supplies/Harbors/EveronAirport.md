@@ -42,7 +42,7 @@
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4939.816 28.775 11764.057 |
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4939.851 28.775 11761.431 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0042/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).
 
 ### Проверка контейнеров в радиусе дока
 
@@ -103,9 +103,9 @@
 
 Учтено в справочнике: [EveronAirport - 4900.952 28.595 11787.412](EveronAirport.md#potential-expansion), [EveronAirport - 4936.765 28.261 11921.946](EveronAirport.md#potential-expansion).
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0042/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0043/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0042/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0042/Locations.json).
+[Состав расчёта](../../revisions/r0043/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0043/Locations.json).
 
 <a id="potential-expansion"></a>
 ## 2. Потенциальное расширение состава дока
@@ -158,7 +158,7 @@
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4939.009 28.416 11861.886 |
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4938.860 28.416 11864.508 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0042/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).
 
 
 ### Подпись карты: military site — 4936.765 28.261 11921.946

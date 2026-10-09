@@ -91,3 +91,5 @@ Unreleased: unified named pages for all 18 harbors, initial-supply summaries and
 Unreleased: include matching settlement and user-confirmed military-site groups on harbor pages; deduplicate shared storage roots and totals across location labels.
 
 Unreleased / r0042: harbor summaries include associated expansion storage in the Harbors accounting category; original category provenance is retained and the world total is unchanged.
+
+Unreleased / r0043: remove synthetic unknown stock for harbors without descendant storage; catalogued configured initial supplies remain 231200.

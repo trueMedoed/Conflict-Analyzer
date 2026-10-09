@@ -42,7 +42,7 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 7550.510 2.348 6698.506 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 7548.497 2.348 6700.154 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0042/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).
 
 ### Проверка контейнеров в радиусе дока
 
@@ -71,9 +71,9 @@
 | SupplyShippingContainers_01_20ft | физический | 7548.497 2.348 6700.154 | 20.46 | да | нет | да | да | да | нет |
 | Storage_Supplies_Containers_FIA_02 | виртуальный | 7549.566 2.349 6699.607 | 21.114 | да | нет | да | нет | да | нет |
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0042/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0043/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0042/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0042/Locations.json).
+[Состав расчёта](../../revisions/r0043/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0043/Locations.json).
 
 <a id="potential-expansion"></a>
 ## 2. Потенциальное расширение состава дока
@@ -101,4 +101,4 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 7431.513 9.688 6797.613 |
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 7429.938 9.688 6795.542 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0042/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).

@@ -2,7 +2,7 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0042`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0043`.
 
 Начальных припасов по конфигам: **12500**. Итог учитывает каждый объект один раз.
 
@@ -13,4 +13,4 @@
 | [Saint-Pierre's Pass](Saint-Pierre-s-Pass.md) | 11500 |
 | [StartingPos21](StartingPos21.md) | 1000 |
 
-[Состав расчёта и источники](../../revisions/r0042/Supplies/Summary.json).
+[Состав расчёта и источники](../../revisions/r0043/Supplies/Summary.json).

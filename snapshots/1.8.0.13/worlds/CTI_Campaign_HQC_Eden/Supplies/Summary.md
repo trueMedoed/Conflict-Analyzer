@@ -1,17 +1,15 @@
 # Начальные припасы
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0042`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0043`.
 
 ## Всего припасов изначально
 
 **231200** — известная сумма по конфигам хранилищ.
 
-Полный итог пока неизвестен: записей с неопределённым начальным запасом — **3**. Они не приравниваются к нулю; сумма выше включает только известные значения.
-
 | Категория | Припасов изначально |
 | --- | ---: |
 | [Контрольные точки](ControlPoints/Summary.md) | 48100 |
-| [Доки](Harbors/Summary.md) | 95500 + неизвестно |
+| [Доки](Harbors/Summary.md) | 95500 |
 | [Склады](SupplyDepots/Summary.md) | 75100 |
 | [Города](Settlements/Summary.md) | 0 |
 | [Другое](Other/Summary.md) | 12500 |
@@ -36,10 +34,10 @@
 | --- | ---: |
 | [EveronAirport](Harbors/EveronAirport.md) | 11000 |
 | [StPhillipe](Harbors/StPhillipe.md) | 13500 |
-| [StPierre](Harbors/StPierre.md) | 9500 + неизвестно |
+| [StPierre](Harbors/StPierre.md) | 9500 |
 | [FishermansBay](Harbors/FishermansBay.md) | 7000 |
-| [Lamentin](Harbors/Lamentin.md) | 9500 + неизвестно |
-| [Meaux](Harbors/Meaux.md) | 7500 + неизвестно |
+| [Lamentin](Harbors/Lamentin.md) | 9500 |
+| [Meaux](Harbors/Meaux.md) | 7500 |
 | [MilitaryHospital](Harbors/MilitaryHospital.md) | 10500 |
 | [Morton](Harbors/Morton.md) | 5500 |
 | [GoatBay](Harbors/GoatBay.md) | 2500 |
@@ -85,4 +83,4 @@
 
 Использованы configuredInitialSupplies у родительских хранилищ, m_fResourceValueCurrent физических контейнеров доков и начальное значение после действия префаба командного пункта. Вместимость, доход за цикл, виртуальные контейнеры и агрегаты общей сети базы в сумму не прибавляются. Это сводка настроенных запасов, а не измерение всего мира после запуска миссии.
 
-[Состав расчёта и источники](../revisions/r0042/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).
+[Состав расчёта и источники](../revisions/r0043/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).

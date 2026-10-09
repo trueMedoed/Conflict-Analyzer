@@ -38,7 +38,7 @@ function WriteSupplyHierarchy($entries,$totals){
             }
             $ids=@($group.members | ForEach-Object {$_.objectId} | Sort-Object -Unique)
             if($category -ceq 'control_points'){$ids+=($group.anchorObjectId+'/command-post')}
-            if($category -ceq 'harbors'){$ids+=@($group.physicalDescendantContainers | ForEach-Object {$_.id});$ids+=($group.anchorObjectId+'/unresolved-storage')}
+            if($category -ceq 'harbors'){$ids+=@($group.physicalDescendantContainers | ForEach-Object {$_.id})}
             $pages.Add([pscustomobject]@{id=$group.id;category=$category;label=$label;position=$position;positionStatus=$positionStatus;group=$group;harborLocationBinding=$harborLocationBinding;entryIds=$ids;unrecognized=$false;file='';amount='';known=0.0;unknown=0})
         }
     }

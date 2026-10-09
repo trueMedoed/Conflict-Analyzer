@@ -33,7 +33,7 @@
 | SupplyShippingContainers_01_20ft | 1000 / 1000 | 3252.692 1.626 3529.832 |
 | SupplyShippingContainers_01_10ft | 500 / 500 | 3256.669 1.615 3531.854 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0042/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).
 
 ### Проверка контейнеров в радиусе дока
 
@@ -51,6 +51,6 @@
 | SupplyShippingContainers_01_10ft | физический | 3256.669 1.615 3531.854 | 21.454 | да | нет | да | да | да | нет |
 | Storage_Supplies_Containers_FIA_03 | виртуальный | 3253.220 1.660 3530.436 | 24.934 | да | нет | да | нет | да | нет |
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0042/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0043/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0042/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0042/Locations.json).
+[Состав расчёта](../../revisions/r0043/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0043/Locations.json).

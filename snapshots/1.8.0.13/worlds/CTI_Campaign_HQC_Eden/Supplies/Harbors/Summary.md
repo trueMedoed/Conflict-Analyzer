@@ -2,9 +2,9 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0042`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0043`.
 
-Начальных припасов по конфигам: **95500 + неизвестно**. Итог учитывает каждый объект один раз.
+Начальных припасов по конфигам: **95500**. Итог учитывает каждый объект один раз.
 
 ## Радиус поиска хранилищ и пополнение
 
@@ -30,10 +30,10 @@
 | --- | ---: |
 | [EveronAirport](EveronAirport.md) | 11000 |
 | [StPhillipe](StPhillipe.md) | 13500 |
-| [StPierre](StPierre.md) | 9500 + неизвестно |
+| [StPierre](StPierre.md) | 9500 |
 | [FishermansBay](FishermansBay.md) | 7000 |
-| [Lamentin](Lamentin.md) | 9500 + неизвестно |
-| [Meaux](Meaux.md) | 7500 + неизвестно |
+| [Lamentin](Lamentin.md) | 9500 |
+| [Meaux](Meaux.md) | 7500 |
 | [MilitaryHospital](MilitaryHospital.md) | 10500 |
 | [Morton](Morton.md) | 5500 |
 | [GoatBay](GoatBay.md) | 2500 |
@@ -47,6 +47,6 @@
 | [SpaniardsBay](SpaniardsBay.md) | 3000 |
 | [Thollevast](Thollevast.md) | 1500 |
 
-[Состав расчёта и источники](../../revisions/r0042/Supplies/Summary.json).
+[Состав расчёта и источники](../../revisions/r0043/Supplies/Summary.json).
 
 Итог каждого дока включает собственное хранилище и потенциальное расширение. Это категория справочника, а не подтверждение пополнения всех контейнеров.
