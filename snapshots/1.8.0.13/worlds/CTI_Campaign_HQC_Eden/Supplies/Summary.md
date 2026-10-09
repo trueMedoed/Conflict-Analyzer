@@ -34,24 +34,24 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [SP_A_EveronAirport](Harbors/EveronAirport.md#dock-storage) | 4000 |
-| [SP_T1H_StPhillipe](Harbors/StPhillipe.md#dock-storage) | 3500 |
-| [SP_T1H_StPierre](Harbors/StPierre.md#dock-storage) | неизвестно |
-| [SP_T2H_FishermansBay](Harbors/FishermansBay.md#dock-storage) | 5000 |
-| [SP_T2H_Lamentin](Harbors/Lamentin.md#dock-storage) | неизвестно |
-| [SP_T2H_Meaux](Harbors/Meaux.md#dock-storage) | неизвестно |
-| [SP_T2H_MilitaryHospital](Harbors/MilitaryHospital.md#dock-storage) | 3000 |
-| [SP_T2H_Morton](Harbors/Morton.md#dock-storage) | 3500 |
-| [SP_T3H_GoatBay](Harbors/GoatBay.md#dock-storage) | 2500 |
-| [SP_T3H_Gravette](Harbors/Gravette.md#dock-storage) | 1500 |
-| [SP_T3H_HalcyonStrait](Harbors/HalcyonStrait.md#dock-storage) | 1500 |
-| [SP_T3H_Kermovan](Harbors/Kermovan.md#dock-storage) | 2500 |
-| [SP_T3H_Lancre](Harbors/Lancre.md#dock-storage) | 1000 |
-| [SP_T3H_Laruns](Harbors/Laruns.md#dock-storage) | 1500 |
-| [SP_T3H_LeBosc](Harbors/LeBosc.md#dock-storage) | 3000 |
-| [SP_T3H_Perelle](Harbors/Perelle.md#dock-storage) | 3500 |
-| [SP_T3H_SpaniardsBay](Harbors/SpaniardsBay.md#dock-storage) | 3000 |
-| [SP_T3H_Thollevast](Harbors/Thollevast.md#dock-storage) | 1500 |
+| [EveronAirport](Harbors/EveronAirport.md#dock-storage) | 4000 |
+| [StPhillipe](Harbors/StPhillipe.md#dock-storage) | 3500 |
+| [StPierre](Harbors/StPierre.md#dock-storage) | неизвестно |
+| [FishermansBay](Harbors/FishermansBay.md#dock-storage) | 5000 |
+| [Lamentin](Harbors/Lamentin.md#dock-storage) | неизвестно |
+| [Meaux](Harbors/Meaux.md#dock-storage) | неизвестно |
+| [MilitaryHospital](Harbors/MilitaryHospital.md#dock-storage) | 3000 |
+| [Morton](Harbors/Morton.md#dock-storage) | 3500 |
+| [GoatBay](Harbors/GoatBay.md#dock-storage) | 2500 |
+| [Gravette](Harbors/Gravette.md#dock-storage) | 1500 |
+| [HalcyonStrait](Harbors/HalcyonStrait.md#dock-storage) | 1500 |
+| [Kermovan](Harbors/Kermovan.md#dock-storage) | 2500 |
+| [Lancre](Harbors/Lancre.md#dock-storage) | 1000 |
+| [Laruns](Harbors/Laruns.md#dock-storage) | 1500 |
+| [LeBosc](Harbors/LeBosc.md#dock-storage) | 3000 |
+| [Perelle](Harbors/Perelle.md#dock-storage) | 3500 |
+| [SpaniardsBay](Harbors/SpaniardsBay.md#dock-storage) | 3000 |
+| [Thollevast](Harbors/Thollevast.md#dock-storage) | 1500 |
 
 ## [Склады](SupplyDepots/Summary.md)
 

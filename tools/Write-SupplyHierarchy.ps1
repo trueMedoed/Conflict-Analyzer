@@ -246,6 +246,11 @@ $expansionBody
             }
             if($updated -cne $body){[IO.File]::WriteAllText($file.FullName,$updated,[Text.UTF8Encoding]::new($false))}
         }
+        $mainSummaryPath=Join-Path $supplies 'Summary.md'
+        $mainSummary=[IO.File]::ReadAllText($mainSummaryPath)
+        $displayName=[IO.Path]::GetFileNameWithoutExtension($newLeaf)
+        $mainSummary=$mainSummary.Replace("[$(Text $dock.label)](Harbors/$newLeaf#dock-storage)","[$(Text $displayName)](Harbors/$newLeaf#dock-storage)")
+        [IO.File]::WriteAllText($mainSummaryPath,$mainSummary,[Text.UTF8Encoding]::new($false))
         [IO.File]::Delete($oldPath)
         $dock.file=$relative
     }
