@@ -1,6 +1,6 @@
 # industrial compound
 
-[Склады — сводка](Summary.md) · [Все категории](../Summary.md)
+[Склады — сводка](../SupplyDepots/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **6463.926 162.215 6497.726**.
 

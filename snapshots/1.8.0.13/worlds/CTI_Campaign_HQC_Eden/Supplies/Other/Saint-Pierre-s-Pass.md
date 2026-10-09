@@ -1,6 +1,6 @@
 # Saint-Pierre's Pass
 
-[Другое — сводка](Summary.md) · [Все категории](../Summary.md)
+[Другое — сводка](../Other/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **8020.888 217.707 4217.001**.
 

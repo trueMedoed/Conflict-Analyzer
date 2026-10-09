@@ -83,3 +83,6 @@ Unreleased / r0041: name generic harbor location pages after nearby dock source 
 
 
 Unreleased: StPhillipe combines dock storage and potential expansion storage in one page with an initial-supplies summary.
+
+
+Unreleased: unified named pages for all 18 harbors, initial-supply summaries and linked potential-expansion groups where available; unknown values and accounting preserved.

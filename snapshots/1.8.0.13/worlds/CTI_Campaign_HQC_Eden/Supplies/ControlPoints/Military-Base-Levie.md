@@ -1,6 +1,6 @@
 # Military Base Levie
 
-[Контрольные точки — сводка](Summary.md) · [Все категории](../Summary.md)
+[Контрольные точки — сводка](../ControlPoints/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **7500.099 165.496 4302.559**.
 

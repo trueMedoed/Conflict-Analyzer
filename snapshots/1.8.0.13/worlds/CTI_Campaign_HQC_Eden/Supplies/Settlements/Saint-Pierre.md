@@ -1,6 +1,6 @@
 # Saint-Pierre
 
-[Города — сводка](Summary.md) · [Все категории](../Summary.md)
+[Города — сводка](../Settlements/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **9689.018 14.024 1558.482**.
 

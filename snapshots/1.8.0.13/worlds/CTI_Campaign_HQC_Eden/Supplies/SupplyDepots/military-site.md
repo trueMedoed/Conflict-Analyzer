@@ -1,6 +1,6 @@
 # military site
 
-[Склады — сводка](Summary.md) · [Все категории](../Summary.md)
+[Склады — сводка](../SupplyDepots/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **7631.798 13.131 8141.200**.
 

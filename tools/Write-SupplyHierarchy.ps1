@@ -152,7 +152,7 @@ function WriteSupplyHierarchy($entries,$totals){
     $text=$previous.Substring(0,$start)+($main -join "`n")+"`n"+$previous.Substring($end)
     foreach($category in $folders.Keys){$text=$text.Replace("| $($names[$category]) |","| [$($names[$category])]($($folders[$category])/Summary.md) |")}
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
-    MergeStPhillipeDetailPages $pages
+    MergeHarborDetailPages $pages
     $result=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
     $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown;harborLocationBinding=$_.harborLocationBinding}})
     $result | Add-Member -NotePropertyName detailPages -NotePropertyValue $navigation
@@ -161,19 +161,11 @@ function WriteSupplyHierarchy($entries,$totals){
     WriteJson 'data.json' $index
 }
 
-# Presentation-only combination: accounting categories and entry IDs remain independent.
-function MergeStPhillipeDetailPages($pages){
-    $dock=@($pages | Where-Object {$_.category -ceq 'harbors' -and $_.group.name -ceq 'SP_T1H_StPhillipe'})
-    if(!$dock.Count){return}
-    $dock=$dock[0]
-    $location=@($pages | Where-Object {$_.harborLocationBinding -and $_.harborLocationBinding.dockGroupId -ceq $dock.id})
-    if($location.Count -ne 1){return}
-    $location=$location[0]
-    Assert (@($dock.entryIds | Where-Object {$_ -cin $location.entryIds}).Count -eq 0) 'Merged harbor groups overlap.'
+
+# Shared presentation for all docks. Accounting categories remain independent.
+function MergeHarborDetailPages($pages){
     $supplies=[IO.Path]::GetFullPath((Join-Path $output 'Supplies'))
-    $oldPath=[IO.Path]::GetFullPath((Join-Path $supplies $dock.file))
-    $newPath=[IO.Path]::GetFullPath((Join-Path $supplies $location.file))
-    Assert ($oldPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $newPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $oldPath -cne $newPath) 'Invalid merged page paths.'
+    $destinations=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     function DetailBody($path){
         $text=[IO.File]::ReadAllText($path).Replace("`r`n","`n")
         $start=$text.IndexOf('Координаты X Y Z:')
@@ -183,51 +175,74 @@ function MergeStPhillipeDetailPages($pages){
         $text=[regex]::Replace($text,'(?m)^(#{2,5}) ', '$1# ')
         $text.TrimEnd()
     }
-    $dockBody=DetailBody $oldPath;$locationBody=DetailBody $newPath
-    $dockTableStart=$dockBody.IndexOf('| Название |')
-    Assert ($dockTableStart -ge 0) 'Missing harbor summary table.'
-    $dockBody=$dockBody.Substring($dockTableStart)
-    $total=Number ($dock.known+$location.known)
-    if($dock.unknown -or $location.unknown){$total+=' + неизвестно'}
-    $text=@"
-# StPhillipe
-
-[Доки — сводка](Summary.md) · [Все категории](../Summary.md)
-
-Здесь собраны две группы: собственные хранилища дока и соседние хранилища локации. Вторая группа нужна, чтобы подсветить возможный недочёт размещения: **возможно, эти хранилища забыли переместить в радиус дока, чтобы они тоже пополнялись**. Это гипотеза для проверки в редакторе, а не установленная ошибка разработчиков.
-
-## Суммаризация припасов
-
-Всего изначально по конфигам в двух группах: **$total припасов**.
-
-| Группа | Припасов изначально |
-| --- | ---: |
-| [Состав дока](#dock-storage) | $($dock.amount) |
-| [Потенциальное расширение состава дока](#potential-expansion) | $($location.amount) |
-| **Всего** | **$total** |
-
-Общий итог включает обе группы и не означает, что все эти припасы пополняются доком. В общей сводке группы продолжают учитываться в своих категориях без повторного сложения.
-
-<a id="dock-storage"></a>
-## 1. Состав дока — SP_T1H_StPhillipe
-
-$dockBody
+    foreach($dock in @($pages | Where-Object category -ceq 'harbors')){
+        $locations=@($pages | Where-Object {$_.harborLocationBinding -and $_.harborLocationBinding.dockGroupId -ceq $dock.id})
+        Assert ($locations.Count -le 1) 'Multiple location pages need explicit merging.'
+        $location=$null;if($locations.Count){$location=$locations[0]}
+        $name=$dock.group.name -creplace '^SP_(?:A|T[0-9]+H)_',''
+        $relative="Harbors/$name.md"
+        if($location){$name=$location.label;$relative=$location.file}
+        Assert ($destinations.Add($relative)) 'Duplicate merged harbor page.'
+        $oldPath=[IO.Path]::GetFullPath((Join-Path $supplies $dock.file))
+        $newPath=[IO.Path]::GetFullPath((Join-Path $supplies $relative))
+        Assert ($oldPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $newPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $oldPath -cne $newPath) 'Invalid merged page paths.'
+        Assert ($location -or !(Test-Path -LiteralPath $newPath)) 'Destination already exists.'
+        $dockBody=DetailBody $oldPath
+        $start=$dockBody.IndexOf('| Название |');Assert ($start -ge 0) 'Missing harbor summary table.'
+        $dockBody=$dockBody.Substring($start)
+        $known=$dock.known;$unknown=$dock.unknown
+        $description='Здесь приведён состав дока и проверки его физических и виртуальных контейнеров.'
+        $expansionRow='';$expansionBody=''
+        if($location){
+            Assert (@($dock.entryIds | Where-Object {$_ -cin $location.entryIds}).Count -eq 0) 'Merged harbor groups overlap.'
+            $known+=$location.known;$unknown+=$location.unknown
+            $description='Здесь собраны две группы: собственные хранилища дока и соседние хранилища локации. Вторая группа нужна, чтобы подсветить возможный недочёт размещения: **возможно, эти хранилища забыли переместить в радиус дока, чтобы они тоже пополнялись**. Это гипотеза для проверки в редакторе, а не установленная ошибка разработчиков.'
+            $expansionRow="| [Потенциальное расширение состава дока](#potential-expansion) | $($location.amount) |`n"
+            $body=DetailBody $newPath
+            $expansionBody=@"
 
 <a id="potential-expansion"></a>
 ## 2. Потенциальное расширение состава дока
 
 Соседние, условно «скрытые» хранилища: кандидаты для проверки и возможного переноса в радиус пополнения дока.
 
-$locationBody
+$body
 "@
-    [IO.File]::WriteAllText($newPath,$text.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))
-    $oldLeaf=Split-Path $dock.file -Leaf;$newLeaf=Split-Path $location.file -Leaf
-    foreach($file in Get-ChildItem $supplies -Recurse -Filter *.md){
-        if($file.FullName -ceq $oldPath){continue}
-        $body=[IO.File]::ReadAllText($file.FullName)
-        $updated=$body.Replace($oldLeaf+')',$newLeaf+'#dock-storage)')
-        if($updated -cne $body){[IO.File]::WriteAllText($file.FullName,$updated,[Text.UTF8Encoding]::new($false))}
+        }
+        $total=if($unknown -and !$known){'неизвестно'}elseif($unknown){"$(Number $known) + неизвестно"}else{Number $known}
+        $text=@"
+# $name
+
+[Доки — сводка](Summary.md) · [Все категории](../Summary.md)
+
+$description
+
+## Суммаризация припасов
+
+Всего изначально по конфигам: **$total припасов**.
+
+| Группа | Припасов изначально |
+| --- | ---: |
+| [Состав дока](#dock-storage) | $($dock.amount) |
+$expansionRow| **Всего** | **$total** |
+
+Этот итог не означает, что все указанные припасы пополняются доком. В общей сводке группы учитываются в своих категориях без повторного сложения.
+
+<a id="dock-storage"></a>
+## 1. Состав дока — $($dock.group.name)
+
+$dockBody
+$expansionBody
+"@
+        [IO.File]::WriteAllText($newPath,$text.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))
+        $oldLeaf=Split-Path $dock.file -Leaf;$newLeaf=Split-Path $relative -Leaf
+        foreach($file in Get-ChildItem $supplies -Recurse -Filter *.md){
+            if($file.FullName -ceq $oldPath){continue}
+            $body=[IO.File]::ReadAllText($file.FullName)
+            $updated=$body.Replace($oldLeaf+')',$newLeaf+'#dock-storage)')
+            if($updated -cne $body){[IO.File]::WriteAllText($file.FullName,$updated,[Text.UTF8Encoding]::new($false))}
+        }
+        [IO.File]::Delete($oldPath)
+        $dock.file=$relative
     }
-    [IO.File]::Delete($oldPath)
-    $dock.file=$location.file
 }

@@ -1,6 +1,6 @@
 # Transformer Station
 
-[Контрольные точки — сводка](Summary.md) · [Все категории](../Summary.md)
+[Контрольные точки — сводка](../ControlPoints/Summary.md) · [Все категории](../Summary.md)
 
 Координаты X Y Z: **5610.476 90.375 5892.061**.
 
