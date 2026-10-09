@@ -184,6 +184,9 @@ function MergeStPhillipeDetailPages($pages){
         $text.TrimEnd()
     }
     $dockBody=DetailBody $oldPath;$locationBody=DetailBody $newPath
+    $dockTableStart=$dockBody.IndexOf('| Название |')
+    Assert ($dockTableStart -ge 0) 'Missing harbor summary table.'
+    $dockBody=$dockBody.Substring($dockTableStart)
     $total=Number ($dock.known+$location.known)
     if($dock.unknown -or $location.unknown){$total+=' + неизвестно'}
     $text=@"
