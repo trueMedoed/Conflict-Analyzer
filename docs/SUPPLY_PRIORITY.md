@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0040 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0041 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0040 `
+  -RevisionId r0041 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -150,3 +150,7 @@ r0039 ограничивает сбор отдельно стоящих хран
 ## Проверка контейнеров доков — r0040
 
 r0040 проверяет физические и виртуальные SUPPLIES-контейнеры доков отдельно. Корень больше не исключает вложенные контейнеры из отбора: сравниваются обе дистанции по X/Y/Z и сохраняются вышедшие за радиус соседи внутри выбранной композиции. Runtime-проба 1.8.0.13 со штатным MissionHeader проверила 18 доков на 30-й и 45-й секундах: IsInRange (сфера/AABB), IsIsolated, CanInteractWith, IsInteractorLinked; радиус всех генераторов 100 м. Проба только читает состояние, не вызывает пополнение или обновление сети. Отсутствие связи не доказывает невозможность подключения. Схема HarborNeighbors.json — 2, normalizerVersion supply-priority-architecture-0.22. Категории, 231200 известных начальных припасов и три unknown сохранены; виртуальные представления не суммируются. Архивные ревизии неизменны.
+
+## Названия локаций доков — r0041
+
+r0041 именует непустые группы подписи harbor по связанному доку: Other/StPhillipe.md (6 хранилищ, 10000 припасов) и Other/Lamentin.md (2 хранилища, 4000 припасов). Привязка — ближайший док в пределах действующего географического радиуса 350 м по X/Z от подписи; при равной дистанции с точностью 0.001 м автоматическое назначение не выполняется. Название берётся из суффикса source name дока, без выдуманной локализации. Сопоставление и его происхождение сохранены в Summary.json/detailPages.harborLocationBinding. Есть взаимные ссылки между доком и географической группой. Состав групп, категории, исходная подпись harbor, координаты, расстояния и общий запас 231200 не изменены. Эта привязка не подтверждает пополнение; игровая проверка 100 м остаётся прежней. normalizerVersion supply-priority-architecture-0.23; прежние ревизии сохранены.

@@ -1,6 +1,6 @@
 # Начальные припасы
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0040`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0041`.
 
 ## Всего припасов изначально
 
@@ -81,8 +81,8 @@
 | Название | Припасов изначально |
 | --- | ---: |
 | [Airport](Other/Airport.md) | 7000 |
-| [harbor - 1024.018 2.849 6043.247](Other/harbor-3a1f7efd.md) | 4000 |
-| [harbor - 4397.416 1.485 11098.094](Other/harbor-45cceb20.md) | 10000 |
+| [Lamentin](Other/Lamentin.md) | 4000 |
+| [StPhillipe](Other/StPhillipe.md) | 10000 |
 | [military site - 7447.122 7.894 6704.909](Other/military-site-382919a3.md) | 2000 |
 | [military site - 3901.866 15.249 8450.660](Other/military-site-1603197e.md) | 7500 |
 | [military site - 4936.765 28.261 11921.946](Other/military-site-dc7d1177.md) | 7000 |
@@ -93,4 +93,4 @@
 
 Использованы configuredInitialSupplies у родительских хранилищ, m_fResourceValueCurrent физических контейнеров доков и начальное значение после действия префаба командного пункта. Вместимость, доход за цикл, виртуальные контейнеры и агрегаты общей сети базы в сумму не прибавляются. Это сводка настроенных запасов, а не измерение всего мира после запуска миссии.
 
-[Состав расчёта и источники](../revisions/r0040/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).
+[Состав расчёта и источники](../revisions/r0041/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).

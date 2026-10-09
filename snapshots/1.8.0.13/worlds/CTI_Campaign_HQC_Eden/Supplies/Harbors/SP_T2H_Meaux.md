@@ -14,7 +14,7 @@
 
 Подтверждённые вложенные физические хранилища не найдены. Их расположение и запас остаются неизвестными.
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0040/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0041/Supplies/ContainerDetails.json).
 
 ## Проверка контейнеров в радиусе дока
 
@@ -80,6 +80,6 @@
 
 Учтено в справочнике: [Meaux](../Settlements/Meaux.md).
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0040/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0041/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0040/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0040/Locations.json).
+[Состав расчёта](../../revisions/r0041/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0041/Locations.json).

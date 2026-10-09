@@ -10,11 +10,13 @@
 | --- | ---: | --- | ---: | ---: | --- |
 | SP_T2H_Lamentin | unknown | unknown | 15 | 2000 | 1052.508 3.504 6049.772 |
 
+Хранилища локации: [Lamentin](../Other/Lamentin.md). В эту географическую группу могут входить объекты вне радиуса пополнения дока.
+
 ## Где находятся контейнеры
 
 Подтверждённые вложенные физические хранилища не найдены. Их расположение и запас остаются неизвестными.
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0040/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0041/Supplies/ContainerDetails.json).
 
 ## Проверка контейнеров в радиусе дока
 
@@ -58,6 +60,6 @@
 
 Учтено в справочнике: [Lamentin](../Settlements/Lamentin.md).
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0040/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0041/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0040/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0040/Locations.json).
+[Состав расчёта](../../revisions/r0041/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0041/Locations.json).

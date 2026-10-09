@@ -8,6 +8,22 @@ function WriteSupplyHierarchy($entries,$totals){
     foreach($category in $folders.Keys){
         foreach($group in @($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})){
             $label=$group.name;$position=$group.worldPositionMeters;$positionStatus=$group.positionStatus
+            $harborLocationBinding=$null
+            if($category -ceq 'other' -and $group.name -ceq 'harbor'){
+                $candidates=@(@(foreach($dock in @($saved.groups | Where-Object category -ceq 'harbors')){
+                    if(!(ValidPosition $group.worldPositionMeters $group.positionStatus) -or !(ValidPosition $dock.worldPositionMeters $dock.positionStatus)){continue}
+                    $dx=$dock.worldPositionMeters[0]-$group.worldPositionMeters[0];$dz=$dock.worldPositionMeters[2]-$group.worldPositionMeters[2]
+                    $distance=[Math]::Sqrt($dx*$dx+$dz*$dz)
+                    if($distance -le $RadiusMeters){[pscustomobject]@{dock=$dock;distance=$distance}}
+                }) | Sort-Object distance,{$_.dock.id})
+                if($candidates.Count -and ($candidates.Count -eq 1 -or [Math]::Abs($candidates[0].distance-$candidates[1].distance) -gt 0.001)){
+                    $nearest=$candidates[0]
+                    if($nearest.dock.name -cmatch '^SP_(?:A|T[0-9]+H)_(.+)$'){
+                        $label=$Matches[1]
+                        $harborLocationBinding=[ordered]@{originalMapLabel=$group.name;mapGroupId=$group.id;dockGroupId=$nearest.dock.id;dockName=$nearest.dock.name;locationName=$label;nameSource='dock_source_name_suffix';method='nearest_dock_to_generic_harbor_map_label_horizontal';distanceMeters=$nearest.distance;radiusMeters=$RadiusMeters;ownershipEstablished=$false;replenishmentEstablished=$false}
+                    }
+                }
+            }
             if($category -ceq 'supply_depots'){
                 $region=@($saved.depotLocationGrouping.locations | Where-Object {$_.depots.depotGroupId -contains $group.id})
                 if($region.Count){$label=$region[0].name;$position=$region[0].worldPositionMeters;$positionStatus=$region[0].positionStatus}
@@ -16,12 +32,12 @@ function WriteSupplyHierarchy($entries,$totals){
             $ids=@($group.members | ForEach-Object {$_.objectId} | Sort-Object -Unique)
             if($category -ceq 'control_points'){$ids+=($group.anchorObjectId+'/command-post')}
             if($category -ceq 'harbors'){$ids+=@($group.physicalDescendantContainers | ForEach-Object {$_.id});$ids+=($group.anchorObjectId+'/unresolved-storage')}
-            $pages.Add([pscustomobject]@{id=$group.id;category=$category;label=$label;position=$position;positionStatus=$positionStatus;group=$group;entryIds=$ids;unrecognized=$false;file='';amount='';known=0.0;unknown=0})
+            $pages.Add([pscustomobject]@{id=$group.id;category=$category;label=$label;position=$position;positionStatus=$positionStatus;group=$group;harborLocationBinding=$harborLocationBinding;entryIds=$ids;unrecognized=$false;file='';amount='';known=0.0;unknown=0})
         }
     }
     foreach($member in $saved.unrecognizedObjects){
         $obj=$rows[$member.objectId]
-        $pages.Add([pscustomobject]@{id=$member.objectId;category='other';label=$obj.name;position=$obj.worldPositionMeters;positionStatus=$obj.positionStatus;group=[pscustomobject]@{members=@($member)};entryIds=@($member.objectId);unrecognized=$true;file='';amount='';known=0.0;unknown=0})
+        $pages.Add([pscustomobject]@{id=$member.objectId;category='other';label=$obj.name;position=$obj.worldPositionMeters;positionStatus=$obj.positionStatus;group=[pscustomobject]@{members=@($member)};harborLocationBinding=$null;entryIds=@($member.objectId);unrecognized=$true;file='';amount='';known=0.0;unknown=0})
     }
     $paths=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     $labelCounts=@{};foreach($item in $pages){$key=$item.category+'/'+$item.label.ToLowerInvariant();if(!$labelCounts.ContainsKey($key)){$labelCounts[$key]=0};$labelCounts[$key]++}
@@ -107,6 +123,16 @@ function WriteSupplyHierarchy($entries,$totals){
                 ParentTable $detail $page.group.members $true
                 $detail.Add($(if($category -ceq 'supply_depots'){'Расстояния рассчитаны до маркера склада.'}else{'Расстояния рассчитаны до подписи локации.'}));$detail.Add('')
             }
+            if($page.harborLocationBinding){
+                $binding=$page.harborLocationBinding
+                $dockPage=@($pages | Where-Object id -ceq $binding.dockGroupId)[0]
+                $detail.Add("Подпись карты ``harbor`` связана для навигации с доком [$(Text $binding.dockName)](../$($dockPage.file)); между подписью и доком **$(Distance $binding.distanceMeters) м** по X/Z. Название файла взято из имени дока. Координаты группы и расстояния в таблице по-прежнему относятся к подписи карты.");$detail.Add('')
+                $detail.Add('Это географическая группа хранилищ, а не список пополнения дока. Попадание отдельных физических и виртуальных контейнеров в радиус 100 м и игровые проверки показаны на странице дока.');$detail.Add('')
+            }
+            if($category -ceq 'harbors'){
+                $locations=@($pages | Where-Object {$_.harborLocationBinding -and $_.harborLocationBinding.dockGroupId -ceq $page.id})
+                foreach($location in $locations){$detail.Add("Хранилища локации: [$(Text $location.label)](../$($location.file)). В эту географическую группу могут входить объекты вне радиуса пополнения дока.");$detail.Add('')}
+            }
             AddPhysicalSupplyDetails $detail $page
             AddHarborNeighbors $detail $page $pages
             $detail.Add('[Состав расчёта](../Summary.json) · [Группы и происхождение](../../Locations.json).')
@@ -119,7 +145,7 @@ function WriteSupplyHierarchy($entries,$totals){
     foreach($category in $folders.Keys){$text=$text.Replace("| $($names[$category]) |","| [$($names[$category])]($($folders[$category])/Summary.md) |")}
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
     $result=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
-    $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown}})
+    $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown;harborLocationBinding=$_.harborLocationBinding}})
     $result | Add-Member -NotePropertyName detailPages -NotePropertyValue $navigation
     WriteJson 'Supplies/Summary.json' $result
     $index.sections.supplies.hierarchy=[ordered]@{categories=@($folders.Keys | ForEach-Object {[ordered]@{category=$_;summary="Supplies/$($folders[$_])/Summary.md"}});pages=@($pages | ForEach-Object {"Supplies/$($_.file)"})}

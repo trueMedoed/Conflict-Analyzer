@@ -78,3 +78,5 @@ Unreleased: harbor pages list detached storage within 100 m and between 100 and 
 Unreleased: harbor neighbor collection is limited to 100 m. More distant neighbors are excluded; existing categories and totals are preserved.
 
 Unreleased / r0040: inspect individual physical and virtual harbor containers, compare storage-root positions, and display observed runtime range / isolation / interaction / link checks. Categories and supply totals are unchanged.
+
+Unreleased / r0041: name generic harbor location pages after nearby dock source names and add reciprocal navigation links; storage assignments and totals remain unchanged.

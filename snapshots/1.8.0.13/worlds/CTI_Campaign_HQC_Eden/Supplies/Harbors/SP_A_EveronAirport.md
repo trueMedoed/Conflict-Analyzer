@@ -29,7 +29,7 @@
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4939.816 28.775 11764.057 |
 | SupplyShippingContainers_01_10ft | 500 / 500 | 4939.851 28.775 11761.431 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0040/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0041/Supplies/ContainerDetails.json).
 
 ## Проверка контейнеров в радиусе дока
 
@@ -90,6 +90,6 @@
 
 Учтено в справочнике: [Airport](../Other/Airport.md), [military site - 4936.765 28.261 11921.946](../Other/military-site-dc7d1177.md).
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0040/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0041/Supplies/HarborNeighbors.json).
 
-[Состав расчёта](../../revisions/r0040/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0040/Locations.json).
+[Состав расчёта](../../revisions/r0041/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0041/Locations.json).
