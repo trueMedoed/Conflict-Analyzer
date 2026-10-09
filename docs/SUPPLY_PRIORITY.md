@@ -1,6 +1,6 @@
 # Приоритеты групп мира
 
-В r0039 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
+В r0040 используется один канонический Locations.json (schemaVersion 3, kind=priority-location-catalog). Из него и сохранённых настроек создаются Locations.md и Supplies/OtherContainers.md. Порядок: склады припасов, контрольные точки, Harbors, города / деревни, остальные объекты, нераспознанные.
 
 ## Алгоритм
 
@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0039 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0040 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0039 `
+  -RevisionId r0040 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -140,9 +140,13 @@ Write-SupplyHierarchy.ps1 вызывается основным генерато
 
 r0039 ограничивает сбор отдельно стоящих хранилищ рядом с доками дистанцией 100 м включительно по X/Y/Z до корня хранилища. Все 14 записей из прежней полосы 100–200 м исключены из HarborNeighbors.json и страниц доков; осталось 14 соседств у 5 доков. Категории и общий запас 231200 не изменены согласно прежнему выбору пользователя, три unknown сохранены. Все 49 подтверждённых физических контейнеров доков также находятся не далее 100 м. Радиус складов CampaignRemnantsSupplyDepot остаётся 200 м, привязка к локациям — 350 м. Близость не подтверждает фактическое игровое пополнение. Обновлены пояснения в сводке доков и генератор. normalizerVersion supply-priority-architecture-0.21; 66 канонических файлов, архивные ревизии и captures сохранены.
 
-## Точки отсчёта радиуса соседей доков
+## Точки отсчёта радиуса соседей доков (исторический алгоритм r0039)
 
 - Расстояние считается **от мировых координат сущности дока до мировых координат корня композиции хранилища** (например, SupplyCache_S_FIA_04), по трём осям **X/Y/Z**: d = √((Xх − Xд)² + (Yх − Yд)² + (Zх − Zд)²). Хранилище включается при d ≤ 100 м до округления.
 - **Позиции отдельных контейнеров внутри композиции этим фильтром не проверяются.** Корень может попасть в радиус, а часть ящиков оказаться снаружи, или наоборот. Поэтому список соседей не равен списку контейнеров игровой ресурсной сети; виртуальные представления и условия подключения требуют отдельной проверки.
 
 Это справочный отбор родительских композиций. Существующие категории и сумма припасов от него не меняются.
+
+## Проверка контейнеров доков — r0040
+
+r0040 проверяет физические и виртуальные SUPPLIES-контейнеры доков отдельно. Корень больше не исключает вложенные контейнеры из отбора: сравниваются обе дистанции по X/Y/Z и сохраняются вышедшие за радиус соседи внутри выбранной композиции. Runtime-проба 1.8.0.13 со штатным MissionHeader проверила 18 доков на 30-й и 45-й секундах: IsInRange (сфера/AABB), IsIsolated, CanInteractWith, IsInteractorLinked; радиус всех генераторов 100 м. Проба только читает состояние, не вызывает пополнение или обновление сети. Отсутствие связи не доказывает невозможность подключения. Схема HarborNeighbors.json — 2, normalizerVersion supply-priority-architecture-0.22. Категории, 231200 известных начальных припасов и три unknown сохранены; виртуальные представления не суммируются. Архивные ревизии неизменны.

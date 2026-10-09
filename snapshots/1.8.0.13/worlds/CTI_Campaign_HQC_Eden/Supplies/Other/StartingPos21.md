@@ -23,6 +23,6 @@
 | SupplyShippingContainers_01_10ft | 500 / 500 | 7617.380 3.340 8876.440 |
 | SupplyShippingContainers_01_10ft | 500 / 500 | 7614.754 3.357 8876.375 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0039/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0040/Supplies/ContainerDetails.json).
 
-[Состав расчёта](../../revisions/r0039/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0039/Locations.json).
+[Состав расчёта](../../revisions/r0040/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0040/Locations.json).

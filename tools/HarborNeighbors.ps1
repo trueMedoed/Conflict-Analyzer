@@ -1,39 +1,83 @@
-# A spatial inspection overlay only: never changes assignment or summary totals.
+function HarborDistance($a,$b){[Math]::Sqrt([Math]::Pow($a[0]-$b[0],2)+[Math]::Pow($a[1]-$b[1],2)+[Math]::Pow($a[2]-$b[2],2))}
 function InitializeHarborNeighbors {
     $script:harborNeighbors=@{}
+    $runtime=$null
+    if($HarborRuntimeReportPath){$runtimeInput=ReadInput $HarborRuntimeReportPath;$runtime=$runtimeInput.value;Assert ($runtime.kind -ceq 'harbor-container-runtime' -and $runtime.gameVersion -ceq $version -and $runtime.complete) 'Invalid harbor runtime report.';Assert ($cp.worldPath.EndsWith($runtime.world,[StringComparison]::Ordinal)) 'Runtime world differs from source inventory.';Assert (@($runtime.bases | Where-Object {$_.sampleSeconds -eq $runtime.selectedSampleSeconds -and $_.radiusMeters -eq 100 -and $_.initialized}).Count -eq 18) 'Runtime generator coverage or range differs.'}
+    $rootParents=@{};foreach($parent in $other.records){$rootParents[$parent.sourceId]=$parent}
+    $catalog=@(foreach($resource in $inventory.resources){foreach($slot in $resource.containers){
+        $type=@($slot.fields | Where-Object name -ceq 'm_eResourceType')
+        if($type.Count -ne 1 -or $type[0].enumLabel -cne 'SUPPLIES'){continue}
+        $node=$nodes[$resource.sourceId]
+        $rootParent=$null;$walk=$resource.sourceId
+        while($walk){if($rootParents.ContainsKey($walk)){$rootParent=$rootParents[$walk]};$walk=$nodes[$walk].parentSourceId}
+        [pscustomobject]@{id="$($resource.sourceId)/$($resource.componentIndex)/$($slot.index)";sourceId=$resource.sourceId;node=$node;rootParent=$rootParent;virtual=($slot.className -ceq 'SCR_ResourceContainerVirtual');fields=$slot.fields;index=$slot.index}
+    }})
     foreach($group in @($saved.groups | Where-Object category -ceq 'harbors')){
-        $near=[Collections.Generic.List[object]]::new()
-        foreach($parent in $other.records){
-            if(!(ValidPosition $parent.worldPositionMeters $parent.positionStatus) -or !(ValidPosition $group.worldPositionMeters $group.positionStatus)){continue}
-            $dx=$parent.worldPositionMeters[0]-$group.worldPositionMeters[0]
-            $dy=$parent.worldPositionMeters[1]-$group.worldPositionMeters[1]
-            $dz=$parent.worldPositionMeters[2]-$group.worldPositionMeters[2]
-            $distance=[Math]::Sqrt($dx*$dx+$dy*$dy+$dz*$dz)
-            if($distance -gt 100){continue}
-            $near.Add([pscustomobject][ordered]@{objectId=$parent.objectId;sourceId=$parent.sourceId;name=$parent.name;worldPositionMeters=$parent.worldPositionMeters;positionStatus=$parent.positionStatus;distanceMeters=$distance;band='within_100m';configuredInitialSupplies=$parent.configuredInitialSupplies;configuredInitialStatus=$parent.configuredInitialStatus;capacitySupplies=$parent.capacitySupplies;capacityStatus=$parent.capacityStatus;assignedGroupIds=@($saved.groups | Where-Object {$parent.objectId -in @($_.members | ForEach-Object {$_.objectId})} | ForEach-Object {$_.id});includedInHarborTotal=$false;runtimeConnectionStatus='not_measured'})
+        $anchor=$rows[$group.anchorObjectId].sourceId
+        $liveRecords=@();if($runtime){$liveRecords=@($runtime.records | Where-Object harbor -CEQ $group.name)}
+        $audit=[Collections.Generic.List[object]]::new()
+        $buckets=@{}
+        foreach($slot in $catalog){
+            $root=$null;$objectId=$null;$relation='detached'
+            if($slot.rootParent){$root=$slot.rootParent.sourceId;$objectId=$slot.rootParent.objectId}
+            if(IsDescendant $slot.sourceId $anchor){
+                $relation='source_descendant';$root=$slot.sourceId
+                while($nodes[$root].parentSourceId -and $nodes[$root].parentSourceId -cne $anchor -and $root -cne $anchor){$root=$nodes[$root].parentSourceId}
+                $objectId=$group.anchorObjectId
+            }
+            if(!$root){$root=$slot.sourceId}
+            $rootNode=$nodes[$root]
+            if(!(ValidPosition $slot.node.worldPositionMeters $slot.node.positionStatus) -or !(ValidPosition $rootNode.worldPositionMeters $rootNode.positionStatus)){continue}
+            $d=HarborDistance $slot.node.worldPositionMeters $group.worldPositionMeters
+            $rd=HarborDistance $rootNode.worldPositionMeters $group.worldPositionMeters
+            $live=$null
+            if($runtime){
+                $matches=@($liveRecords | Where-Object { $_.virtual -eq $slot.virtual -and $_.containerIndex -eq $slot.index -and ($_.runtimeEntityId -ceq $slot.sourceId -or ($_.prefab -and $_.prefab -ceq $slot.node.prefab -and (HarborDistance $_.worldPositionMeters $slot.node.worldPositionMeters) -le 0.03))})
+                Assert ($matches.Count -le 1) 'Ambiguous runtime container match.'
+                if($matches.Count){$live=$matches[0]}
+            }
+            $entry=[pscustomobject][ordered]@{id=$slot.id;sourceId=$slot.sourceId;name=(PhysicalNodeName $slot.node);prefab=$slot.node.prefab;virtual=$slot.virtual;worldPositionMeters=$slot.node.worldPositionMeters;positionStatus=$slot.node.positionStatus;distanceMeters=$d;originWithinRadius=($d -le 100);rootSourceId=$root;rootName=(PhysicalNodeName $rootNode);rootWorldPositionMeters=$rootNode.worldPositionMeters;rootDistanceMeters=$rd;rootWithinRadius=($rd -le 100);rootOriginDisagreement=(($d -le 100) -ne ($rd -le 100));relation=$relation;objectId=$objectId;runtime=$live;runtimePositionDeltaMeters=$(if($live){HarborDistance $live.worldPositionMeters $slot.node.worldPositionMeters}else{$null});runtimeStatus=$(if($live){'measured'}else{'not_measured'});fields=$slot.fields}
+            if(!$buckets.ContainsKey($root)){$buckets[$root]=[Collections.Generic.List[object]]::new()}
+            $buckets[$root].Add($entry)
         }
-        $script:harborNeighbors[$group.id]=[ordered]@{groupId=$group.id;anchorObjectId=$group.anchorObjectId;name=$group.name;worldPositionMeters=$group.worldPositionMeters;neighbors=@($near | Sort-Object distanceMeters,objectId)}
+        foreach($bucket in $buckets.Values){
+            # Root distance never excludes a container; retain outside siblings to expose discrepancies.
+            $relevant=@($bucket | Where-Object {$_.originWithinRadius -or $_.rootWithinRadius -or $_.relation -ceq 'source_descendant' -or ($null -ne $_.runtime -and $_.runtime.inRange)}).Count -gt 0
+            if($relevant){foreach($entry in $bucket){$audit.Add($entry)}}
+        }
+        $script:harborNeighbors[$group.id]=[ordered]@{groupId=$group.id;anchorObjectId=$group.anchorObjectId;name=$group.name;worldPositionMeters=$group.worldPositionMeters;containers=@($audit | Sort-Object rootName,rootSourceId,virtual,id)}
     }
-    WriteJson 'Supplies/HarborNeighbors.json' ([ordered]@{schemaVersion=1;kind='harbor-neighbor-inspection';snapshotId=$snapshotId;scope='detached_other_container_root_parents_near_harbor_sources';method='three_dimensional_root_position_distance';innerRadiusMeters=100;outerRadiusMeters=100;boundary='inclusive_before_rounding';classificationChanged=$false;runtimeConnectionMeasured=$false;radiusMeaning='Maximum inspection radius; 100m matches the storage range configured in the inspected ConflictSourceBase prefab, not verified per-world runtime container membership.';inputs=$saved.inputs;records=@($script:harborNeighbors.Values | Sort-Object {$_.name})})
+    WriteJson 'Supplies/HarborNeighbors.json' ([ordered]@{schemaVersion=2;kind='harbor-container-inspection';snapshotId=$snapshotId;scope='physical_and_virtual_supplies_slots_near_harbors_and_relevant_composition_siblings';method='container_origin_screen_with_separate_runtime_AABB_and_connection_checks';radiusMeters=100;boundary='inclusive_before_rounding';classificationChanged=$false;runtimeConnectionMeasured=($null -ne $runtime);runtimeInput=$(if($runtime){[ordered]@{sha256=$runtimeInput.hash;report=$runtime}}else{$null});inputs=$saved.inputs;records=@($script:harborNeighbors.Values | Sort-Object {$_.name})})
 }
+function HarborYes($value){if($null -eq $value){return 'не измерено'};if($value){return 'да'};'нет'}
 function AddHarborNeighbors($lines,$page,$pages){
     if($page.category -cne 'harbors'){return}
     $record=$script:harborNeighbors[$page.id]
-    $lines.Add('## Хранилища рядом с доком');$lines.Add('')
-    $lines.Add('Это отдельный справочный список. Категории не изменены: припасы этих объектов уже учтены в группах по ссылкам ниже и не прибавляются к итогу дока.');$lines.Add('')
-    $lines.Add('Расстояние измерено по X/Y/Z от дока до корня хранилища, до округления. Порог 100 м взят из m_fStorageRange базового префаба ConflictSourceBase. Это не проверка фактического подключения: игра проверяет ресурсные контейнеры, условия взаимодействия и их дальность; настройки экземпляра и работа сети здесь не измерялись.');$lines.Add('')
-    foreach($band in @('within_100m')){
-        $lines.Add('### До 100 м включительно');$lines.Add('')
-        $items=@($record.neighbors | Where-Object band -ceq $band)
-        if(!$items.Count){$lines.Add('Отдельно стоящих хранилищ в этом диапазоне не найдено.');$lines.Add('');continue}
-        $lines.Add('| Хранилище | Вместимость / Изначально | Координаты X Y Z, м | Расстояние, м | Где уже учтено |');$lines.Add('| --- | ---: | --- | ---: | --- |')
-        foreach($item in $items){
-            $owners=@($pages | Where-Object {$item.objectId -in $_.entryIds})
-            Assert ($owners.Count -gt 0) 'Harbor neighbor lacks an existing detail page.'
-            $links=@($owners | ForEach-Object {"[$(Text $_.label)](../$($_.file))"}) -join ', '
-            $lines.Add("| $(Text $item.name) | $(Value $item.capacitySupplies $item.capacityStatus) / $(Value $item.configuredInitialSupplies $item.configuredInitialStatus) | $(Position $item.worldPositionMeters $item.positionStatus) | $(Distance $item.distanceMeters) | $links |")
+    $lines.Add('## Проверка контейнеров в радиусе дока');$lines.Add('')
+    $lines.Add('Отбор проверяет каждый физический и виртуальный SUPPLIES-контейнер отдельно. Расстояния по X/Y/Z — от дока до контейнера и до корня композиции, порог 100 м до округления. Показаны также вышедшие за радиус контейнеры выбранной композиции для поиска расхождений. Они не считаются попавшими в радиус.');$lines.Add('')
+    $lines.Add('Игра использует IsInRange (пересечение сферы с границами сущности), IsIsolated и CanInteractWith. Виртуальное представление может подключаться вместо физических ящиков; его запас не суммируется повторно. Координаты и дистанции в таблице взяты из editor source, игровые проверки — из отдельной сессии; сдвиги позиции показаны ниже. «Связан» — наблюдение IsInteractorLinked, а не доказательство пополнения. Категории и суммы сохранены.');$lines.Add('')
+    foreach($bucket in @($record.containers | Group-Object rootSourceId)){
+        $first=$bucket.Group[0]
+        $lines.Add("### $(Text $first.rootName) - $(Position $first.rootWorldPositionMeters 'resolved')");$lines.Add('')
+        $lines.Add("Расстояние до корня: **$(Distance $first.rootDistanceMeters) м**. Корень в радиусе: **$(HarborYes $first.rootWithinRadius)**.");$lines.Add('')
+        $lines.Add('| Контейнер | Вид | Координаты X Y Z, м | До дока, м | Позиция ≤ 100 м | Расхождение с корнем | IsInRange | Изолирован | Разрешено | Связан |');$lines.Add('| --- | --- | --- | ---: | --- | --- | --- | --- | --- | --- |')
+        foreach($item in $bucket.Group){
+            $live=$item.runtime;$inRange=$null;$isolated=$null;$allowed=$null;$linked=$null
+            if($live){$inRange=$live.inRange;$isolated=$live.isolated;$allowed=$live.allowed;$linked=$live.linked}
+            $kind=if($item.virtual){'виртуальный'}else{'физический'}
+            $lines.Add("| $(Text $item.name) | $kind | $(Position $item.worldPositionMeters $item.positionStatus) | $(Distance $item.distanceMeters) | $(HarborYes $item.originWithinRadius) | $(HarborYes $item.rootOriginDisagreement) | $(HarborYes $inRange) | $(HarborYes $isolated) | $(HarborYes $allowed) | $(HarborYes $linked) |")
         }
         $lines.Add('')
+        $shifted=@($bucket.Group | Where-Object {$null -ne $_.runtimePositionDeltaMeters -and $_.runtimePositionDeltaMeters -gt 0.03})
+        if($shifted.Count){
+            $lines.Add('Положение после запуска отличается от editor source более чем на 0.03 м:');$lines.Add('')
+            $lines.Add('| Контейнер | Координаты в сессии X Y Z, м | Сдвиг, м |');$lines.Add('| --- | --- | ---: |')
+            foreach($item in $shifted){$lines.Add("| $(Text $item.name) | $(Position $item.runtime.worldPositionMeters 'resolved') | $(Distance $item.runtimePositionDeltaMeters) |")}
+            $lines.Add('')
+        }
+        $owners=@($pages | Where-Object {$first.objectId -in $_.entryIds})
+        if($owners.Count){$links=@($owners | ForEach-Object {"[$(Text $_.label)](../$($_.file))"}) -join ', ';$lines.Add("Учтено в справочнике: $links.");$lines.Add('')}
     }
-    $lines.Add('[Расстояния и исходные назначения](../HarborNeighbors.json).');$lines.Add('')
+    if(!$record.containers.Count){$lines.Add('Подходящих контейнеров не найдено.');$lines.Add('')}
+    $lines.Add('[Проверки контейнеров, корней и подключения](../HarborNeighbors.json).');$lines.Add('')
 }

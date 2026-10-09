@@ -76,3 +76,5 @@ Unreleased: all 46 detail pages now expose physical supply containers and their 
 Unreleased: harbor pages list detached storage within 100 m and between 100 and 200 m, with links to existing groups. This is a proximity overlay; categories, totals and runtime uncertainty are preserved.
 
 Unreleased: harbor neighbor collection is limited to 100 m. More distant neighbors are excluded; existing categories and totals are preserved.
+
+Unreleased / r0040: inspect individual physical and virtual harbor containers, compare storage-root positions, and display observed runtime range / isolation / interaction / link checks. Categories and supply totals are unchanged.
