@@ -33,9 +33,9 @@ Workbench CLI использует параметры [SOURCE_DIAGNOSTICS.md](SO
   -OtherContainersViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\OtherContainers.json `
   -HarborsViewPath .\snapshots\1.8.0.13\worlds\CTI_Campaign_HQC_Eden\revisions\r0018\Supplies\Harbors.json `
   -WorldContainersReportPath .\exports\HQC_Eden_WorldSupplyContainers_1.8.0.13.json `
-  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0041 `
+  -OutputDirectory .\exports\HQC_Eden_SupplyPriority_r0042 `
   -ControlPointMapLinksPath .\tools\config\ControlPointMapLinks.json `
-  -RevisionId r0041 `
+  -RevisionId r0042 `
   -DepotRadiusMeters 200 -RadiusMeters 350 `
   -RevisionReason 'Resolve initial command-post storage supplies after its prefab action separately from campaign base initialization'
 ```
@@ -154,3 +154,7 @@ r0040 проверяет физические и виртуальные SUPPLIES
 ## Названия локаций доков — r0041
 
 r0041 именует непустые группы подписи harbor по связанному доку: Other/StPhillipe.md (6 хранилищ, 10000 припасов) и Other/Lamentin.md (2 хранилища, 4000 припасов). Привязка — ближайший док в пределах действующего географического радиуса 350 м по X/Z от подписи; при равной дистанции с точностью 0.001 м автоматическое назначение не выполняется. Название берётся из суффикса source name дока, без выдуманной локализации. Сопоставление и его происхождение сохранены в Summary.json/detailPages.harborLocationBinding. Есть взаимные ссылки между доком и географической группой. Состав групп, категории, исходная подпись harbor, координаты, расстояния и общий запас 231200 не изменены. Эта привязка не подтверждает пополнение; игровая проверка 100 м остаётся прежней. normalizerVersion supply-priority-architecture-0.23; прежние ревизии сохранены.
+
+## Категории объединённых страниц — r0042
+
+r0042 приводит категории сводки к объединённым страницам: связанные группы потенциального расширения относятся к «Докам». Перенесены 30 уникальных записей: 30500 из «Другое» и 24500 из «Города». Доки 95500 + неизвестно, Города 0, Другое 12500; контрольные точки 48100 и склады 75100 сохранены. Общая известная сумма 231200 и три unknown неизменны. Summary.json хранит прежнюю sourceCategory у перенесённых записей, summaryDockGroupId и harborLocationTransfers для происхождения; detailPages содержит 36 объединённых страниц без повторного учёта. В сводках строки доков показывают сумму собственного хранилища и расширения. Исходный географический граф Locations.json сохранён и отделён от категории подсчёта припасов. Географическая связь не доказывает игрового пополнения. normalizerVersion supply-priority-architecture-0.24; 56 канонических файлов; опубликованные ревизии сохранены.

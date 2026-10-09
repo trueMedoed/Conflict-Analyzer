@@ -115,3 +115,5 @@ Unreleased / r0039: limit harbor neighbors to 100 m without reclassification. О
 Unreleased / r0040: per-container harbor inspection and runtime connection diagnostics. Проверка контейнеров доков и диагностика подключения в игровой сессии.
 
 Unreleased / r0041: named harbor location pages / именованные страницы локаций доков.
+
+Unreleased / r0042: align supply accounting with consolidated harbor pages / категории сводки приведены к объединённым страницам доков.

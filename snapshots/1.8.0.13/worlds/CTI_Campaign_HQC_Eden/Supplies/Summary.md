@@ -1,6 +1,6 @@
 # Начальные припасы
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0041`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0042`.
 
 ## Всего припасов изначально
 
@@ -11,12 +11,12 @@
 | Категория | Припасов изначально |
 | --- | ---: |
 | [Контрольные точки](ControlPoints/Summary.md) | 48100 |
-| [Доки](Harbors/Summary.md) | 40500 + неизвестно |
+| [Доки](Harbors/Summary.md) | 95500 + неизвестно |
 | [Склады](SupplyDepots/Summary.md) | 75100 |
-| [Города](Settlements/Summary.md) | 24500 |
-| [Другое](Other/Summary.md) | 43000 |
+| [Города](Settlements/Summary.md) | 0 |
+| [Другое](Other/Summary.md) | 12500 |
 
-«Города» включают города, деревни и поселения. «Другое» — остальные локации и нераспознанные хранилища. Повторные ссылки на один родительский объект не суммируются.
+«Доки» включают собственные хранилища и связанные группы потенциального расширения. «Города» включают оставшиеся отдельно учтённые города, деревни и поселения. «Другое» — остальные локации и нераспознанные хранилища. Повторные ссылки на один родительский объект не суммируются.
 
 ## [Контрольные точки](ControlPoints/Summary.md)
 
@@ -34,24 +34,24 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [EveronAirport](Harbors/EveronAirport.md#dock-storage) | 4000 |
-| [StPhillipe](Harbors/StPhillipe.md#dock-storage) | 3500 |
-| [StPierre](Harbors/StPierre.md#dock-storage) | неизвестно |
-| [FishermansBay](Harbors/FishermansBay.md#dock-storage) | 5000 |
-| [Lamentin](Harbors/Lamentin.md#dock-storage) | неизвестно |
-| [Meaux](Harbors/Meaux.md#dock-storage) | неизвестно |
-| [MilitaryHospital](Harbors/MilitaryHospital.md#dock-storage) | 3000 |
-| [Morton](Harbors/Morton.md#dock-storage) | 3500 |
-| [GoatBay](Harbors/GoatBay.md#dock-storage) | 2500 |
-| [Gravette](Harbors/Gravette.md#dock-storage) | 1500 |
-| [HalcyonStrait](Harbors/HalcyonStrait.md#dock-storage) | 1500 |
-| [Kermovan](Harbors/Kermovan.md#dock-storage) | 2500 |
-| [Lancre](Harbors/Lancre.md#dock-storage) | 1000 |
-| [Laruns](Harbors/Laruns.md#dock-storage) | 1500 |
-| [LeBosc](Harbors/LeBosc.md#dock-storage) | 3000 |
-| [Perelle](Harbors/Perelle.md#dock-storage) | 3500 |
-| [SpaniardsBay](Harbors/SpaniardsBay.md#dock-storage) | 3000 |
-| [Thollevast](Harbors/Thollevast.md#dock-storage) | 1500 |
+| [EveronAirport](Harbors/EveronAirport.md) | 11000 |
+| [StPhillipe](Harbors/StPhillipe.md) | 13500 |
+| [StPierre](Harbors/StPierre.md) | 9500 + неизвестно |
+| [FishermansBay](Harbors/FishermansBay.md) | 7000 |
+| [Lamentin](Harbors/Lamentin.md) | 9500 + неизвестно |
+| [Meaux](Harbors/Meaux.md) | 7500 + неизвестно |
+| [MilitaryHospital](Harbors/MilitaryHospital.md) | 10500 |
+| [Morton](Harbors/Morton.md) | 5500 |
+| [GoatBay](Harbors/GoatBay.md) | 2500 |
+| [Gravette](Harbors/Gravette.md) | 1500 |
+| [HalcyonStrait](Harbors/HalcyonStrait.md) | 1500 |
+| [Kermovan](Harbors/Kermovan.md) | 2500 |
+| [Lancre](Harbors/Lancre.md) | 1000 |
+| [Laruns](Harbors/Laruns.md) | 1500 |
+| [LeBosc](Harbors/LeBosc.md) | 3000 |
+| [Perelle](Harbors/Perelle.md) | 3500 |
+| [SpaniardsBay](Harbors/SpaniardsBay.md) | 3000 |
+| [Thollevast](Harbors/Thollevast.md) | 1500 |
 
 ## [Склады](SupplyDepots/Summary.md)
 
@@ -71,21 +71,13 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [Lamentin](Harbors/Lamentin.md#potential-expansion) | 5500 |
-| [Meaux](Harbors/Meaux.md#potential-expansion) | 7500 |
-| [Morton](Harbors/Morton.md#potential-expansion) | 2000 |
-| [StPierre](Harbors/StPierre.md#potential-expansion) | 9500 |
+
+Отдельно учитываемых хранилищ в этой категории нет.
 
 ## [Другое](Other/Summary.md)
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [EveronAirport - 4900.952 28.595 11787.412](Harbors/EveronAirport.md#potential-expansion) | 7000 |
-| [Lamentin](Harbors/Lamentin.md#potential-expansion) | 4000 |
-| [StPhillipe](Harbors/StPhillipe.md#potential-expansion) | 10000 |
-| [FishermansBay](Harbors/FishermansBay.md#potential-expansion) | 2000 |
-| [MilitaryHospital](Harbors/MilitaryHospital.md#potential-expansion) | 7500 |
-| [EveronAirport - 4936.765 28.261 11921.946](Harbors/EveronAirport.md#potential-expansion) | 7000 |
 | [Saint-Pierre's Pass](Other/Saint-Pierre-s-Pass.md) | 11500 |
 | [StartingPos21](Other/StartingPos21.md) | 1000 |
 
@@ -93,4 +85,4 @@
 
 Использованы configuredInitialSupplies у родительских хранилищ, m_fResourceValueCurrent физических контейнеров доков и начальное значение после действия префаба командного пункта. Вместимость, доход за цикл, виртуальные контейнеры и агрегаты общей сети базы в сумму не прибавляются. Это сводка настроенных запасов, а не измерение всего мира после запуска миссии.
 
-[Состав расчёта и источники](../revisions/r0041/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).
+[Состав расчёта и источники](../revisions/r0042/Supplies/Summary.json) · [Подробные таблицы](OtherContainers.md).

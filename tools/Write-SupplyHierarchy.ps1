@@ -105,7 +105,7 @@ function WriteSupplyHierarchy($entries,$totals){
             $cat.Add('- Проверяются отдельно все физические и виртуальные SUPPLIES-контейнеры. Расстояние по X/Y/Z считается от сущности дока до позиции каждого контейнера; 100 м включительно, до округления. Корень композиции больше не служит фильтром, исключающим вложенные ящики.')
             $cat.Add('- Расстояние до корня сохранено для сравнения. Вышедшие за радиус соседи внутри выбранной композиции показаны как диагностика: расхождение с корнем — повод проверить расположение, а не автоматически доказанная ошибка мира.')
             $cat.Add('- Игровой IsInRange проверяет пересечение сферы с AABB сущности (GetBounds), поэтому результат может отличаться от расстояния до её позиции. Изоляция, CanInteractWith и IsInteractorLinked показываются отдельными колонками при наличии runtime-измерения; иначе — «не измерено».')
-            $cat.Add('- Виртуальные представления хранилищ показаны отдельно от физических ящиков и не добавляются к суммам. Категории, исходные запасы и принадлежность по source-иерархии не изменяются. Динамически созданные объекты, отсутствующие в editor source, остаются в runtime-отчёте без придуманной привязки.')
+            $cat.Add('- Виртуальные представления хранилищ показаны отдельно от физических ящиков и не добавляются к суммам. Исходные запасы и принадлежность по source-иерархии сохраняются. Связанные группы потенциального расширения включены в категорию сводки «Доки». Динамически созданные объекты, отсутствующие в editor source, остаются в runtime-отчёте без придуманной привязки.')
             $cat.Add('')
             $cat.Add('')
             $cat.Add('У StPierre, Lamentin и Meaux «неизвестно» означает отсутствие подтверждённых вложенных хранилищ в используемом отчёте, а не нулевой запас и не доказанную остановку пополнения. Припасы отдельно стоящих соседей уже учтены в других категориях.')
@@ -152,7 +152,7 @@ function WriteSupplyHierarchy($entries,$totals){
                 $leaf="../$($location.file)"
                 $cat.Add("- [$(Text $location.label)]($leaf)")
             }
-            $cat.Add('');$cat.Add('Это географические группы, включая хранилища вне радиуса пополнения. Их суммы учитываются в исходных категориях «Другое» и «Города».');$cat.Add('')
+            $cat.Add('');$cat.Add('Это географические группы, включая хранилища вне радиуса пополнения. Их суммы включены в категорию «Доки» по уникальным объектам.');$cat.Add('')
         }
         SaveHierarchyPage "$folder/Summary.md" $cat
     }
@@ -160,6 +160,7 @@ function WriteSupplyHierarchy($entries,$totals){
     foreach($category in $folders.Keys){$text=$text.Replace("| $($names[$category]) |","| [$($names[$category])]($($folders[$category])/Summary.md) |")}
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
     MergeHarborDetailPages $pages $entries
+    UpdateHarborSummaryAccounting $pages $entries
     $result=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
     $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown;harborLocationBinding=$_.harborLocationBinding}})
     $result | Add-Member -NotePropertyName detailPages -NotePropertyValue $navigation
@@ -265,7 +266,7 @@ $description
 | [Состав дока](#dock-storage) | $($dock.amount) |
 $expansionRow| **Всего** | **$total** |
 
-Этот итог не означает, что все указанные припасы пополняются доком. В общей сводке группы учитываются в своих категориях без повторного сложения.
+Этот итог не означает, что все указанные припасы пополняются доком. В общей сводке хранилища этой страницы учитываются в категории «Доки», каждый объект один раз.
 
 <a id="dock-storage"></a>
 ## 1. Состав дока — $($dock.group.name)
@@ -300,4 +301,74 @@ $expansionBody
         foreach($part in $locations){$part.file=$relative}
         $dock.file=$relative
     }
+}
+
+# Accounting follows consolidated detail pages; the geographic source graph remains provenance.
+function UpdateHarborSummaryAccounting($pages,$entries){
+    $transfers=[Collections.Generic.List[object]]::new()
+    $owners=@{}
+    foreach($part in @($pages | Where-Object harborLocationBinding)){
+        $dock=@($pages | Where-Object id -ceq $part.harborLocationBinding.dockGroupId)[0]
+        $transfers.Add([ordered]@{groupId=$part.id;sourceCategory=$part.category;dockGroupId=$dock.id;path=$dock.file;entryIds=$part.entryIds;binding=$part.harborLocationBinding})
+        foreach($id in $part.entryIds){
+            if($owners.ContainsKey($id)){Assert ($owners[$id] -ceq $dock.id) 'Storage assigned to multiple docks.'}
+            $owners[$id]=$dock.id
+        }
+        $dock.entryIds=@(@($dock.entryIds)+@($part.entryIds) | Sort-Object -Unique)
+        $null=$pages.Remove($part)
+    }
+    foreach($entry in $entries){
+        if($owners.ContainsKey($entry.id)){
+            $entry.sourceCategory=$entry.category
+            $entry.category='harbors'
+            $entry.summaryDockGroupId=$owners[$entry.id]
+        }
+    }
+    foreach($dock in @($pages | Where-Object category -ceq 'harbors')){
+        $items=@($entries | Where-Object {$_.id -cin $dock.entryIds})
+        $dock.known=0.0;foreach($item in $items){$dock.known+=$item.knownInitialSubtotal}
+        $dock.unknown=@($items | Where-Object status -cne 'resolved').Count
+        $dock.amount=if($dock.unknown -and !$dock.known){'неизвестно'}elseif($dock.unknown){"$(Number $dock.known) + неизвестно"}else{Number $dock.known}
+        $dock.label=[IO.Path]::GetFileNameWithoutExtension($dock.file)
+    }
+    $summary=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
+    $summary.entries=@($entries)
+    foreach($total in $summary.categories){
+        $selected=@($entries | Where-Object category -ceq $total.category)
+        $total.knownInitialSupplies=0.0;foreach($item in $selected){$total.knownInitialSupplies+=$item.knownInitialSubtotal}
+        $total.unknownEntryCount=@($selected | Where-Object status -cne 'resolved').Count
+        $total.uniqueEntryCount=$selected.Count
+        $total.status=if($total.unknownEntryCount){'partial'}else{'resolved'}
+    }
+    Assert (($summary.categories | Measure-Object knownInitialSupplies -Sum).Sum -eq $summary.knownInitialSupplies) 'World supply total changed.'
+    $summary | Add-Member -NotePropertyName harborLocationTransfers -NotePropertyValue @($transfers)
+    $summary | Add-Member -NotePropertyName classificationRule -NotePropertyValue 'Consolidated harbor pages own their source storage and associated expansion entries; sourceCategory retains the original map classification.'
+    $summary.deduplication='Every entry ID counted once globally; associated location groups are unioned per dock; virtual storage excluded.'
+    WriteJson 'Supplies/Summary.json' $summary
+    $mainPath=Join-Path $output 'Supplies/Summary.md'
+    $text=[IO.File]::ReadAllText($mainPath)
+    foreach($total in $summary.categories){
+        $folder=$folders[$total.category]
+        $amount=Number $total.knownInitialSupplies;if($total.unknownEntryCount){$amount+=' + неизвестно'}
+        $pattern='(?m)^\| \['+[regex]::Escape($total.name)+'\]\('+[regex]::Escape("$folder/Summary.md")+'\) \| [^|]+ \|$'
+        $text=[regex]::Replace($text,$pattern,"| [$($total.name)]($folder/Summary.md) | $amount |")
+        $detail=[Collections.Generic.List[string]]::new();$detail.Add("## [$($total.name)]($folder/Summary.md)");$detail.Add('')
+        $table=[Collections.Generic.List[string]]::new();$table.Add('| Название | Припасов изначально |');$table.Add('| --- | ---: |')
+        foreach($page in @($pages | Where-Object category -ceq $total.category)){$table.Add("| [$(Text $page.label)]($($page.file)) | $($page.amount) |")}
+        if($table.Count -eq 2){$table.Add('');$table.Add('Отдельно учитываемых хранилищ в этой категории нет.')}
+        foreach($line in $table){$detail.Add($line)};$detail.Add('')
+        $section='(?ms)^## \['+[regex]::Escape($total.name)+'\][^\r\n]*\r?\n.*?(?=^## |^Один объект)'
+        $text=[regex]::Replace($text,$section,($detail -join "`n")+"`n")
+        $categoryPath=Join-Path $output "Supplies/$folder/Summary.md"
+        $cat=[IO.File]::ReadAllText($categoryPath)
+        $cat=[regex]::Replace($cat,'(?m)^Начальных припасов по конфигам:.*$',"Начальных припасов по конфигам: **$amount**. Итог учитывает каждый объект один раз.")
+        $offset=$cat.IndexOf('| Название | Припасов изначально |')
+        Assert ($offset -ge 0) 'Missing category summary table.'
+        $local=($table -join "`n").Replace("]($folder/",'](')
+        $cat=$cat.Substring(0,$offset)+$local+"`n`n[Состав расчёта и источники](../Summary.json).`n"
+        if($total.category -ceq 'harbors'){$cat+="`nИтог каждого дока включает собственное хранилище и потенциальное расширение. Это категория справочника, а не подтверждение пополнения всех контейнеров.`n"}
+        [IO.File]::WriteAllText($categoryPath,$cat,[Text.UTF8Encoding]::new($false))
+    }
+    $text=$text.Replace('«Города» включают города, деревни и поселения.','«Доки» включают собственные хранилища и связанные группы потенциального расширения. «Города» включают оставшиеся отдельно учтённые города, деревни и поселения.')
+    [IO.File]::WriteAllText($mainPath,$text,[Text.UTF8Encoding]::new($false))
 }

@@ -2,9 +2,9 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0041`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0042`.
 
-Начальных припасов по конфигам: **40500 + неизвестно**. Итог учитывает каждый объект один раз.
+Начальных припасов по конфигам: **95500 + неизвестно**. Итог учитывает каждый объект один раз.
 
 ## Радиус поиска хранилищ и пополнение
 
@@ -19,7 +19,7 @@
 - Проверяются отдельно все физические и виртуальные SUPPLIES-контейнеры. Расстояние по X/Y/Z считается от сущности дока до позиции каждого контейнера; 100 м включительно, до округления. Корень композиции больше не служит фильтром, исключающим вложенные ящики.
 - Расстояние до корня сохранено для сравнения. Вышедшие за радиус соседи внутри выбранной композиции показаны как диагностика: расхождение с корнем — повод проверить расположение, а не автоматически доказанная ошибка мира.
 - Игровой IsInRange проверяет пересечение сферы с AABB сущности (GetBounds), поэтому результат может отличаться от расстояния до её позиции. Изоляция, CanInteractWith и IsInteractorLinked показываются отдельными колонками при наличии runtime-измерения; иначе — «не измерено».
-- Виртуальные представления хранилищ показаны отдельно от физических ящиков и не добавляются к суммам. Категории, исходные запасы и принадлежность по source-иерархии не изменяются. Динамически созданные объекты, отсутствующие в editor source, остаются в runtime-отчёте без придуманной привязки.
+- Виртуальные представления хранилищ показаны отдельно от физических ящиков и не добавляются к суммам. Исходные запасы и принадлежность по source-иерархии сохраняются. Связанные группы потенциального расширения включены в категорию сводки «Доки». Динамически созданные объекты, отсутствующие в editor source, остаются в runtime-отчёте без придуманной привязки.
 
 
 У StPierre, Lamentin и Meaux «неизвестно» означает отсутствие подтверждённых вложенных хранилищ в используемом отчёте, а не нулевой запас и не доказанную остановку пополнения. Припасы отдельно стоящих соседей уже учтены в других категориях.
@@ -28,35 +28,25 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [EveronAirport](EveronAirport.md#dock-storage) | 4000 |
-| [StPhillipe](StPhillipe.md#dock-storage) | 3500 |
-| [StPierre](StPierre.md#dock-storage) | неизвестно |
-| [FishermansBay](FishermansBay.md#dock-storage) | 5000 |
-| [Lamentin](Lamentin.md#dock-storage) | неизвестно |
-| [Meaux](Meaux.md#dock-storage) | неизвестно |
-| [MilitaryHospital](MilitaryHospital.md#dock-storage) | 3000 |
-| [Morton](Morton.md#dock-storage) | 3500 |
-| [GoatBay](GoatBay.md#dock-storage) | 2500 |
-| [Gravette](Gravette.md#dock-storage) | 1500 |
-| [HalcyonStrait](HalcyonStrait.md#dock-storage) | 1500 |
-| [Kermovan](Kermovan.md#dock-storage) | 2500 |
-| [Lancre](Lancre.md#dock-storage) | 1000 |
-| [Laruns](Laruns.md#dock-storage) | 1500 |
-| [LeBosc](LeBosc.md#dock-storage) | 3000 |
-| [Perelle](Perelle.md#dock-storage) | 3500 |
-| [SpaniardsBay](SpaniardsBay.md#dock-storage) | 3000 |
-| [Thollevast](Thollevast.md#dock-storage) | 1500 |
+| [EveronAirport](EveronAirport.md) | 11000 |
+| [StPhillipe](StPhillipe.md) | 13500 |
+| [StPierre](StPierre.md) | 9500 + неизвестно |
+| [FishermansBay](FishermansBay.md) | 7000 |
+| [Lamentin](Lamentin.md) | 9500 + неизвестно |
+| [Meaux](Meaux.md) | 7500 + неизвестно |
+| [MilitaryHospital](MilitaryHospital.md) | 10500 |
+| [Morton](Morton.md) | 5500 |
+| [GoatBay](GoatBay.md) | 2500 |
+| [Gravette](Gravette.md) | 1500 |
+| [HalcyonStrait](HalcyonStrait.md) | 1500 |
+| [Kermovan](Kermovan.md) | 2500 |
+| [Lancre](Lancre.md) | 1000 |
+| [Laruns](Laruns.md) | 1500 |
+| [LeBosc](LeBosc.md) | 3000 |
+| [Perelle](Perelle.md) | 3500 |
+| [SpaniardsBay](SpaniardsBay.md) | 3000 |
+| [Thollevast](Thollevast.md) | 1500 |
 
-[Состав расчёта и неизвестные значения](../../revisions/r0041/Supplies/Summary.json).
-## Хранилища локаций доков
+[Состав расчёта и источники](../../revisions/r0042/Supplies/Summary.json).
 
-- [Lamentin](Lamentin.md#potential-expansion)
-- [Meaux](Meaux.md#potential-expansion)
-- [Morton](Morton.md#potential-expansion)
-- [StPierre](StPierre.md#potential-expansion)
-- [EveronAirport](EveronAirport.md#potential-expansion)
-- [StPhillipe](StPhillipe.md#potential-expansion)
-- [FishermansBay](FishermansBay.md#potential-expansion)
-- [MilitaryHospital](MilitaryHospital.md#potential-expansion)
-
-Это географические группы, включая хранилища вне радиуса пополнения. Их суммы учитываются в исходных категориях «Другое» и «Города».
+Итог каждого дока включает собственное хранилище и потенциальное расширение. Это категория справочника, а не подтверждение пополнения всех контейнеров.
