@@ -80,7 +80,7 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [Airport](Other/Airport.md) | 7000 |
+| [EveronAirport](Harbors/EveronAirport.md) | 7000 |
 | [Lamentin](Harbors/Lamentin.md) | 4000 |
 | [StPhillipe](Harbors/StPhillipe.md) | 10000 |
 | [military site - 7447.122 7.894 6704.909](Other/military-site-382919a3.md) | 2000 |

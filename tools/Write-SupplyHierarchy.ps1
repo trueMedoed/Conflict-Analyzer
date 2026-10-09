@@ -9,8 +9,9 @@ function WriteSupplyHierarchy($entries,$totals){
         foreach($group in @($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})){
             $label=$group.name;$position=$group.worldPositionMeters;$positionStatus=$group.positionStatus
             $harborLocationBinding=$null
-            if($category -ceq 'other' -and $group.name -ceq 'harbor'){
+            if($category -ceq 'other' -and ($group.name -ceq 'harbor' -or $group.name -ceq 'Airport')){
                 $candidates=@(@(foreach($dock in @($saved.groups | Where-Object category -ceq 'harbors')){
+                    if($group.name -ceq 'Airport' -and $dock.name -cne 'SP_A_EveronAirport'){continue}
                     if(!(ValidPosition $group.worldPositionMeters $group.positionStatus) -or !(ValidPosition $dock.worldPositionMeters $dock.positionStatus)){continue}
                     $dx=$dock.worldPositionMeters[0]-$group.worldPositionMeters[0];$dz=$dock.worldPositionMeters[2]-$group.worldPositionMeters[2]
                     $distance=[Math]::Sqrt($dx*$dx+$dz*$dz)
@@ -20,7 +21,7 @@ function WriteSupplyHierarchy($entries,$totals){
                     $nearest=$candidates[0]
                     if($nearest.dock.name -cmatch '^SP_(?:A|T[0-9]+H)_(.+)$'){
                         $label=$Matches[1]
-                        $harborLocationBinding=[ordered]@{originalMapLabel=$group.name;mapGroupId=$group.id;dockGroupId=$nearest.dock.id;dockName=$nearest.dock.name;locationName=$label;nameSource='dock_source_name_suffix';method='nearest_dock_to_generic_harbor_map_label_horizontal';distanceMeters=$nearest.distance;radiusMeters=$RadiusMeters;ownershipEstablished=$false;replenishmentEstablished=$false}
+                        $harborLocationBinding=[ordered]@{originalMapLabel=$group.name;mapGroupId=$group.id;dockGroupId=$nearest.dock.id;dockName=$nearest.dock.name;locationName=$label;nameSource='dock_source_name_suffix';method=$(if($group.name -ceq 'Airport'){'user_confirmed_airport_dock_pair_within_horizontal_radius'}else{'nearest_dock_to_generic_harbor_map_label_horizontal'});distanceMeters=$nearest.distance;radiusMeters=$RadiusMeters;ownershipEstablished=$false;replenishmentEstablished=$false}
                     }
                 }
             }
@@ -126,7 +127,7 @@ function WriteSupplyHierarchy($entries,$totals){
             if($page.harborLocationBinding){
                 $binding=$page.harborLocationBinding
                 $dockPage=@($pages | Where-Object id -ceq $binding.dockGroupId)[0]
-                $detail.Add("Подпись карты ``harbor`` связана для навигации с доком [$(Text $binding.dockName)](../$($dockPage.file)); между подписью и доком **$(Distance $binding.distanceMeters) м** по X/Z. Название файла взято из имени дока. Координаты группы и расстояния в таблице по-прежнему относятся к подписи карты.");$detail.Add('')
+                $detail.Add("Подпись карты ``$($binding.originalMapLabel)`` связана для навигации с доком [$(Text $binding.dockName)](../$($dockPage.file)); между подписью и доком **$(Distance $binding.distanceMeters) м** по X/Z. Название файла взято из имени дока. Координаты группы и расстояния в таблице по-прежнему относятся к подписи карты.");$detail.Add('')
                 $detail.Add('Это географическая группа хранилищ, а не список пополнения дока. Попадание отдельных физических и виртуальных контейнеров в радиус 100 м и игровые проверки показаны на странице дока.');$detail.Add('')
             }
             if($category -ceq 'harbors'){

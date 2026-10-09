@@ -50,6 +50,7 @@
 [Состав расчёта и неизвестные значения](../../revisions/r0041/Supplies/Summary.json).
 ## Хранилища локаций доков
 
+- [EveronAirport](EveronAirport.md)
 - [Lamentin](Lamentin.md)
 - [StPhillipe](StPhillipe.md)
 
