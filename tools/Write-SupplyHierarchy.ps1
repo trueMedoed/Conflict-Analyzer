@@ -9,8 +9,14 @@ function WriteSupplyHierarchy($entries,$totals){
         foreach($group in @($saved.groups | Where-Object {$_.category -ceq $category -and ($_.anchorObjectId -or $_.members.Count)})){
             $label=$group.name;$position=$group.worldPositionMeters;$positionStatus=$group.positionStatus
             $harborLocationBinding=$null
-            if($category -ceq 'other' -and ($group.name -ceq 'harbor' -or $group.name -ceq 'Airport')){
+            if(($category -ceq 'other' -and ($group.name -ceq 'harbor' -or $group.name -ceq 'Airport' -or ($group.name -ceq 'military site' -and $group.id -cin @('map/0x0000000000085611 {}/1','map/0x00000000000B0C4D {}/1','map/0x00000000000C3925 {}/1')))) -or $category -ceq 'settlements'){
                 $candidates=@(@(foreach($dock in @($saved.groups | Where-Object category -ceq 'harbors')){
+                    if($category -ceq 'settlements'){
+                        $mapKey=([regex]::Replace($group.name.ToLowerInvariant(),'[^a-z0-9]','')) -replace '^saint','st'
+                        $dockKey=([regex]::Replace(($dock.name -creplace '^SP_(?:A|T[0-9]+H)_','').ToLowerInvariant(),'[^a-z0-9]',''))
+                        if($mapKey -ceq 'stphilippe'){$mapKey='stphillipe'}
+                        if($mapKey -cne $dockKey){continue}
+                    }
                     if($group.name -ceq 'Airport' -and $dock.name -cne 'SP_A_EveronAirport'){continue}
                     if(!(ValidPosition $group.worldPositionMeters $group.positionStatus) -or !(ValidPosition $dock.worldPositionMeters $dock.positionStatus)){continue}
                     $dx=$dock.worldPositionMeters[0]-$group.worldPositionMeters[0];$dz=$dock.worldPositionMeters[2]-$group.worldPositionMeters[2]
@@ -21,7 +27,7 @@ function WriteSupplyHierarchy($entries,$totals){
                     $nearest=$candidates[0]
                     if($nearest.dock.name -cmatch '^SP_(?:A|T[0-9]+H)_(.+)$'){
                         $label=$Matches[1]
-                        $harborLocationBinding=[ordered]@{originalMapLabel=$group.name;mapGroupId=$group.id;dockGroupId=$nearest.dock.id;dockName=$nearest.dock.name;locationName=$label;nameSource='dock_source_name_suffix';method=$(if($group.name -ceq 'Airport'){'user_confirmed_airport_dock_pair_within_horizontal_radius'}else{'nearest_dock_to_generic_harbor_map_label_horizontal'});distanceMeters=$nearest.distance;radiusMeters=$RadiusMeters;ownershipEstablished=$false;replenishmentEstablished=$false}
+                        $harborLocationBinding=[ordered]@{originalMapLabel=$group.name;mapGroupId=$group.id;dockGroupId=$nearest.dock.id;dockName=$nearest.dock.name;locationName=$label;nameSource='dock_source_name_suffix';method=$(if($group.name -ceq 'Airport'){'user_confirmed_airport_dock_pair_within_horizontal_radius'}elseif($category -ceq 'settlements'){'same_named_settlement_and_dock_within_horizontal_radius'}elseif($group.name -ceq 'military site'){'user_confirmed_military_site_nearest_dock_within_horizontal_radius'}else{'nearest_dock_to_generic_harbor_map_label_horizontal'});distanceMeters=$nearest.distance;radiusMeters=$RadiusMeters;ownershipEstablished=$false;replenishmentEstablished=$false}
                     }
                 }
             }
@@ -52,7 +58,7 @@ function WriteSupplyHierarchy($entries,$totals){
             $hash=[Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($page.id))).Substring(0,8).ToLowerInvariant()
             $slug+='-'+$hash;$page.label+=" - $(Position $page.position $page.positionStatus)"
         }
-        $pageFolder=if($page.harborLocationBinding){'Harbors'}else{$folders[$page.category]};$page.file="$pageFolder/$slug.md"
+        $pageFolder=$folders[$page.category];$page.file="$pageFolder/$slug.md"
         Assert ($paths.Add($page.file)) 'Hierarchy: filename collision.'
         $items=@($entries | Where-Object {$_.id -in $page.entryIds})
         $page.entryIds=@($items | ForEach-Object {$_.id})
@@ -109,7 +115,7 @@ function WriteSupplyHierarchy($entries,$totals){
         }
         $cat.Add('| Название | Припасов изначально |');$cat.Add('| --- | ---: |')
         foreach($page in $categoryPages){
-            $filename=if($page.harborLocationBinding){"../$($page.file)"}else{Split-Path $page.file -Leaf}
+            $filename=Split-Path $page.file -Leaf
             $main.Add("| [$(Text $page.label)]($($page.file)) | $($page.amount) |")
             $cat.Add("| [$(Text $page.label)]($filename) | $($page.amount) |")
             $detail=[Collections.Generic.List[string]]::new();$detail.Add("# $(Text $page.label)");$detail.Add('');$detail.Add("[$name — сводка](../$folder/Summary.md) · [Все категории](../Summary.md)");$detail.Add('')
@@ -143,17 +149,17 @@ function WriteSupplyHierarchy($entries,$totals){
         if($category -ceq 'harbors'){
             $cat.Add('## Хранилища локаций доков');$cat.Add('')
             foreach($location in @($pages | Where-Object {$_.harborLocationBinding})){
-                $leaf=Split-Path $location.file -Leaf
+                $leaf="../$($location.file)"
                 $cat.Add("- [$(Text $location.label)]($leaf)")
             }
-            $cat.Add('');$cat.Add('Это географические группы, включая хранилища вне радиуса пополнения. Их суммы пока учитываются в категории «Другое».');$cat.Add('')
+            $cat.Add('');$cat.Add('Это географические группы, включая хранилища вне радиуса пополнения. Их суммы учитываются в исходных категориях «Другое» и «Города».');$cat.Add('')
         }
         SaveHierarchyPage "$folder/Summary.md" $cat
     }
     $text=$previous.Substring(0,$start)+($main -join "`n")+"`n"+$previous.Substring($end)
     foreach($category in $folders.Keys){$text=$text.Replace("| $($names[$category]) |","| [$($names[$category])]($($folders[$category])/Summary.md) |")}
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
-    MergeHarborDetailPages $pages
+    MergeHarborDetailPages $pages $entries
     $result=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
     $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown;harborLocationBinding=$_.harborLocationBinding}})
     $result | Add-Member -NotePropertyName detailPages -NotePropertyValue $navigation
@@ -164,7 +170,7 @@ function WriteSupplyHierarchy($entries,$totals){
 
 
 # Shared presentation for all docks. Accounting categories remain independent.
-function MergeHarborDetailPages($pages){
+function MergeHarborDetailPages($pages,$entries){
     $supplies=[IO.Path]::GetFullPath((Join-Path $output 'Supplies'))
     $destinations=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     function DetailBody($path){
@@ -178,34 +184,66 @@ function MergeHarborDetailPages($pages){
     }
     foreach($dock in @($pages | Where-Object category -ceq 'harbors')){
         $locations=@($pages | Where-Object {$_.harborLocationBinding -and $_.harborLocationBinding.dockGroupId -ceq $dock.id})
-        Assert ($locations.Count -le 1) 'Multiple location pages need explicit merging.'
+        $locations=@($locations | Sort-Object {$_.harborLocationBinding.originalMapLabel},id)
         $location=$null;if($locations.Count){$location=$locations[0]}
         $name=$dock.group.name -creplace '^SP_(?:A|T[0-9]+H)_',''
         $relative="Harbors/$name.md"
-        if($location){$name=$location.label;$relative=$location.file}
+
         Assert ($destinations.Add($relative)) 'Duplicate merged harbor page.'
         $oldPath=[IO.Path]::GetFullPath((Join-Path $supplies $dock.file))
         $newPath=[IO.Path]::GetFullPath((Join-Path $supplies $relative))
         Assert ($oldPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $newPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar) -and $oldPath -cne $newPath) 'Invalid merged page paths.'
-        Assert ($location -or !(Test-Path -LiteralPath $newPath)) 'Destination already exists.'
+        Assert (!(Test-Path -LiteralPath $newPath)) 'Destination already exists.'
         $dockBody=DetailBody $oldPath
         $start=$dockBody.IndexOf('| Название |');Assert ($start -ge 0) 'Missing harbor summary table.'
         $dockBody=$dockBody.Substring($start)
         $known=$dock.known;$unknown=$dock.unknown
         $description='Здесь приведён состав дока и проверки его физических и виртуальных контейнеров.'
         $expansionRow='';$expansionBody=''
-        if($location){
-            Assert (@($dock.entryIds | Where-Object {$_ -cin $location.entryIds}).Count -eq 0) 'Merged harbor groups overlap.'
-            $known+=$location.known;$unknown+=$location.unknown
-            $description='Здесь собраны две группы: собственные хранилища дока и соседние хранилища локации. Вторая группа нужна, чтобы подсветить возможный недочёт размещения: **возможно, эти хранилища забыли переместить в радиус дока, чтобы они тоже пополнялись**. Это гипотеза для проверки в редакторе, а не установленная ошибка разработчиков.'
-            $expansionRow="| [Потенциальное расширение состава дока](#potential-expansion) | $($location.amount) |`n"
-            $body=DetailBody $newPath
+        $sourcePaths=[Collections.Generic.List[string]]::new()
+        $sourcePaths.Add($oldPath)
+        if($locations.Count){
+            $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+            foreach($id in $dock.entryIds){$null=$seen.Add($id)}
+            $expansionKnown=0.0;$expansionUnknown=0
+            $bodies=[Collections.Generic.List[string]]::new()
+            foreach($part in $locations){
+                $uniqueIds=@($part.entryIds | Where-Object {$seen.Add($_)})
+                $selected=@($entries | Where-Object {$_.id -cin $uniqueIds})
+                $partKnown=0.0;foreach($entry in $selected){$partKnown+=$entry.knownInitialSubtotal}
+                $partUnknown=@($selected | Where-Object status -cne 'resolved').Count
+                $expansionKnown+=$partKnown;$expansionUnknown+=$partUnknown
+                $partPath=[IO.Path]::GetFullPath((Join-Path $supplies $part.file))
+                Assert ($partPath.StartsWith($supplies+[IO.Path]::DirectorySeparatorChar)) 'Location outside output.'
+                $sourcePaths.Add($partPath)
+                $partLines=[Collections.Generic.List[string]]::new()
+                $partLines.Add("### Подпись карты: $(Text $part.harborLocationBinding.originalMapLabel) — $(Position $part.position $part.positionStatus)");$partLines.Add('')
+                $members=@($part.group.members | Where-Object {$_.objectId -cin $uniqueIds})
+                if(!$members.Count){
+                    $partLines.Add('Все хранилища этой подписи уже показаны выше. Повторно не учитываются.');$partLines.Add('')
+                }else{
+                    $partLines.Add("Начальных припасов в неповторяющихся объектах: **$(Number $partKnown)**.");$partLines.Add('')
+                    ParentTable $partLines $members $true
+                    $partLines.Add('Расстояния относятся к исходной подписи карты. Совпадающие объекты показаны один раз.');$partLines.Add('')
+                    $physicalLines=[Collections.Generic.List[string]]::new()
+                    AddPhysicalSupplyDetails $physicalLines ([pscustomobject]@{category=$part.category;group=[pscustomobject]@{members=$members}})
+                    $physicalText=[regex]::Replace(($physicalLines -join "`n"),'(?m)^(#{2,4}) ', '$1## ')
+                    $partLines.Add($physicalText)
+                }
+                $bodies.Add(($partLines -join "`n"))
+
+            }
+            $known+=$expansionKnown;$unknown+=$expansionUnknown
+            $expansionAmount=if($expansionUnknown -and !$expansionKnown){'неизвестно'}elseif($expansionUnknown){"$(Number $expansionKnown) + неизвестно"}else{Number $expansionKnown}
+            $description='Здесь собраны две группы: собственные хранилища дока и соседние хранилища связанных локаций. Вторая группа нужна, чтобы подсветить возможный недочёт размещения: **возможно, часть этих хранилищ забыли переместить в радиус дока, чтобы они тоже пополнялись**. Это гипотеза для проверки в редакторе. Некоторые контейнеры второй группы уже находятся в радиусе; их игровые проверки показаны отдельно.'
+            $expansionRow="| [Потенциальное расширение состава дока](#potential-expansion) | $expansionAmount |`n"
+            $body=$bodies -join "`n`n"
             $expansionBody=@"
 
 <a id="potential-expansion"></a>
 ## 2. Потенциальное расширение состава дока
 
-Соседние, условно «скрытые» хранилища: кандидаты для проверки и возможного переноса в радиус пополнения дока.
+Хранилища связанных локаций, учтённые по уникальным объектам. Принадлежность этой группе не означает обязательного переноса или подтверждённого пополнения.
 
 $body
 "@
@@ -236,23 +274,30 @@ $dockBody
 $expansionBody
 "@
         [IO.File]::WriteAllText($newPath,$text.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))
-        $oldLeaf=Split-Path $dock.file -Leaf;$newLeaf=Split-Path $relative -Leaf
+        $newLeaf=Split-Path $relative -Leaf
         foreach($file in Get-ChildItem $supplies -Recurse -Filter *.md){
-            if($file.FullName -ceq $oldPath){continue}
+            if($file.FullName -cin $sourcePaths){continue}
             $body=[IO.File]::ReadAllText($file.FullName)
-            $updated=$body.Replace($oldLeaf+')',$newLeaf+'#dock-storage)')
-            if($file.FullName -ceq (Join-Path $supplies 'Harbors/Summary.md')){
-                $displayName=[IO.Path]::GetFileNameWithoutExtension($newLeaf)
-                $updated=$updated.Replace("[$(Text $dock.label)]($newLeaf#dock-storage)","[$(Text $displayName)]($newLeaf#dock-storage)")
+            $updated=[regex]::Replace($body,'\]\(([^)]+)\)',[Text.RegularExpressions.MatchEvaluator]{param($match)
+                $link=$match.Groups[1].Value
+                if($link -match '^(https?:|#)'){return $match.Value}
+                $target=[IO.Path]::GetFullPath((Join-Path $file.DirectoryName ($link -split '#')[0]))
+                if($target -cnotin $sourcePaths){return $match.Value}
+                $anchor=if($target -ceq $oldPath){'dock-storage'}else{'potential-expansion'}
+                $newLink=[IO.Path]::GetRelativePath($file.DirectoryName,$newPath).Replace('\','/')
+                return "]($newLink#$anchor)"
+            })
+            if($file.Name -ceq 'Summary.md'){
+                $updated=$updated.Replace("[$(Text $dock.label)](","[$(Text $name)](")
+                foreach($part in $locations){$updated=$updated.Replace("- [$(Text $part.label)](","- [$(Text $name)](")}
+                # Multiple source groups can now lead to one combined page.
+                $seenLinks=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+                $updated=(@($updated -split '\r?\n' | Where-Object {if($_ -match '^- \['){$seenLinks.Add($_)}else{$true}}) -join "`n")
             }
             if($updated -cne $body){[IO.File]::WriteAllText($file.FullName,$updated,[Text.UTF8Encoding]::new($false))}
         }
-        $mainSummaryPath=Join-Path $supplies 'Summary.md'
-        $mainSummary=[IO.File]::ReadAllText($mainSummaryPath)
-        $displayName=[IO.Path]::GetFileNameWithoutExtension($newLeaf)
-        $mainSummary=$mainSummary.Replace("[$(Text $dock.label)](Harbors/$newLeaf#dock-storage)","[$(Text $displayName)](Harbors/$newLeaf#dock-storage)")
-        [IO.File]::WriteAllText($mainSummaryPath,$mainSummary,[Text.UTF8Encoding]::new($false))
-        [IO.File]::Delete($oldPath)
+        foreach($path in $sourcePaths){[IO.File]::Delete($path)}
+        foreach($part in $locations){$part.file=$relative}
         $dock.file=$relative
     }
 }

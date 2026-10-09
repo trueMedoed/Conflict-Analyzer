@@ -86,3 +86,6 @@ Unreleased: StPhillipe combines dock storage and potential expansion storage in 
 
 
 Unreleased: unified named pages for all 18 harbors, initial-supply summaries and linked potential-expansion groups where available; unknown values and accounting preserved.
+
+
+Unreleased: include matching settlement and user-confirmed military-site groups on harbor pages; deduplicate shared storage roots and totals across location labels.

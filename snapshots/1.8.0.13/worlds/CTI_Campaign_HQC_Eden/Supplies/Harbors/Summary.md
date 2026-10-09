@@ -50,8 +50,13 @@
 [Состав расчёта и неизвестные значения](../../revisions/r0041/Supplies/Summary.json).
 ## Хранилища локаций доков
 
-- [EveronAirport](EveronAirport.md)
-- [Lamentin](Lamentin.md)
-- [StPhillipe](StPhillipe.md)
+- [Lamentin](Lamentin.md#potential-expansion)
+- [Meaux](Meaux.md#potential-expansion)
+- [Morton](Morton.md#potential-expansion)
+- [StPierre](StPierre.md#potential-expansion)
+- [EveronAirport](EveronAirport.md#potential-expansion)
+- [StPhillipe](StPhillipe.md#potential-expansion)
+- [FishermansBay](FishermansBay.md#potential-expansion)
+- [MilitaryHospital](MilitaryHospital.md#potential-expansion)
 
-Это географические группы, включая хранилища вне радиуса пополнения. Их суммы пока учитываются в категории «Другое».
+Это географические группы, включая хранилища вне радиуса пополнения. Их суммы учитываются в исходных категориях «Другое» и «Города».

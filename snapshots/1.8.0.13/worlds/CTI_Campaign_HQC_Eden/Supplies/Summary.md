@@ -71,21 +71,21 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [Lamentin](Settlements/Lamentin.md) | 5500 |
-| [Meaux](Settlements/Meaux.md) | 7500 |
-| [Morton](Settlements/Morton.md) | 2000 |
-| [Saint-Pierre](Settlements/Saint-Pierre.md) | 9500 |
+| [Lamentin](Harbors/Lamentin.md#potential-expansion) | 5500 |
+| [Meaux](Harbors/Meaux.md#potential-expansion) | 7500 |
+| [Morton](Harbors/Morton.md#potential-expansion) | 2000 |
+| [StPierre](Harbors/StPierre.md#potential-expansion) | 9500 |
 
 ## [Другое](Other/Summary.md)
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [EveronAirport](Harbors/EveronAirport.md) | 7000 |
-| [Lamentin](Harbors/Lamentin.md) | 4000 |
-| [StPhillipe](Harbors/StPhillipe.md) | 10000 |
-| [military site - 7447.122 7.894 6704.909](Other/military-site-382919a3.md) | 2000 |
-| [military site - 3901.866 15.249 8450.660](Other/military-site-1603197e.md) | 7500 |
-| [military site - 4936.765 28.261 11921.946](Other/military-site-dc7d1177.md) | 7000 |
+| [EveronAirport - 4900.952 28.595 11787.412](Harbors/EveronAirport.md#potential-expansion) | 7000 |
+| [Lamentin](Harbors/Lamentin.md#potential-expansion) | 4000 |
+| [StPhillipe](Harbors/StPhillipe.md#potential-expansion) | 10000 |
+| [FishermansBay](Harbors/FishermansBay.md#potential-expansion) | 2000 |
+| [MilitaryHospital](Harbors/MilitaryHospital.md#potential-expansion) | 7500 |
+| [EveronAirport - 4936.765 28.261 11921.946](Harbors/EveronAirport.md#potential-expansion) | 7000 |
 | [Saint-Pierre's Pass](Other/Saint-Pierre-s-Pass.md) | 11500 |
 | [StartingPos21](Other/StartingPos21.md) | 1000 |
 

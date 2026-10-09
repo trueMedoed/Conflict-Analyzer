@@ -8,9 +8,9 @@
 
 | Название | Припасов изначально |
 | --- | ---: |
-| [Lamentin](Lamentin.md) | 5500 |
-| [Meaux](Meaux.md) | 7500 |
-| [Morton](Morton.md) | 2000 |
-| [Saint-Pierre](Saint-Pierre.md) | 9500 |
+| [Lamentin](../Harbors/Lamentin.md#potential-expansion) | 5500 |
+| [Meaux](../Harbors/Meaux.md#potential-expansion) | 7500 |
+| [Morton](../Harbors/Morton.md#potential-expansion) | 2000 |
+| [StPierre](../Harbors/StPierre.md#potential-expansion) | 9500 |
 
 [Состав расчёта и неизвестные значения](../../revisions/r0041/Supplies/Summary.json).
