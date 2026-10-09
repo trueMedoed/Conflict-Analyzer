@@ -80,3 +80,6 @@ Unreleased: harbor neighbor collection is limited to 100 m. More distant neighbo
 Unreleased / r0040: inspect individual physical and virtual harbor containers, compare storage-root positions, and display observed runtime range / isolation / interaction / link checks. Categories and supply totals are unchanged.
 
 Unreleased / r0041: name generic harbor location pages after nearby dock source names and add reciprocal navigation links; storage assignments and totals remain unchanged.
+
+
+Unreleased: StPhillipe combines dock storage and potential expansion storage in one page with an initial-supplies summary.

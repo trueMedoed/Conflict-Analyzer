@@ -29,7 +29,7 @@
 | Название | Припасов изначально |
 | --- | ---: |
 | [SP_A_EveronAirport](SP_A_EveronAirport.md) | 4000 |
-| [SP_T1H_StPhillipe](SP_T1H_StPhillipe.md) | 3500 |
+| [SP_T1H_StPhillipe](StPhillipe.md#dock-storage) | 3500 |
 | [SP_T1H_StPierre](SP_T1H_StPierre.md) | неизвестно |
 | [SP_T2H_FishermansBay](SP_T2H_FishermansBay.md) | 5000 |
 | [SP_T2H_Lamentin](SP_T2H_Lamentin.md) | неизвестно |
