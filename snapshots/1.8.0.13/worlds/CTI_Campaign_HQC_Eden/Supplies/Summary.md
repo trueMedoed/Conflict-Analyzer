@@ -30,26 +30,32 @@
 
 ## [Доки](Harbors/Summary.md)
 
-| Название | Припасов изначально |
-| --- | ---: |
-| [EveronAirport](Harbors/EveronAirport.md) | 11000 |
-| [StPhillipe](Harbors/StPhillipe.md) | 13500 |
-| [StPierre](Harbors/StPierre.md) | 9500 |
-| [FishermansBay](Harbors/FishermansBay.md) | 7000 |
-| [Lamentin](Harbors/Lamentin.md) | 9500 |
-| [Meaux](Harbors/Meaux.md) | 7500 |
-| [MilitaryHospital](Harbors/MilitaryHospital.md) | 10500 |
-| [Morton](Harbors/Morton.md) | 5500 |
-| [GoatBay](Harbors/GoatBay.md) | 2500 |
-| [Gravette](Harbors/Gravette.md) | 1500 |
-| [HalcyonStrait](Harbors/HalcyonStrait.md) | 1500 |
-| [Kermovan](Harbors/Kermovan.md) | 2500 |
-| [Lancre](Harbors/Lancre.md) | 1000 |
-| [Laruns](Harbors/Laruns.md) | 1500 |
-| [LeBosc](Harbors/LeBosc.md) | 3000 |
-| [Perelle](Harbors/Perelle.md) | 3500 |
-| [SpaniardsBay](Harbors/SpaniardsBay.md) | 3000 |
-| [Thollevast](Harbors/Thollevast.md) | 1500 |
+«В составе дока» — начальный запас контейнеров, прошедших измеренные игровые условия подключения. «Потенциальное расширение» — остальные припасы на странице дока; пополнение доком для них не подтверждено. Это не доказательство, что их запас невосполняем при любых условиях. Обе группы входят в общий итог, без повторного подсчёта.
+
+Количество за цикл взято из m_iRegularSuppliesIncomeBase, интервал — m_iSuppliesArrivalInterval / 60. Это настройки конфигурации; фактический цикл пополнения пока не измерен.
+
+| Название | Всего изначально | В составе дока | Пополнение за цикл, припасы | Пополнение, мин. | Потенциальное расширение, припасы |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| [EveronAirport](Harbors/EveronAirport.md) | 11000 | 6500 | 2000 | 10 | 4500 |
+| [StPhillipe](Harbors/StPhillipe.md) | 13500 | 3500 | 3000 | 15 | 10000 |
+| [StPierre](Harbors/StPierre.md) | 9500 | 8500 | 3000 | 15 | 1000 |
+| [FishermansBay](Harbors/FishermansBay.md) | 7000 | 5000 | 2000 | 15 | 2000 |
+| [Lamentin](Harbors/Lamentin.md) | 9500 | 5500 | 2000 | 15 | 4000 |
+| [Meaux](Harbors/Meaux.md) | 7500 | 7500 | 2000 | 15 | 0 |
+| [MilitaryHospital](Harbors/MilitaryHospital.md) | 10500 | 6000 | 2000 | 15 | 4500 |
+| [Morton](Harbors/Morton.md) | 5500 | 3500 | 2000 | 15 | 2000 |
+| [GoatBay](Harbors/GoatBay.md) | 2500 | 2500 | 1000 | 10 | 0 |
+| [Gravette](Harbors/Gravette.md) | 1500 | 1500 | 1000 | 10 | 0 |
+| [HalcyonStrait](Harbors/HalcyonStrait.md) | 1500 | 1500 | 1000 | 10 | 0 |
+| [Kermovan](Harbors/Kermovan.md) | 2500 | 2500 | 1000 | 10 | 0 |
+| [Lancre](Harbors/Lancre.md) | 1000 | 1000 | 1000 | 10 | 0 |
+| [Laruns](Harbors/Laruns.md) | 1500 | 1500 | 1000 | 10 | 0 |
+| [LeBosc](Harbors/LeBosc.md) | 3000 | 3000 | 1000 | 10 | 0 |
+| [Perelle](Harbors/Perelle.md) | 3500 | 3500 | 1000 | 10 | 0 |
+| [SpaniardsBay](Harbors/SpaniardsBay.md) | 3000 | 3000 | 1000 | 10 | 0 |
+| [Thollevast](Harbors/Thollevast.md) | 1500 | 1500 | 1000 | 10 | 0 |
+
+[Распределение хранилищ](../revisions/r0044/Supplies/HarborStorageGroups.json) · [Настройки пополнения](../revisions/r0044/Supplies/Harbors.json).
 
 ## [Склады](SupplyDepots/Summary.md)
 

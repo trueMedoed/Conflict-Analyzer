@@ -432,6 +432,7 @@ function WriteEligibleHarborGroups($pages,$entries){
         $reports.Add([ordered]@{groupId=$page.id;name=$page.group.name;path=$page.file;eligibleInitialSupplies=$activeSum;potentialExpansionInitialSupplies=$restSum;totalInitialSupplies=$sum;physicalSlots=@($parts | ForEach-Object {[ordered]@{id=$_.slot.id;group=$_.group;configuredInitialSupplies=$_.slot.configuredInitialSupplies;eligibilityEvidenceIds=$_.evidenceIds}})})
     }
     WriteHarborSummaryBreakdown (Join-Path $output 'Supplies/Harbors/Summary.md') @($reports) ((Get-Content -LiteralPath (Join-Path $output 'Supplies/Harbors.json') -Raw | ConvertFrom-Json).records)
+    WriteMainHarborSummary (Join-Path $output 'Supplies/Summary.md') @($reports) ((Get-Content -LiteralPath (Join-Path $output 'Supplies/Harbors.json') -Raw | ConvertFrom-Json).records)
     $index.sections.supplies.harborStorageGroups='Supplies/HarborStorageGroups.json'
     WriteJson 'Supplies/HarborStorageGroups.json' ([ordered]@{schemaVersion=1;snapshotId=$snapshotId;method='measured_eligible_physical_or_source_ancestor_virtual';runtimeRefillConfirmed=$false;evidence='HarborNeighbors.json';records=@($reports)})
 }
@@ -458,4 +459,26 @@ function WriteHarborSummaryBreakdown($summaryPath,$records,$harborRecords){
     if(!$text.Contains($legend)){$text=$text.Replace('## Начальные припасы по докам',"## Начальные припасы по докам`n`n$legend")}
     $text=[regex]::Replace($text,'(?m)^У StPierre, Lamentin и Meaux «неизвестно»[^\r\n]*\r?\n','')
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
+}
+function WriteMainHarborSummary($path,$records,$sources){
+    $text=[IO.File]::ReadAllText($path)
+    $pattern='(?ms)^## \[Доки\]\(Harbors/Summary\.md\)\r?\n.*?(?=^## |\z)'
+    Assert ([regex]::Matches($text,$pattern).Count -eq 1) 'Missing harbor section in world summary.'
+    $lines=[Collections.Generic.List[string]]::new()
+    $lines.Add('## [Доки](Harbors/Summary.md)');$lines.Add('')
+    $lines.Add('«В составе дока» — начальный запас контейнеров, прошедших измеренные игровые условия подключения. «Потенциальное расширение» — остальные припасы на странице дока; пополнение доком для них не подтверждено. Это не доказательство, что их запас невосполняем при любых условиях. Обе группы входят в общий итог, без повторного подсчёта.');$lines.Add('')
+    $lines.Add('Количество за цикл взято из m_iRegularSuppliesIncomeBase, интервал — m_iSuppliesArrivalInterval / 60. Это настройки конфигурации; фактический цикл пополнения пока не измерен.');$lines.Add('')
+    $lines.Add('| Название | Всего изначально | В составе дока | Пополнение за цикл, припасы | Пополнение, мин. | Потенциальное расширение, припасы |')
+    $lines.Add('| --- | ---: | ---: | ---: | ---: | ---: |')
+    foreach($record in $records){
+        $source=@($sources | Where-Object name -ceq $record.name);Assert ($source.Count -eq 1) 'Missing harbor refill source.';$source=$source[0]
+        $income=if($source.valueStatus.supplyIncomePerCycle -ceq 'resolved'){Number $source.supplyIncomePerCycle}else{'неизвестно'}
+        $minutes=if($source.valueStatus.arrivalInterval -ceq 'resolved'){Number ($source.arrivalIntervalSeconds / 60.0)}else{'неизвестно'}
+        $name=[IO.Path]::GetFileNameWithoutExtension($record.path)
+        $lines.Add("| [$name]($($record.path)) | $(Number $record.totalInitialSupplies) | $(Number $record.eligibleInitialSupplies) | $income | $minutes | $(Number $record.potentialExpansionInitialSupplies) |")
+    }
+    $lines.Add('');$lines.Add('[Распределение хранилищ](HarborStorageGroups.json) · [Настройки пополнения](Harbors.json).');$lines.Add('');$lines.Add('')
+    $replacement=$lines -join "`n"
+    $text=[regex]::Replace($text,$pattern,[Text.RegularExpressions.MatchEvaluator]{param($m) $replacement})
+    [IO.File]::WriteAllText($path,$text,[Text.UTF8Encoding]::new($false))
 }
