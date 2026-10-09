@@ -93,3 +93,5 @@ Unreleased: include matching settlement and user-confirmed military-site groups 
 Unreleased / r0042: harbor summaries include associated expansion storage in the Harbors accounting category; original category provenance is retained and the world total is unchanged.
 
 Unreleased / r0043: remove synthetic unknown stock for harbors without descendant storage; catalogued configured initial supplies remain 231200.
+
+Unreleased / r0044: harbor storage groups use measured interaction eligibility, including ancestor virtual representations; actual refill is not confirmed.

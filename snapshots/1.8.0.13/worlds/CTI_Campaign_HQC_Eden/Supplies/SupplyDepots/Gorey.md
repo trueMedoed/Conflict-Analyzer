@@ -81,6 +81,6 @@
 | SupplyStack_01_V3_storage | 100 / 100 | 4871.566 114.113 8039.662 |
 | SupplyStack_01_V3_storage | 100 / 100 | 4873.072 113.990 8041.253 |
 
-[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0043/Supplies/ContainerDetails.json).
+[Контейнеры: координаты, иерархия и исходные поля](../../revisions/r0044/Supplies/ContainerDetails.json).
 
-[Состав расчёта](../../revisions/r0043/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0043/Locations.json).
+[Состав расчёта](../../revisions/r0044/Supplies/Summary.json) · [Группы и происхождение](../../revisions/r0044/Locations.json).

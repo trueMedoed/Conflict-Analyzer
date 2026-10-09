@@ -161,6 +161,7 @@ function WriteSupplyHierarchy($entries,$totals){
     [IO.File]::WriteAllText($summaryPath,$text,[Text.UTF8Encoding]::new($false))
     MergeHarborDetailPages $pages $entries
     UpdateHarborSummaryAccounting $pages $entries
+    WriteEligibleHarborGroups $pages $entries
     $result=Get-Content -LiteralPath (Join-Path $output 'Supplies/Summary.json') -Raw | ConvertFrom-Json
     $navigation=@($pages | ForEach-Object {[ordered]@{id=$_.id;category=$_.category;name=$_.label;path=$_.file;entryIds=$_.entryIds;knownInitialSupplies=$_.known;unknownEntryCount=$_.unknown;harborLocationBinding=$_.harborLocationBinding}})
     $result | Add-Member -NotePropertyName detailPages -NotePropertyValue $navigation
@@ -371,4 +372,65 @@ function UpdateHarborSummaryAccounting($pages,$entries){
     }
     $text=$text.Replace('«Города» включают города, деревни и поселения.','«Доки» включают собственные хранилища и связанные группы потенциального расширения. «Города» включают оставшиеся отдельно учтённые города, деревни и поселения.')
     [IO.File]::WriteAllText($mainPath,$text,[Text.UTF8Encoding]::new($false))
+}
+
+# Partition physical stock using measured direct or ancestor-virtual eligibility.
+function WriteEligibleHarborGroups($pages,$entries){
+    $reports=[Collections.Generic.List[object]]::new()
+    foreach($page in @($pages | Where-Object category -ceq 'harbors')){
+        $record=$script:harborNeighbors[$page.id]
+        $eligible=@($record.containers | Where-Object {$null -ne $_.runtime -and $_.runtime.inRange -eq $true -and $_.runtime.isolated -eq $false -and $_.runtime.allowed -eq $true})
+        $slots=[ordered]@{}
+        foreach($id in $page.entryIds){
+            if($script:detailSlots.ContainsKey($id)){$slots[$id]=$script:detailSlots[$id];continue}
+            Assert ($rows.ContainsKey($id)) 'Harbor entry missing source parent.'
+            $parent=$rows[$id]
+            foreach($slot in $script:detailSlots.Values){if($parent.sourceId -cin $slot.ancestorSourceIds){$slots[$slot.id]=$slot}}
+        }
+        $parts=[Collections.Generic.List[object]]::new()
+        foreach($slot in $slots.Values){
+            $evidence=@($eligible | Where-Object {$_.id -ceq $slot.id -or ($_.virtual -and $_.sourceId -cin $slot.ancestorSourceIds)})
+            $parts.Add([pscustomobject]@{slot=$slot;group=$(if($evidence.Count){'eligible'}else{'potential_expansion'});evidenceIds=@($evidence | ForEach-Object {$_.id})})
+        }
+        $sum=0.0;foreach($part in $parts){Assert ($part.slot.configuredInitialStatus -ceq 'resolved') 'Unresolved stock requires explicit presentation.';$sum+=$part.slot.configuredInitialSupplies}
+        Assert ($sum -eq $page.known -and $page.unknown -eq 0) 'Harbor partition changed initial supplies.'
+        $active=@($parts | Where-Object group -ceq eligible);$rest=@($parts | Where-Object group -ceq potential_expansion)
+        $activeSum=0.0;foreach($part in $active){$activeSum+=$part.slot.configuredInitialSupplies};$restSum=$sum-$activeSum
+        $path=Join-Path $output "Supplies/$($page.file)"
+        $old=[IO.File]::ReadAllText($path)
+        $lines=[Collections.Generic.List[string]]::new()
+        $lines.Add("# $($page.label)");$lines.Add('');$lines.Add('[Доки — сводка](Summary.md) · [Все категории](../Summary.md)');$lines.Add('')
+        $lines.Add('Состав дока определяется игровыми проверками IsInRange=true, IsIsolated=false и CanInteractWith=true из сохранённой сессии. Учитывается физический контейнер либо его виртуальное представление-предок в source-иерархии. Вложенность в сущность дока сама по себе не определяет группу. Виртуальные представления не прибавляются к запасу повторно.');$lines.Add('')
+        $lines.Add('Это пригодность к подключению в момент измерения, а не подтверждённый цикл пополнения: IsInteractorLinked показал false. Не прошедшие проверки или не измеренные контейнеры остаются в потенциальном расширении для проверки размещения и подключения.');$lines.Add('')
+        $lines.Add('## Суммаризация припасов');$lines.Add('');$lines.Add('| Группа | Припасов изначально по конфигам |');$lines.Add('| --- | ---: |');$lines.Add("| [Состав дока](#dock-storage) | $(Number $activeSum) |");$lines.Add("| [Потенциальное расширение состава дока](#potential-expansion) | $(Number $restSum) |");$lines.Add("| **Всего** | **$(Number $sum)** |");$lines.Add('')
+        foreach($key in @('eligible','potential_expansion')){
+            $selected=@($parts | Where-Object group -ceq $key)
+            if($key -ceq 'eligible'){$lines.Add('<a id="dock-storage"></a>');$lines.Add("## 1. Состав дока — $($page.group.name)")}else{$lines.Add('<a id="potential-expansion"></a>');$lines.Add('## 2. Потенциальное расширение состава дока')};$lines.Add('')
+            if($key -ceq 'eligible'){
+                $table=[regex]::Match($old,'(?m)^\| Название \|[^\r\n]*\r?\n\|[^\r\n]*\r?\n\|[^\r\n]*').Value
+                # Original table describes source-descendant capacity, not eligible capacity.
+                if($table){
+                    $capacity=0.0;foreach($part in $active){Assert ($part.slot.capacityStatus -ceq 'resolved') 'Unresolved eligible capacity.';$capacity+=$part.slot.capacitySupplies}
+                    $composition=@($active | Group-Object {$_.slot.capacitySupplies} | Sort-Object {[double]$_.Name} | ForEach-Object {"$($_.Count) × $(Number ([double]$_.Name))"}) -join ' + '
+                    if(!$composition){$composition='—'}
+                    $tableLines=$table -split '\r?\n';$cells=$tableLines[2].Split('|');$cells[2]=" $(Number $capacity) ";$cells[3]=" $composition ";$tableLines[2]=$cells -join '|'
+                    $lines.Add(($tableLines -join "`n"));$lines.Add('')
+                }
+                if(!$page.group.physicalDescendantContainers.Count){$lines.Add('> ⚠️ **Требует проверки структуры дока**');$lines.Add('>');$lines.Add('> Вложенных хранилищ не найдено. Отдельно расположенные контейнеры перечислены ниже. Проверьте, нужно ли включить их в иерархию дока. Отсутствие вложенности не означает отсутствия пополнения.');$lines.Add('')}
+            }
+            if(!$selected.Count){$lines.Add('Контейнеров в этой группе нет.');$lines.Add('');continue}
+            $lines.Add('| Контейнер | Вместимость / Изначально | Координаты X Y Z, м | Основание |');$lines.Add('| --- | ---: | --- | --- |')
+            foreach($part in @($selected | Sort-Object {$_.slot.sourceId},{$_.slot.id})){
+                $slot=$part.slot;$why=if($part.group -ceq 'eligible'){'Игровые условия выполнены'}else{'Нет подтверждения всех условий'}
+                $lines.Add("| $(Text $slot.name) | $(Value $slot.capacitySupplies $slot.capacityStatus) / $(Number $slot.configuredInitialSupplies) | $(Position $slot.worldPositionMeters $slot.positionStatus) | $why |")
+            };$lines.Add('')
+        }
+        $lines.Add('## Проверки и происхождение');$lines.Add('')
+        $audit=[Collections.Generic.List[string]]::new();AddHarborNeighbors $audit $page $pages
+        $lines.Add(($audit -join "`n"));$lines.Add('[Распределение физических контейнеров и основания](../HarborStorageGroups.json).');$lines.Add('');$lines.Add('[Исходные поля и иерархия контейнеров](../ContainerDetails.json).')
+        [IO.File]::WriteAllText($path,($lines -join "`n")+"`n",[Text.UTF8Encoding]::new($false))
+        $reports.Add([ordered]@{groupId=$page.id;name=$page.group.name;path=$page.file;eligibleInitialSupplies=$activeSum;potentialExpansionInitialSupplies=$restSum;totalInitialSupplies=$sum;physicalSlots=@($parts | ForEach-Object {[ordered]@{id=$_.slot.id;group=$_.group;configuredInitialSupplies=$_.slot.configuredInitialSupplies;eligibilityEvidenceIds=$_.evidenceIds}})})
+    }
+    $index.sections.supplies.harborStorageGroups='Supplies/HarborStorageGroups.json'
+    WriteJson 'Supplies/HarborStorageGroups.json' ([ordered]@{schemaVersion=1;snapshotId=$snapshotId;method='measured_eligible_physical_or_source_ancestor_virtual';runtimeRefillConfirmed=$false;evidence='HarborNeighbors.json';records=@($reports)})
 }

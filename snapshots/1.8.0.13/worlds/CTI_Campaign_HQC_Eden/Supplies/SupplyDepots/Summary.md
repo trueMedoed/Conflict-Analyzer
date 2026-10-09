@@ -2,7 +2,7 @@
 
 [Общая сводка](../Summary.md)
 
-Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0043`.
+Игра **1.8.0.13**, мир `CTI_Campaign_HQC_Eden`, ревизия `r0044`.
 
 Начальных припасов по конфигам: **75100**. Итог учитывает каждый объект один раз.
 
@@ -20,4 +20,4 @@
 | [Régina](Regina.md) | 7100 |
 | [military site](military-site.md) | 6500 |
 
-[Состав расчёта и источники](../../revisions/r0043/Supplies/Summary.json).
+[Состав расчёта и источники](../../revisions/r0044/Supplies/Summary.json).

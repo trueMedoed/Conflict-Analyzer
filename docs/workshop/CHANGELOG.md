@@ -119,3 +119,5 @@ Unreleased / r0041: named harbor location pages / именованные стр�
 Unreleased / r0042: align supply accounting with consolidated harbor pages / категории сводки приведены к объединённым страницам доков.
 
 Unreleased / r0043: remove synthetic harbor unknown stock / убран искусственный неизвестный запас доков.
+
+Unreleased / r0044: partition harbor storage by measured eligibility / состав доков по игровым проверкам.
