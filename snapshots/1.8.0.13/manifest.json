@@ -5022,6 +5022,37 @@
           "ownershipEstablished": false
         }
       }
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0045",
+      "revisionId": "r0045",
+      "schemaVersion": 3,
+      "status": "partial",
+      "normalizerVersion": "starting-bases-0.1",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/data.json",
+      "scope": "starting_HQ_candidates_only",
+      "summary": {
+        "candidateCount": 8,
+        "runtimeNetworkCapacityStatus": "not_measured",
+        "existingKnownInitialSupplies": 231200
+      },
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/Summary.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos05.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos07.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos09.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos12.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos14.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos15.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos19.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/StartingPos21.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0045/Supplies/StartingBases/Summary.md"
+      ]
     }
   ],
   "warnings": [

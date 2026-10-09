@@ -95,3 +95,5 @@ Unreleased / r0042: harbor summaries include associated expansion storage in the
 Unreleased / r0043: remove synthetic unknown stock for harbors without descendant storage; catalogued configured initial supplies remain 231200.
 
 Unreleased / r0044: harbor storage groups use measured interaction eligibility, including ancestor virtual representations; actual refill is not confirmed.
+
+Unreleased / r0045: eight starting HQ candidates, command-post capacity and configured refill amounts/intervals. Full runtime network capacity and refill remain unmeasured; candidate totals are not added to world stock.

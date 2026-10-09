@@ -121,3 +121,5 @@ Unreleased / r0042: align supply accounting with consolidated harbor pages / к�
 Unreleased / r0043: remove synthetic harbor unknown stock / убран искусственный неизвестный запас доков.
 
 Unreleased / r0044: partition harbor storage by measured eligibility / состав доков по игровым проверкам.
+
+Unreleased / r0045: starting HQ candidate catalog / каталог стартовых позиций главных баз.

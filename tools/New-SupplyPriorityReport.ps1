@@ -11,6 +11,7 @@ param(
     [Parameter(Mandatory=$true)][string]$WorldContainersReportPath,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
     [string]$HarborRuntimeReportPath,
+    [string]$StartingBasesReportPath,
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=200,
@@ -491,3 +492,16 @@ function WriteInitialSummary {
 . (Join-Path $PSScriptRoot 'PhysicalSupplyDetails.ps1')
 . (Join-Path $PSScriptRoot 'Write-SupplyHierarchy.ps1')
 WriteInitialSummary
+
+# Optional targeted HQ catalog; keep its original capture/revision metadata.
+if($StartingBasesReportPath){
+    $hq=Get-Content -LiteralPath $StartingBasesReportPath -Raw | ConvertFrom-Json
+    Assert ($hq.gameVersion -ceq $world.gameVersion) 'HQ candidate game version mismatch.'
+    $sourceFolder=Join-Path (Split-Path $StartingBasesReportPath) 'StartingBases'
+    Copy-Item -LiteralPath $StartingBasesReportPath -Destination (Join-Path $output 'Supplies/StartingBases.json')
+    Copy-Item -LiteralPath $sourceFolder -Destination (Join-Path $output 'Supplies/StartingBases') -Recurse
+    . (Join-Path $PSScriptRoot 'StartingBasesSummary.ps1')
+    AddStartingBasesSummary (Join-Path $output 'Supplies/Summary.md') $hq
+    $index.sections.startingBases=@{status='partial';data='Supplies/StartingBases.json';summary='Supplies/StartingBases/Summary.md';sourceSnapshotId=$hq.snapshotId;accounting='non_additive_candidates'}
+    WriteJson 'data.json' $index
+}
