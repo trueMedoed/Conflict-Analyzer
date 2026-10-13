@@ -108,8 +108,8 @@
 
 Учтено в справочнике: [Meaux](../Harbors/Meaux.md).
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0044/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0046/Supplies/HarborNeighbors.json).
 
-[Распределение физических контейнеров и основания](../../revisions/r0044/Supplies/HarborStorageGroups.json).
+[Распределение физических контейнеров и основания](../../revisions/r0046/Supplies/HarborStorageGroups.json).
 
-[Исходные поля и иерархия контейнеров](../../revisions/r0044/Supplies/ContainerDetails.json).
+[Исходные поля и иерархия контейнеров](../../revisions/r0046/Supplies/ContainerDetails.json).

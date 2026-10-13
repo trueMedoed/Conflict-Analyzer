@@ -51,8 +51,8 @@
 | SupplyShippingContainers_01_20ft | физический | 3389.517 1.093 7222.590 | 17.869 | да | нет | да | да | да | нет |
 | Storage_Supplies_Containers_FIA_04 | виртуальный | 3386.898 1.094 7220.547 | 14.55 | да | нет | да | нет | да | нет |
 
-[Проверки контейнеров, корней и подключения](../../revisions/r0044/Supplies/HarborNeighbors.json).
+[Проверки контейнеров, корней и подключения](../../revisions/r0046/Supplies/HarborNeighbors.json).
 
-[Распределение физических контейнеров и основания](../../revisions/r0044/Supplies/HarborStorageGroups.json).
+[Распределение физических контейнеров и основания](../../revisions/r0046/Supplies/HarborStorageGroups.json).
 
-[Исходные поля и иерархия контейнеров](../../revisions/r0044/Supplies/ContainerDetails.json).
+[Исходные поля и иерархия контейнеров](../../revisions/r0046/Supplies/ContainerDetails.json).

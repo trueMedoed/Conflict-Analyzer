@@ -123,3 +123,5 @@ Unreleased / r0043: remove synthetic harbor unknown stock / убран иску�
 Unreleased / r0044: partition harbor storage by measured eligibility / состав доков по игровым проверкам.
 
 Unreleased / r0045: starting HQ candidate catalog / каталог стартовых позиций главных баз.
+
+Unreleased / r0046: move StartingPos21 stock from Other to Starting Bases.

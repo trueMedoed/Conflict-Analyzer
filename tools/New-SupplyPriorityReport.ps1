@@ -15,7 +15,7 @@ param(
     [string]$ControlPointMapLinksPath=(Join-Path $PSScriptRoot 'config/ControlPointMapLinks.json'),
     [ValidateRange(0.001,100000)][double]$RadiusMeters=350,
     [ValidateRange(0.001,100000)][double]$DepotRadiusMeters=200,
-    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0044',
+    [ValidatePattern('^r[0-9]{4}$')][string]$RevisionId='r0046',
     [Parameter(Mandatory=$true)][string]$RevisionReason
 )
 $ErrorActionPreference='Stop'
@@ -34,7 +34,7 @@ Assert ($depots.schemaVersion -eq 2 -and $depots.kind -ceq 'campaign-remnants-su
 Assert ($cp.schemaVersion -eq 2 -and $cp.kind -ceq 'conflict-control-points' -and $cp.selection -ceq 'ConflictControlPoint-prefab' -and $cp.records.Count -eq $cp.recordCount -and $cp.editorEntityCountUnchanged -and $cp.coordinateMismatchCount -eq 0) 'Invalid native control-point export.'
 Assert ($oldLocations.kind -ceq 'location-radius-catalog' -and $oldLocations.schemaVersion -eq 2) 'Invalid map/location seed.'
 Assert ($other.kind -ceq 'location-grouped-supply-view' -and $other.category -ceq 'other_supply_parent' -and $harbors.kind -ceq 'location-grouped-supply-view' -and $harbors.category -ceq 'supply_source_base') 'Invalid previous supply views.'
-$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.26'
+$version=$oldLocations.gameVersion;$scenario=$oldLocations.scenarioKey;$snapshotId="$version/$scenario/$RevisionId";$normalizer='supply-priority-architecture-0.27'
 $commandPostInput=ReadInput $ControlPointStorageReportPath;$commandPosts=$commandPostInput.value
 Assert ($commandPosts.schemaVersion -eq 2 -and $commandPosts.kind -ceq 'control-point-command-post-storage' -and $commandPosts.gameVersion -ceq $version -and $commandPosts.worldPath -ceq $cp.worldPath -and $commandPosts.recordCount -eq 3 -and $commandPosts.records.Count -eq 3 -and !$commandPosts.runtimeMeasured) 'Invalid command-post storage comparison.'
 Assert (Same @($commandPosts.records.variantId | Sort-Object) @('FIA','US','USSR')) 'Missing command-post variant.'
@@ -502,6 +502,9 @@ if($StartingBasesReportPath){
     Copy-Item -LiteralPath $sourceFolder -Destination (Join-Path $output 'Supplies/StartingBases') -Recurse
     . (Join-Path $PSScriptRoot 'StartingBasesSummary.ps1')
     AddStartingBasesSummary (Join-Path $output 'Supplies/Summary.md') $hq
-    $index.sections.startingBases=@{status='partial';data='Supplies/StartingBases.json';summary='Supplies/StartingBases/Summary.md';sourceSnapshotId=$hq.snapshotId;accounting='non_additive_candidates'}
+    MoveStartingBaseAccounting (Join-Path $output 'Supplies') $hq
+    $index.sections.supplies.hierarchy.pages=@($index.sections.supplies.hierarchy.pages | Where-Object {$_ -notmatch '/Other/StartingPos[0-9]+\.md$'}) + @($hq.records | ForEach-Object {"Supplies/StartingBases/$($_.name).md"})
+    $index.sections.supplies.hierarchy.categories+=@{category='starting_bases';summary='Supplies/StartingBases/Summary.md'}
+    $index.sections.startingBases=@{status='partial';data='Supplies/StartingBases.json';summary='Supplies/StartingBases/Summary.md';sourceSnapshotId=$hq.snapshotId;accounting='static_physical_stock_counted_once_dynamic_candidates_not_additive'}
     WriteJson 'data.json' $index
 }

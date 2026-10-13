@@ -97,3 +97,5 @@ Unreleased / r0043: remove synthetic unknown stock for harbors without descendan
 Unreleased / r0044: harbor storage groups use measured interaction eligibility, including ancestor virtual representations; actual refill is not confirmed.
 
 Unreleased / r0045: eight starting HQ candidates, command-post capacity and configured refill amounts/intervals. Full runtime network capacity and refill remain unmeasured; candidate totals are not added to world stock.
+
+Unreleased / r0046: existing StartingPos21 storage is accounted under starting bases, without double counting.
