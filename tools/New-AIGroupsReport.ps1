@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0048',
+    [string]$RevisionId='r0049',
     [string]$WeaponsLogPath
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
@@ -77,3 +77,5 @@ Json 'world.json' ([ordered]@{schemaVersion=3;snapshotId=$report.snapshotId;revi
 Write-Output ($summary | ConvertTo-Json -Compress)
 
 if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIWeaponsReport.ps1') -WeaponsLogPath $WeaponsLogPath -OutputDirectory $OutputDirectory }
+
+if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIMedicalReport.ps1') -InventoryLogPath $WeaponsLogPath -OutputDirectory $OutputDirectory }
