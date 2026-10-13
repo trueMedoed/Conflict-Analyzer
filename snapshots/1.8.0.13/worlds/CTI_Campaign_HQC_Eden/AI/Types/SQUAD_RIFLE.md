@@ -6,15 +6,29 @@
 
 Prefab: `{265B11E8E53F9FBA}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_RifleSquad_NotSpawned.et`.
 
-| Prefab бойца | Количество |
+## Вооружение группы
+
+| Оружие | Количество |
 | --- | ---: |
-| Character_FIA_RTO | 1 |
-| Character_FIA_MG | 1 |
-| Character_FIA_SL | 1 |
-| Character_FIA_AMG | 1 |
-| Character_FIA_Rifleman | 1 |
-| Character_FIA_LAT | 2 |
+| Vz. 58 P | 5 |
+| RPG-75 | 2 |
+| ПМ | 1 |
+| UK vz. 59 (4×8) | 1 |
+| Vz. 58 V | 1 |
 
-Состав прочитан через унаследованное m_aUnitPrefabSlots в Workbench; повторяющиеся слоты считаются отдельными бойцами. Вооружение не выводится из имени персонажа.
+## Состав бойцов
 
-[Исходные ресурсы и значения](../../revisions/r0047/AI/Groups.json).
+| Prefab бойца | Количество | Оружие у каждого | Тип гранаты в слоте |
+| --- | ---: | --- | --- |
+| Character_FIA_RTO | 1 | Vz. 58 P | РГД-5 |
+| Character_FIA_MG | 1 | UK vz. 59 (4×8); ПМ | РДГ-2 (дым) |
+| Character_FIA_SL | 1 | Vz. 58 V | РГД-5 |
+| Character_FIA_AMG | 1 | Vz. 58 P | РГД-5 |
+| Character_FIA_Rifleman | 1 | Vz. 58 P | РГД-5 |
+| Character_FIA_LAT | 2 | Vz. 58 P; RPG-75 | РГД-5 |
+
+Вооружение прочитано из унаследованных CharacterWeaponSlotComponent.WeaponTemplate; повторяющиеся бойцы учитываются отдельно. Тип гранаты — шаблон CharacterGrenadeSlotComponent, а не количество гранат. Боезапас, содержимое одежды и изменения после появления здесь не суммируются; это конфигурация префабов, не измеренный боевой состав.
+
+[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0048/AI/Weapons.json).
+
+[Исходные ресурсы и значения](../../revisions/r0048/AI/Groups.json).

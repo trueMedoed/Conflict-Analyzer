@@ -6,13 +6,24 @@
 
 Prefab: `{DB3D2D4FC5922C6A}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_PartisanTeam_NotSpawned.et`.
 
-| Prefab бойца | Количество |
+## Вооружение группы
+
+| Оружие | Количество |
 | --- | ---: |
-| Character_FIA_AC_Partisan | 2 |
-| Character_FIA_AC_Partisan_Grenadier | 1 |
-| Character_FIA_AC_Medic | 1 |
-| Character_FIA_AC_Scout | 1 |
+| ПМ | 5 |
+| Vz. 58 V | 2 |
 
-Состав прочитан через унаследованное m_aUnitPrefabSlots в Workbench; повторяющиеся слоты считаются отдельными бойцами. Вооружение не выводится из имени персонажа.
+## Состав бойцов
 
-[Исходные ресурсы и значения](../../revisions/r0047/AI/Groups.json).
+| Prefab бойца | Количество | Оружие у каждого | Тип гранаты в слоте |
+| --- | ---: | --- | --- |
+| Character_FIA_AC_Partisan | 2 | Vz. 58 V; ПМ | — |
+| Character_FIA_AC_Partisan_Grenadier | 1 | ПМ | РГД-5 |
+| Character_FIA_AC_Medic | 1 | ПМ | — |
+| Character_FIA_AC_Scout | 1 | ПМ | — |
+
+Вооружение прочитано из унаследованных CharacterWeaponSlotComponent.WeaponTemplate; повторяющиеся бойцы учитываются отдельно. Тип гранаты — шаблон CharacterGrenadeSlotComponent, а не количество гранат. Боезапас, содержимое одежды и изменения после появления здесь не суммируются; это конфигурация префабов, не измеренный боевой состав.
+
+[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0048/AI/Weapons.json).
+
+[Исходные ресурсы и значения](../../revisions/r0048/AI/Groups.json).

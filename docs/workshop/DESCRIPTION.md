@@ -101,3 +101,5 @@ Unreleased / r0045: eight starting HQ candidates, command-post capacity and conf
 Unreleased / r0046: existing StartingPos21 storage is accounted under starting bases, without double counting.
 
 Unreleased / r0047: ambient FIA patrol catalog — 299 spawn points, 9 resolved group variants, location pages and conditional unit counts. Other AI mechanisms remain outside this first report.
+
+The FIA ambient group reference now includes configured weapons per group and per character for all nine types, resolved from 1.8.0.13 prefabs. Runtime equipment and ammunition totals are not measured.

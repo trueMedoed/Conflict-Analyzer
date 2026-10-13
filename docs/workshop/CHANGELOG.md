@@ -127,3 +127,5 @@ Unreleased / r0045: starting HQ candidate catalog / каталог старто�
 Unreleased / r0046: move StartingPos21 stock from Other to Starting Bases.
 
 Unreleased / r0047: ambient AI groups / первый каталог фоновых групп ИИ.
+
+r0048: add inherited weapon-slot evidence for 17 FIA character prefabs and weapon tables for all 9 ambient group types; preserve patrol counts and historical revisions.

@@ -5,7 +5,8 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0047'
+    [string]$RevisionId='r0048',
+    [string]$WeaponsLogPath
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $culture=[Globalization.CultureInfo]::InvariantCulture
@@ -74,3 +75,5 @@ foreach($entry in $catalog){$page=[Collections.Generic.List[string]]::new();$pag
 Json 'data.json' ([ordered]@{schemaVersion=3;snapshotId=$report.snapshotId;status='partial';sections=@{ai=@{data='AI/Groups.json';summary='AI/Summary.md';status='partial'};supplies=@{data='../r0046/data.json';status='unchanged'}}})
 Json 'world.json' ([ordered]@{schemaVersion=3;snapshotId=$report.snapshotId;revisionId=$RevisionId;gameVersion=$version;scenarioKey='CTI_Campaign_HQC_Eden';normalizerVersion=$report.normalizerVersion;status='partial';summary=$summary;worldPath=$diag.worldPath;sourceCapturedAtUTC=$diag.generatedAtUTC})
 Write-Output ($summary | ConvertTo-Json -Compress)
+
+if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIWeaponsReport.ps1') -WeaponsLogPath $WeaponsLogPath -OutputDirectory $OutputDirectory }
