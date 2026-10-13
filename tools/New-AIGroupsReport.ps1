@@ -5,8 +5,9 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0049',
-    [string]$WeaponsLogPath
+    [string]$RevisionId='r0050',
+    [string]$WeaponsLogPath,
+    [string]$InventoryRuntimeLogPath
 )
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 $culture=[Globalization.CultureInfo]::InvariantCulture
@@ -79,3 +80,5 @@ Write-Output ($summary | ConvertTo-Json -Compress)
 if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIWeaponsReport.ps1') -WeaponsLogPath $WeaponsLogPath -OutputDirectory $OutputDirectory }
 
 if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIMedicalReport.ps1') -InventoryLogPath $WeaponsLogPath -OutputDirectory $OutputDirectory }
+
+if ($InventoryRuntimeLogPath) { & (Join-Path $PSScriptRoot 'Add-AIAmmunitionReport.ps1') -InventoryRuntimeLogPath $InventoryRuntimeLogPath -OutputDirectory $OutputDirectory }

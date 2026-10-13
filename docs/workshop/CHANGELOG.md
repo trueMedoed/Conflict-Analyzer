@@ -131,3 +131,6 @@ Unreleased / r0047: ambient AI groups / первый каталог фоновы
 r0048: add inherited weapon-slot evidence for 17 FIA character prefabs and weapon tables for all 9 ambient group types; preserve patrol counts and historical revisions.
 
 r0049: add configured morphine, bandage and tourniquet counts per character and group to all nine AI type pages, with explicit zero counts and source scope.
+
+
+r0050: add measured prototype ammunition, magazine and grenade counts for all nine AI group types; separate spare/loaded magazines and chambered rounds.
