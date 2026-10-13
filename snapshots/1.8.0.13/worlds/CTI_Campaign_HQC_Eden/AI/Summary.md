@@ -12,16 +12,16 @@
 
 | Тип | Точек с фиксированным типом | Бойцов в группе | Всего бойцов фиксированных групп |
 | --- | ---: | ---: | ---: |
-| [TEAM_SENTRY](Types/TEAM_SENTRY.md) | 74 | 2 | 148 |
-| [TEAM_MG](Types/TEAM_MG.md) | 12 | 2 | 24 |
-| [TEAM_AT](Types/TEAM_AT.md) | 25 | 4 | 100 |
 | [FIRETEAM](Types/FIRETEAM.md) | 115 | 5 | 575 |
+| [TEAM_SENTRY](Types/TEAM_SENTRY.md) | 74 | 2 | 148 |
+| [TEAM_AT](Types/TEAM_AT.md) | 25 | 4 | 100 |
 | [SQUAD_RIFLE](Types/SQUAD_RIFLE.md) | 23 | 7 | 161 |
-| [TEAM_SNIPER](Types/TEAM_SNIPER.md) | 7 | 2 | 14 |
-| [TEAM_MG_ELITE](Types/TEAM_MG_ELITE.md) | 7 | 2 | 14 |
-| [PARTISAN_SNIPER](Types/PARTISAN_SNIPER.md) | 11 | 1 | 11 |
 | [PARTISAN_TEAM](Types/PARTISAN_TEAM.md) | 14 | 5 | 70 |
+| [TEAM_MG](Types/TEAM_MG.md) | 12 | 2 | 24 |
 | Случайный тип | 11 | 1–7 | не прибавлять все варианты одновременно |
+| [PARTISAN_SNIPER](Types/PARTISAN_SNIPER.md) | 11 | 1 | 11 |
+| [TEAM_MG_ELITE](Types/TEAM_MG_ELITE.md) | 7 | 2 | 14 |
+| [TEAM_SNIPER](Types/TEAM_SNIPER.md) | 7 | 2 | 14 |
 
 ## Объекты по локациям
 
