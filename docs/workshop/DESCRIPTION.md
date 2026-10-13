@@ -99,3 +99,5 @@ Unreleased / r0044: harbor storage groups use measured interaction eligibility, 
 Unreleased / r0045: eight starting HQ candidates, command-post capacity and configured refill amounts/intervals. Full runtime network capacity and refill remain unmeasured; candidate totals are not added to world stock.
 
 Unreleased / r0046: existing StartingPos21 storage is accounted under starting bases, without double counting.
+
+Unreleased / r0047: ambient FIA patrol catalog — 299 spawn points, 9 resolved group variants, location pages and conditional unit counts. Other AI mechanisms remain outside this first report.

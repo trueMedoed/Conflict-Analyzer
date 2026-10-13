@@ -125,3 +125,5 @@ Unreleased / r0044: partition harbor storage by measured eligibility / сост�
 Unreleased / r0045: starting HQ candidate catalog / каталог стартовых позиций главных баз.
 
 Unreleased / r0046: move StartingPos21 stock from Other to Starting Bases.
+
+Unreleased / r0047: ambient AI groups / первый каталог фоновых групп ИИ.
