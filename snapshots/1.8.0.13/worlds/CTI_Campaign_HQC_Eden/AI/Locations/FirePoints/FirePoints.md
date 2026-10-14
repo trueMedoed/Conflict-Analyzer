@@ -32,11 +32,11 @@
 | Patrol_02000000000003496 | TEAM_SENTRY | 2 | 7059.029 151.124 2332.560 | MachineGunNest_Scoped_S_USSR_01 | 7062.367 150.761 2343.545 | 11.481 | Контрольные точки / Régina |
 | Patrol_020000000000034B6 | TEAM_SENTRY | 2 | 3894.304 15.704 8506.065 | MachineGunNest_S_US_02 | 3890.944 14.208 8508.700 | 4.27 | Доки / MilitaryHospital |
 | Patrol_020000000000034B7 | TEAM_SENTRY | 2 | 5033.074 42.077 8999.515 | MachineGunNest_S_USSR_02 | 5041.103 40.976 9024.564 | 26.305 | Города и деревни / Tyrone |
-| Patrol_020000000000034DA | TEAM_SENTRY | 2 | 4410.875 63.179 4966.041 | MachineGunNest_S_US_02 | 4400.488 65.223 4970.086 | 11.147 | Checkpoint / Checkpoint_S_US_01 |
+| Patrol_020000000000034DA | TEAM_SENTRY | 2 | 4410.875 63.179 4966.041 | MachineGunNest_S_US_02 | 4400.488 65.223 4970.086 | 11.147 | Checkpoints / Checkpoint_S_US_01 |
 | Patrol_020000000000034DB | PARTISAN_TEAM | 5 | 3308.521 115.634 4395.000 | MachineGunNest_S_USSR_01 | 3312.757 115.644 4389.361 | 7.053 | Без локации |
 | Patrol_020000000000034DC | FIRETEAM | 5 | 7052.374 120.102 6033.310 | MachineGunNest_S_USSR_01 | 7053.219 118.831 6031.875 | 1.665 | Города и деревни / Chotain |
 | Patrol_0200000000000351A | PARTISAN_TEAM | 5 | 4715.884 15.185 9828.090 | MachineGunNest_S_USSR_01 | 4713.555 15.131 9829.594 | 2.772 | Другое / farm |
-| Patrol_0200000000000361F | PARTISAN_TEAM | 5 | 4437.845 63.179 4969.825 | MachineGunNest_S_US_02 | 4454.421 62.959 4972.711 | 16.825 | Checkpoint / Checkpoint_S_US_01 |
+| Patrol_0200000000000361F | PARTISAN_TEAM | 5 | 4437.845 63.179 4969.825 | MachineGunNest_S_US_02 | 4454.421 62.959 4972.711 | 16.825 | Checkpoints / Checkpoint_S_US_01 |
 | Patrol_0200000000000362E | TEAM_SENTRY | 2 | 7818.503 225.081 4241.347 | MachineGunNest_S_USSR_02 | 7820.299 223.961 4245.678 | 4.689 | Контрольные точки / Military Base Levie |
 | Patrol_0200000000000362F | TEAM_SENTRY | 2 | 8047.251 229.856 3930.618 | MachineGunNest_Scoped_S_USSR_01 | 8048.186 227.901 3926.963 | 3.773 | Другое / Saint-Pierre's Pass |
 | Patrol_02000000000003630 | FIRETEAM | 5 | 7809.697 260.917 3925.891 | MachineGunNest_S_USSR_02 | 7806.771 260.481 3922.282 | 4.646 | Без локации |
@@ -49,4 +49,4 @@
 | Patrol_02000000000004E08 | FIRETEAM | 5 | 4316.766 1.125 9517.008 | MachineGunNest_S_USSR_01_PKM | 4327.016 1.173 9547.003 | 31.698 | Доки / Meaux |
 | Patrol_02000000000004E09 | FIRETEAM | 5 | 4316.176 1.125 9517.398 | MachineGunNest_S_USSR_01_PKM | 4327.016 1.173 9547.003 | 31.527 | Доки / Meaux |
 
-[Исходные данные и привязки](../../../revisions/r0056/AI/Groups.json).
+[Исходные данные и привязки](../../../revisions/r0057/AI/Groups.json).

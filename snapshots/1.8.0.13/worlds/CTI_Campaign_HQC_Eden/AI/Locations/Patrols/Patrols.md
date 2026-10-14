@@ -120,4 +120,4 @@
 | Patrol_02000000000003624 | PARTISAN_SNIPER | 1 | 5606.426 54.890 9161.504 | Lacan's Head | 1 × SCR_DefendWaypoint |
 | Patrol_02000000000003626 | TEAM_AT | 4 | 4447.355 12.781 10750.005 | StPhillipe | 7 × SCR_AIWaypoint |
 
-[Исходные данные и привязки](../../../revisions/r0056/AI/Groups.json).
+[Исходные данные и привязки](../../../revisions/r0057/AI/Groups.json).
