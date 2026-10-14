@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0055',
+    [string]$RevisionId='r0056',
     [string]$WeaponsLogPath,
     [string]$InventoryRuntimeLogPath,
     [string]$WaypointDiagnosticsPath,
