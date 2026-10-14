@@ -253,8 +253,4 @@
 | 5607.047 90.546 5905.677 | FACTION_FIA, VEHICLE_APC | TRAIT_ARMED |
 
 
-## С повторным появлением — 0
-
-Таких точек нет.
-
-[Полные поля и источники](../../revisions/r0078/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0079/Vehicles/SpawnPoints.json).
