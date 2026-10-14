@@ -12,9 +12,9 @@
 
 ## Точки
 
-| Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | ---: | --- | --- | --- |
-| Vehicle_02000000000001E6D | USSR | 2879.007 6.641 2137.980 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| Vehicle_02000000000001E6E | USSR | 2821.330 6.511 2120.629 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | ---: | --- | --- | --- |
+| USSR | 2879.007 6.641 2137.980 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+| USSR | 2821.330 6.511 2120.629 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0059/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0060/Vehicles/SpawnPoints.json).
