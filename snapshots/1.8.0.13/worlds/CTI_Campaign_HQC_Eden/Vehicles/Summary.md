@@ -1,6 +1,6 @@
 # Точки появления машин
 
-Всего точек фонового появления техники: **181**. Это позиции спавна, не количество существующих машин. Конкретные модели выбираются из каталога фракции по фильтрам; список моделей пока не разрешён.
+Точки фонового появления техники — это позиции спавна, не количество существующих машин. Конкретные модели выбираются из каталога фракции по фильтрам; список моделей пока не разрешён.
 
 ## По фракциям
 
@@ -10,6 +10,7 @@
 | [FIA](Factions/FIA.md) | 79 | 79 | 0 |
 | [USSR](Factions/USSR.md) | 5 | 5 | 0 |
 | [US](Factions/US.md) | 3 | 3 | 0 |
+| **Всего** | **181** | **88** | **93** |
 
 ## По локациям
 
@@ -17,8 +18,6 @@
 
 
 ### Контрольные точки
-
-Всего точек: **14**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -29,10 +28,9 @@
 | [Power Plant](Locations/Power-Plant.md) | 1 |
 | [Régina](Locations/Régina-7cba712f.md) | 1 |
 | [Transformer Station](Locations/Transformer-Station.md) | 3 |
+| **Всего** | **14** |
 
 ### Доки
-
-Всего точек: **34**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -45,10 +43,9 @@
 | [MilitaryHospital](Locations/MilitaryHospital.md) | 2 |
 | [Morton](Locations/Morton.md) | 6 |
 | [StPierre](Locations/StPierre.md) | 8 |
+| **Всего** | **34** |
 
 ### Склады припасов
-
-Всего точек: **8**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -58,10 +55,9 @@
 | [industrial compound](Locations/industrial-compound.md) | 1 |
 | [Régina](Locations/Régina-e90f1cea.md) | 2 |
 | [sawmill](Locations/sawmill-36739edc.md) | 1 |
+| **Всего** | **8** |
 
 ### Города и деревни
-
-Всего точек: **46**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -82,10 +78,9 @@
 | [Tyrone](Locations/Tyrone.md) | 3 |
 | [Vernon](Locations/Vernon.md) | 4 |
 | [Villeneuve](Locations/Villeneuve.md) | 3 |
+| **Всего** | **46** |
 
 ### Блокпосты
-
-Всего точек: **50**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -133,10 +128,9 @@
 | [Checkpoint_S_USSR_01](Locations/Checkpoint_S_USSR_01-73aea5d9.md) | 1 |
 | [Checkpoint_S_USSR_01](Locations/Checkpoint_S_USSR_01-c905e5e0.md) | 1 |
 | [Checkpoint_S_USSR_01](Locations/Checkpoint_S_USSR_01-eac012a8.md) | 1 |
+| **Всего** | **50** |
 
 ### Другое
-
-Всего точек: **6**.
 
 | Локация | Точек |
 | --- | ---: |
@@ -145,14 +139,14 @@
 | [Saint-Pierre's Pass](Locations/Saint-Pierre-s-Pass.md) | 2 |
 | [sawmill](Locations/sawmill-be6eb1e2.md) | 1 |
 | [SIX BELLS](Locations/SIX-BELLS.md) | 1 |
+| **Всего** | **6** |
 
 ### Без локации
-
-Всего точек: **23**.
 
 | Локация | Точек |
 | --- | ---: |
 | [Без локации](Locations/Без-локации.md) | 23 |
+| **Всего** | **23** |
 
 ## Откуда данные и как работает появление
 
@@ -160,4 +154,4 @@
 
 В Update компонент получает VEHICLE-каталог фракции, вызывает GetFullFilteredEntityListWithLabels и выбирает случайный элемент. Таймер повторного появления не означает гарантированный спавн строго каждые 10 минут: система учитывает состояние машины, близость игроков, флаг SpawnVehicles и доступное место. SpawnVehicle дополнительно проверяет свободную позицию. Фактический спавн здесь не измерялся.
 
-[Канонические данные](../revisions/r0072/Vehicles/SpawnPoints.json).
+[Канонические данные](../revisions/r0073/Vehicles/SpawnPoints.json).
