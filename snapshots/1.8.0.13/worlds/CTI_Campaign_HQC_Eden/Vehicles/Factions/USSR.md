@@ -27,7 +27,7 @@
 | --- | --- | --- |
 | 7574.480 166.689 4247.317 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
-#### Доки — 2
+#### Доки — 1
 
 ##### MilitaryHospital — 1
 
@@ -35,7 +35,9 @@
 | --- | --- | --- |
 | 3912.589 15.344 8439.267 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
-##### StPierre — 1
+#### Блокпосты — 1
+
+##### Barricade_S_USSR_01 — 1
 
 | Координаты X Y Z, м | Включённые метки | Исключённые метки |
 | --- | --- | --- |
@@ -46,4 +48,4 @@
 
 Таких точек нет.
 
-[Полные поля и источники](../../revisions/r0068/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0069/Vehicles/SpawnPoints.json).
