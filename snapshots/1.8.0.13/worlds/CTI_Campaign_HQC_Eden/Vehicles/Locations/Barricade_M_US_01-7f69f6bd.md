@@ -23,4 +23,4 @@
 | FIA | 8825.435 95.321 2767.429 | Нет | VEHICLE_CAR | Любая | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0071/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0072/Vehicles/SpawnPoints.json).

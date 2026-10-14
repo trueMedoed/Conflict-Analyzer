@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0071')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0072')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -64,7 +64,7 @@ function FactionLocationTables($rows,$name,$hidePeriod=$false){
    }
   foreach($group in $groups){
    $loc='Без локации';if($group.Group[0].location){$loc=$group.Group[0].location.name}
-   if($category -ne 'checkpoints'){$parts.Add("##### $loc — $($group.Count)");$parts.Add('')}
+   if($category -notin @('checkpoints','unassigned')){$parts.Add("##### $loc — $($group.Count)");$parts.Add('')}
    $raw=RawPage $group.Group $name $false
    $table=[regex]::Match($raw,'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)').Value;Assert ([bool]$table) 'Missing faction table'
    foreach($line in $table -split '\r?\n'){
