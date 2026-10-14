@@ -22,9 +22,5 @@
 | USSR | 3912.589 15.344 8439.267 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 | FIA | 3910.547 15.219 8416.948 | Нет |  | Любая | TRAIT_ARMED |
 
-### Режим «Все» — 0
 
-Таких точек нет.
-
-
-[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0068/Vehicles/SpawnPoints.json).

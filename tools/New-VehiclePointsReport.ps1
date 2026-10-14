@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0067')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0068')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -33,8 +33,8 @@ function ModeTables($rows,$name,$compact){
  $parts=[Collections.Generic.List[string]]::new()
  foreach($all in @($false,$true)){
   $subset=@($rows|Where-Object {$_.requireAllIncludedLabels -eq $all});$label=if($all){'Все'}else{'Любая'}
-  $parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
-  if(!$subset.Count){$parts.Add('Таких точек нет.');$parts.Add('');continue}
+  if(!$subset.Count){continue};$parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
+
   $raw=RawPage $subset $name $compact
   $pattern=if($compact){'(?s)\| Фракция \| Координаты.*?(?=\r?\n\r?\n\[Полные)'}else{'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)'}
   $table=[regex]::Match($raw,$pattern).Value;Assert ([bool]$table) 'Missing mode table';$parts.Add($table);$parts.Add('')
@@ -47,8 +47,8 @@ function FactionLocationTables($rows,$name,$hidePeriod=$false){
  $parts=[Collections.Generic.List[string]]::new()
  foreach($all in @($false,$true)){
   $subset=@($rows|Where-Object {$_.requireAllIncludedLabels -eq $all});$label=if($all){'Все'}else{'Любая'}
-  $parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
-  if(!$subset.Count){$parts.Add('Таких точек нет.');$parts.Add('');continue}
+  if(!$subset.Count){continue};$parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
+
   foreach($category in $categories.Keys){
    $categoryRows=@($subset|Where-Object {if($category -eq 'unassigned'){!$_.location}else{$_.location -and $_.location.category -eq $category}})
    if(!$categoryRows.Count){continue}

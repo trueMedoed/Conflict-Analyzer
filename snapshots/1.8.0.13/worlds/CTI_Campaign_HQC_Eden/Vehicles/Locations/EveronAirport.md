@@ -26,9 +26,5 @@
 | FIA | 4905.063 28.594 11962.939 | Нет |  | Любая | TRAIT_ARMED |
 | FIA | 4921.980 28.514 11569.171 | Нет | VEHICLE_TRUCK | Любая | TRAIT_ARMED |
 
-### Режим «Все» — 0
 
-Таких точек нет.
-
-
-[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0068/Vehicles/SpawnPoints.json).

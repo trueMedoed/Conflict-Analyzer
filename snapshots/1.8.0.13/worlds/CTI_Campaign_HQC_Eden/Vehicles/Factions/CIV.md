@@ -20,10 +20,6 @@
 | --- | --- | --- |
 | 9233.368 61.429 2084.510 | TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
-### Режим «Все» — 0
-
-Таких точек нет.
-
 
 ## С повторным появлением (раз в 10 минут) — 93
 
@@ -306,9 +302,5 @@
 | 4331.194 81.269 4395.952 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | 7791.031 157.821 4596.518 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
-### Режим «Все» — 0
 
-Таких точек нет.
-
-
-[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0068/Vehicles/SpawnPoints.json).

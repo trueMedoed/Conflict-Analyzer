@@ -32,13 +32,9 @@
 | --- | --- | --- |
 | 4940.065 2.261 3885.688 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
-### Режим «Все» — 0
-
-Таких точек нет.
-
 
 ## С повторным появлением — 0
 
 Таких точек нет.
 
-[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0068/Vehicles/SpawnPoints.json).
