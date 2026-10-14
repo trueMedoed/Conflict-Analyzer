@@ -1,6 +1,6 @@
 # Группы ИИ — сводка
 
-Мир CTI_Campaign_HQC_Eden, игра **1.8.0.13**, ревизия **r0050**. Первый раздел: фоновые патрули FIA.
+Мир CTI_Campaign_HQC_Eden, игра **1.8.0.13**, ревизия **r0051**. Первый раздел: фоновые патрули FIA.
 
 Точек: **299**; фиксированный тип: **288**; случайный тип: **11**; вариантов каталога: **9**.
 
@@ -25,65 +25,109 @@
 
 ## Объекты по локациям
 
-Назначение — ближайшая подходящая подпись в радиусе 350 м по X/Z: города, деревни, поселения, острова и холмы имеют приоритет над Name Generic. Пруды, реки и озёра исключены. Это географическая подсказка, не подтверждение родства сущностей. Каждая точка находится в одном списке; остальные — «Без локации».
+Названия, категории и объединения взяты из справочника припасов. Сначала склады (200 м от маркера), затем контрольные точки, доки, кандидаты HQ, города и другие локации (350 м по X/Z). Внутри первого подходящего этапа выбирается ближайший якорь; при равенстве — ID. Для объединённых локаций сохранены исходные подписи и позиции. Каталог включает допустимые локации без припасов; в таблицах показаны только группы с точками ИИ.
+
+Каждая точка учитывается один раз. Это географическое распределение, не source-родство, игровое подчинение базе или проверка ResourceGrid. Расстояние в подробной таблице — до выбранного якоря; все кандидаты и прежняя привязка сохранены в JSON.
+
+### Контрольные точки
 
 | Локация | Точек | Бойцов при одной группе на точку |
 | --- | ---: | ---: |
-| [Gravette](Locations/Location_00000000000004B0B1.md) | 5 | 24–24 |
-| [Pennants Pass](Locations/Location_00000000000004EAD1.md) | 1 | 2–2 |
-| [Huntsman's Heath](Locations/Location_000000000000070851.md) | 1 | 2–2 |
-| [Perelle](Locations/Location_0000000000001042F1.md) | 2 | 7–7 |
-| [LONG HILL](Locations/Location_000000000000119831.md) | 2 | 9–9 |
-| [harbor](Locations/Location_000000000000119851.md) | 1 | 5–5 |
-| [sawmill](Locations/Location_000000000000159FF1.md) | 2 | 7–7 |
-| [Les Creux](Locations/Location_00000000000015A0B1.md) | 1 | 7–7 |
-| [Morton](Locations/Location_0000000000003A6671.md) | 6 | 32–32 |
-| [SAINTE-MARGUERITE](Locations/Location_000000000000407691.md) | 1 | 2–2 |
-| [Laruns](Locations/Location_000000000000409B61.md) | 1 | 5–5 |
-| [Saint-Pierre](Locations/Location_00000000000056AB61.md) | 8 | 31–31 |
-| [Île-aux-Saules](Locations/Location_0000000000005C1FD1.md) | 10 | 32–32 |
-| [Gorey](Locations/Location_0000000000005C3B51.md) | 5 | 17–23 |
-| [Montignac](Locations/Location_000000000000672FD1.md) | 21 | 93–93 |
-| [CALVARY HILL](Locations/Location_0000000000006E9461.md) | 15 | 54–54 |
-| [Chotain](Locations/Location_000000000000723F81.md) | 1 | 5–5 |
-| [power plant](Locations/Location_000000000000729BC1.md) | 10 | 50–50 |
-| [military site](Locations/Location_000000000000856111.md) | 5 | 14–20 |
-| [Meaux](Locations/Location_000000000000884D41.md) | 7 | 30–30 |
-| [Lamentin](Locations/Location_0000000000008BE1C1.md) | 6 | 28–28 |
-| [Provins](Locations/Location_000000000000933591.md) | 10 | 43–43 |
-| [Lacan's Head](Locations/Location_00000000000096B321.md) | 1 | 1–1 |
-| [military site](Locations/Location_00000000000096FE71.md) | 3 | 13–13 |
-| [sawmill](Locations/Location_000000000000A44AF1.md) | 1 | 2–2 |
-| [farm](Locations/Location_000000000000A45731.md) | 1 | 1–7 |
-| [WOLF HILL](Locations/Location_000000000000ABDD31.md) | 1 | 2–2 |
-| [Figari](Locations/Location_000000000000AF6261.md) | 3 | 14–14 |
-| [Kermovan](Locations/Location_000000000000B06E51.md) | 3 | 12–12 |
-| [military site](Locations/Location_000000000000B0C4D1.md) | 6 | 23–23 |
-| [Le Moule](Locations/Location_000000000000B7BCF1.md) | 2 | 9–9 |
-| [Saint-Philippe](Locations/Location_000000000000B7C251.md) | 7 | 28–28 |
-| [Villeneuve](Locations/Location_000000000000BE72A1.md) | 2 | 10–10 |
-| [farm](Locations/Location_000000000000BEEFC1.md) | 3 | 12–12 |
-| [military site](Locations/Location_000000000000C39251.md) | 2 | 10–10 |
-| [Lancre](Locations/Location_000000000000C5DA41.md) | 3 | 9–9 |
-| [Richemont](Locations/Location_000000000000D1C911.md) | 4 | 21–21 |
-| [Le Bosc](Locations/Location_000000000000D1C921.md) | 2 | 10–10 |
-| [Bénac](Locations/Location_000000000000F42CC1.md) | 2 | 5–11 |
-| [Airport](Locations/Location_000000000000F4D491.md) | 7 | 28–28 |
-| [Tyrone](Locations/Location_0000000000010856A1.md) | 3 | 14–14 |
-| [military site](Locations/Location_0000000000010856B1.md) | 15 | 54–54 |
-| [harbor](Locations/Location_00000000000124BAA1.md) | 1 | 2–2 |
-| [Entre-Deux](Locations/Location_00000000000126C2A1.md) | 3 | 9–9 |
-| [La Valette](Locations/Location_0000000000012DC911.md) | 1 | 1–1 |
-| [Saint-Pierre's Pass](Locations/Location_0000000000012DD011.md) | 8 | 23–29 |
-| [Durras](Locations/Location_00000000000139C501.md) | 3 | 9–9 |
-| [industrial compound](Locations/Location_0000000000013AB971.md) | 1 | 5–5 |
-| [Vernon](Locations/Location_0000000000013AB991.md) | 5 | 15–15 |
-| [Étoupe](Locations/Location_0000000000013AC461.md) | 3 | 14–14 |
-| [Régina](Locations/Location_0000000000013D0861.md) | 13 | 48–48 |
-| [GALLOW'S HILL](Locations/Location_000000000001417C81.md) | 3 | 10–10 |
-| [HEDGEHOG HILL](Locations/Location_000000000001417C91.md) | 2 | 6–12 |
-| [POACHER'S HILL](Locations/Location_00000000000143A031.md) | 2 | 8–8 |
-| [Без локации](Locations/Ungrouped.md) | 62 | 201–231 |
+| [Calvary Hill](Locations/ControlPoints/Calvary-Hill.md) | 15 | 54–54 |
+| [Île-aux-Saules](Locations/ControlPoints/Ile-aux-Saules.md) | 16 | 44–44 |
+| [Military Base Levie](Locations/ControlPoints/Military-Base-Levie.md) | 16 | 56–56 |
+| [Montignac](Locations/ControlPoints/Montignac.md) | 21 | 93–93 |
+| [Power Plant](Locations/ControlPoints/Power-Plant.md) | 11 | 55–55 |
+| [Régina](Locations/ControlPoints/Regina.md) | 9 | 37–37 |
+| [Transformer Station](Locations/ControlPoints/Transformer-Station.md) | 10 | 43–43 |
+
+### Доки
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [EveronAirport](Locations/Harbors/EveronAirport.md) | 9 | 38–38 |
+| [FishermansBay](Locations/Harbors/FishermansBay.md) | 5 | 14–20 |
+| [GoatBay](Locations/Harbors/GoatBay.md) | 2 | 10–10 |
+| [Gravette](Locations/Harbors/Gravette.md) | 4 | 19–19 |
+| [HalcyonStrait](Locations/Harbors/HalcyonStrait.md) | 3 | 9–9 |
+| [Kermovan](Locations/Harbors/Kermovan.md) | 3 | 12–12 |
+| [Lamentin](Locations/Harbors/Lamentin.md) | 7 | 29–29 |
+| [Lancre](Locations/Harbors/Lancre.md) | 3 | 9–9 |
+| [Laruns](Locations/Harbors/Laruns.md) | 1 | 5–5 |
+| [LeBosc](Locations/Harbors/LeBosc.md) | 2 | 10–10 |
+| [Meaux](Locations/Harbors/Meaux.md) | 7 | 30–30 |
+| [MilitaryHospital](Locations/Harbors/MilitaryHospital.md) | 6 | 23–23 |
+| [Morton](Locations/Harbors/Morton.md) | 6 | 32–32 |
+| [Perelle](Locations/Harbors/Perelle.md) | 2 | 7–7 |
+| [SpaniardsBay](Locations/Harbors/SpaniardsBay.md) | 1 | 5–5 |
+| [StPhillipe](Locations/Harbors/StPhillipe.md) | 7 | 29–29 |
+| [StPierre](Locations/Harbors/StPierre.md) | 9 | 36–36 |
+
+### Склады
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [Склад - 4814.289 53.445 5819.508](Locations/SupplyDepots/Склад---4814-289-53-445-5819-508.md) | 1 | 5–5 |
+| [Склад - 6912.457 57.718 4482.109](Locations/SupplyDepots/Склад---6912-457-57-718-4482-109.md) | 1 | 5–5 |
+| [Durras](Locations/SupplyDepots/Durras.md) | 2 | 6–12 |
+| [farm](Locations/SupplyDepots/farm.md) | 3 | 9–9 |
+| [Gorey](Locations/SupplyDepots/Gorey.md) | 3 | 12–12 |
+| [industrial compound](Locations/SupplyDepots/industrial-compound.md) | 1 | 5–5 |
+| [military site](Locations/SupplyDepots/military-site.md) | 3 | 13–13 |
+| [Régina](Locations/SupplyDepots/Regina.md) | 4 | 11–11 |
+| [sawmill](Locations/SupplyDepots/sawmill.md) | 2 | 7–7 |
+
+### Города
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [Bénac](Locations/Settlements/Benac-b8dca6e1.md) | 2 | 5–11 |
+| [Chotain](Locations/Settlements/Chotain-a6cceded.md) | 1 | 5–5 |
+| [Durras](Locations/Settlements/Durras-de1c79e3.md) | 2 | 4–4 |
+| [Entre-Deux](Locations/Settlements/Entre-Deux-28d66863.md) | 5 | 17–17 |
+| [Étoupe](Locations/Settlements/Etoupe-0f5ee0da.md) | 2 | 9–9 |
+| [Figari](Locations/Settlements/Figari-b14f1a07.md) | 3 | 14–14 |
+| [Gorey](Locations/Settlements/Gorey-e918a2fb.md) | 2 | 5–11 |
+| [Gravette](Locations/Settlements/Gravette-9807aaa0.md) | 1 | 5–5 |
+| [La Valette](Locations/Settlements/La-Valette-78832316.md) | 1 | 1–1 |
+| [Laruns](Locations/Settlements/Laruns-a95ff7dd.md) | 1 | 5–5 |
+| [Le Moule](Locations/Settlements/Le-Moule-7769f4e6.md) | 3 | 11–11 |
+| [Richemont](Locations/Settlements/Richemont-5d1f9c59.md) | 4 | 21–21 |
+| [Saint-Philippe](Locations/Settlements/Saint-Philippe-f55cca85.md) | 1 | 1–1 |
+| [Tyrone](Locations/Settlements/Tyrone-93ad6bb9.md) | 3 | 14–14 |
+| [Vernon](Locations/Settlements/Vernon-740a9f7d.md) | 5 | 15–15 |
+| [Villeneuve](Locations/Settlements/Villeneuve-07696883.md) | 2 | 10–10 |
+
+### Стартовые позиции главных баз
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [StartingPos12](Locations/StartingBases/StartingPos12.md) | 1 | 7–7 |
+| [StartingPos14](Locations/StartingBases/StartingPos14.md) | 1 | 5–5 |
+
+### Другое
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [farm](Locations/Other/farm-1b13b783.md) | 1 | 1–7 |
+| [farm](Locations/Other/farm-bb70859b.md) | 1 | 5–5 |
+| [GALLOW'S HILL](Locations/Other/GALLOW-S-HILL-08a1f1ec.md) | 1 | 4–4 |
+| [HEDGEHOG HILL](Locations/Other/HEDGEHOG-HILL-8576b4dd.md) | 2 | 6–12 |
+| [Huntsman's Heath](Locations/Other/Huntsman-s-Heath-ad26d22f.md) | 1 | 2–2 |
+| [industrial compound](Locations/Other/industrial-compound-07672585.md) | 1 | 4–4 |
+| [Lacan's Head](Locations/Other/Lacan-s-Head-8343b4b9.md) | 1 | 1–1 |
+| [LONG HILL](Locations/Other/LONG-HILL-957657a1.md) | 1 | 7–7 |
+| [Pennants Pass](Locations/Other/Pennants-Pass-82ef1741.md) | 1 | 2–2 |
+| [Saint-Pierre's Pass](Locations/Other/Saint-Pierre-s-Pass.md) | 7 | 21–27 |
+| [SAINTE-MARGUERITE](Locations/Other/SAINTE-MARGUERITE-c0c088e7.md) | 1 | 2–2 |
+| [sawmill](Locations/Other/sawmill-be6eb1e2.md) | 1 | 2–2 |
+| [WOLF HILL](Locations/Other/WOLF-HILL-eb8ed47f.md) | 1 | 2–2 |
+
+### Без локации
+
+| Локация | Точек | Бойцов при одной группе на точку |
+| --- | ---: | ---: |
+| [Без локации](Locations/Ungrouped/Ungrouped.md) | 44 | 143–167 |
 
 ## Выбор и активация
 
@@ -91,6 +135,6 @@
 
 Для текущего снимка все точки включены, m_iRespawnPeriod=0 означает отсутствие автоматического респавна по таймеру (единица поля — секунды). Это не запрещает отдельную логику смены фракции / повторной активации. Дистанции активации и удаления сохранены для каждой точки в JSON.
 
-[Данные, состав вариантов и происхождение](../revisions/r0050/AI/Groups.json).
+[Данные, состав вариантов и происхождение](../revisions/r0051/AI/Groups.json).
 
-Вооружение каждого варианта приведено на странице типа: сумма по группе и оружие каждого бойца. [Оружейные слоты и происхождение](../revisions/r0050/AI/Weapons.json).
+Вооружение каждого варианта приведено на странице типа: сумма по группе и оружие каждого бойца. [Оружейные слоты и происхождение](../revisions/r0051/AI/Weapons.json).

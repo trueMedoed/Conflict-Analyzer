@@ -134,3 +134,5 @@ r0049: add configured morphine, bandage and tourniquet counts per character and 
 
 
 r0050: add measured prototype ammunition, magazine and grenade counts for all nine AI group types; separate spare/loaded magazines and chambered rounds.
+
+r0051: regroup AI patrol spawn points using the supply location catalog and saved location merges; unique proximity assignment with explicit unmatched points.
