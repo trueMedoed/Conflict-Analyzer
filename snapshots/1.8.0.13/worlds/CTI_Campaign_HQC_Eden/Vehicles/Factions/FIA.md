@@ -84,4 +84,4 @@
 | Vehicle_02000000000004A05 | FIA | 5411.787 78.486 5691.349 | Transformer Station | Нет | VEHICLE_TRUCK | Любая | TRAIT_ARMED |
 | Vehicle_02000000000004A06 | FIA | 5106.086 40.154 10426.477 | GALLOW'S HILL | Нет | VEHICLE_APC | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0058/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0059/Vehicles/SpawnPoints.json).

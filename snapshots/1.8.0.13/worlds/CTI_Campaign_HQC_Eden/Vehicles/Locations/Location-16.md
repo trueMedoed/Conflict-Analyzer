@@ -2,6 +2,17 @@
 
 [Сводка](../Summary.md)
 
+## Summary
+
+Всего точек: **5**. Это количество позиций появления, не фактически созданных машин.
+
+| Фракция | Точек появления |
+| --- | ---: |
+| CIV | 3 |
+| FIA | 2 |
+
+## Точки
+
 | Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
 | --- | --- | --- | --- | ---: | --- | --- | --- |
 | Vehicle_020000000000006C0 | CIV | 4516.209 7.697 9349.213 | Meaux | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
@@ -10,4 +21,4 @@
 | Vehicle_020000000000049E4 | FIA | 4491.708 20.008 9767.969 | Meaux | Нет |  | Любая | TRAIT_ARMED |
 | Vehicle_020000000000049F2 | FIA | 4565.052 21.515 9745.654 | Meaux | Нет | VEHICLE_TRUCK | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0058/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0059/Vehicles/SpawnPoints.json).

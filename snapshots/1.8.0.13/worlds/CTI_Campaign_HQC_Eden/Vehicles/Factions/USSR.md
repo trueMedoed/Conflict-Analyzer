@@ -10,4 +10,4 @@
 | Vehicle_02000000000001E70 | USSR | 7574.480 166.689 4247.317 | Military Base Levie | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 | Vehicle_02000000000001E71 | USSR | 3912.589 15.344 8439.267 | MilitaryHospital | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0058/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0059/Vehicles/SpawnPoints.json).
