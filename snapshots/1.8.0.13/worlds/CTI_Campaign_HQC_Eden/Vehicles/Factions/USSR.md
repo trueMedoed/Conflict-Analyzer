@@ -12,13 +12,30 @@
 
 ### Режим «Любая» — 5
 
-| Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | ---: | --- | --- | --- |
-| Vehicle_02000000000001E6D | USSR | 2879.007 6.641 2137.980 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| Vehicle_02000000000001E6E | USSR | 2821.330 6.511 2120.629 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| Vehicle_02000000000001E6F | USSR | 10147.514 2.531 1513.373 | StPierre | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| Vehicle_02000000000001E70 | USSR | 7574.480 166.689 4247.317 | Military Base Levie | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| Vehicle_02000000000001E71 | USSR | 3912.589 15.344 8439.267 | MilitaryHospital | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+#### Île-aux-Saules — 2
+
+| Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | ---: | --- | --- | --- |
+| 2879.007 6.641 2137.980 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+| 2821.330 6.511 2120.629 | Île-aux-Saules | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+
+#### Military Base Levie — 1
+
+| Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | ---: | --- | --- | --- |
+| 7574.480 166.689 4247.317 | Military Base Levie | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+
+#### MilitaryHospital — 1
+
+| Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | ---: | --- | --- | --- |
+| 3912.589 15.344 8439.267 | MilitaryHospital | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+
+#### StPierre — 1
+
+| Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | ---: | --- | --- | --- |
+| 10147.514 2.531 1513.373 | StPierre | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 
 ### Режим «Все» — 0
 
@@ -29,4 +46,4 @@
 
 Таких точек нет.
 
-[Полные поля и источники](../../revisions/r0064/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0065/Vehicles/SpawnPoints.json).

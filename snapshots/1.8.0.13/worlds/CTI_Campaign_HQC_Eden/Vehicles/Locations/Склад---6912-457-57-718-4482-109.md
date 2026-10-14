@@ -25,4 +25,4 @@
 Таких точек нет.
 
 
-[Полные поля и источники](../../revisions/r0064/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0065/Vehicles/SpawnPoints.json).
