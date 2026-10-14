@@ -5,9 +5,10 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0053',
+    [string]$RevisionId='r0054',
     [string]$WeaponsLogPath,
     [string]$InventoryRuntimeLogPath,
+    [string]$WaypointDiagnosticsPath,
     [string]$SupplyRevisionPath
 )
 function FormatUnitRange($minimum,$maximum){if($minimum -eq $maximum){return (Num $minimum)};return ((Num $minimum)+'–'+(Num $maximum))}
@@ -88,3 +89,5 @@ if ($InventoryRuntimeLogPath) { & (Join-Path $PSScriptRoot 'Add-AIAmmunitionRepo
 if ($SupplyRevisionPath) { & (Join-Path $PSScriptRoot 'Set-AISupplyLocations.ps1') -SupplyRevisionPath $SupplyRevisionPath -OutputDirectory $OutputDirectory -DiagnosticsPath $DiagnosticsPath }
 
 if ($SupplyRevisionPath) { & (Join-Path $PSScriptRoot 'Set-AICheckpointLocations.ps1') -DiagnosticsPath $DiagnosticsPath -OutputDirectory $OutputDirectory -RadiusMeters 50 }
+
+if ($WaypointDiagnosticsPath) { & (Join-Path $PSScriptRoot 'Set-AIPatrolCategory.ps1') -WaypointDiagnosticsPath $WaypointDiagnosticsPath -OutputDirectory $OutputDirectory }
