@@ -21,4 +21,4 @@
 | CIV | 3798.834 115.226 4938.368 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 
-[Полные поля и источники](../../revisions/r0069/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0070/Vehicles/SpawnPoints.json).

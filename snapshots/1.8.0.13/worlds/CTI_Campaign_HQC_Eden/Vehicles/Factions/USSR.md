@@ -48,4 +48,4 @@
 
 Таких точек нет.
 
-[Полные поля и источники](../../revisions/r0069/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0070/Vehicles/SpawnPoints.json).
