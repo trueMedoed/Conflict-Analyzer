@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0077')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0078')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -34,12 +34,23 @@ $summary.Add("| **Всего** | **$($records.Count)** | **$(@($records|Where-Ob
 $summary.Add('');$summary.Add('## По локациям');$summary.Add('');$summary.Add('Названия и объединения взяты из справочника припасов. Склады — 200 м, остальные категории — 350 м по X/Z; ближайший якорь в первом подходящем приоритете. Это географическая привязка, не принадлежность базе. Привязка к ближайшему префабу Barricade или Checkpoint в 50 м по X/Z имеет приоритет над этими категориями. При равенстве расстояний — ID. Прежние локации и все кандидаты сохранены в JSON. Patrols и огневые точки к машинам не применяются.');$summary.Add('')
 function RawPage($rows,$name,$withSummary=$false){$lines=[Collections.Generic.List[string]]::new();$lines.Add("# $name");$lines.Add('');$lines.Add('[Сводка](../Summary.md)');$lines.Add('');if($withSummary){$lines.Add('## Summary');$lines.Add('');$lines.Add("Указано количество позиций появления, не фактически созданных машин.");$lines.Add('');$lines.Add('| Фракция | Точек появления |');$lines.Add('| --- | ---: |');foreach($faction in @('CIV','FIA','US','USSR')){$n=@($rows|Where-Object faction -ceq $faction).Count;if($n){$lines.Add("| $faction | $n |")}};$lines.Add("| **Всего** | **$(@($rows).Count)** |");$lines.Add('');$lines.Add('## Точки');$lines.Add('')};if($withSummary){$lines.Add('| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |');$lines.Add('| --- | --- | ---: | --- | --- | --- |')}else{$lines.Add('| Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |');$lines.Add('| --- | --- | --- | --- | ---: | --- | --- | --- |');};foreach($p in $rows|Sort-Object id){$loc='Без локации';if($p.location){$loc=$p.location.name};$period='Нет';if($p.respawnPeriodSeconds -gt 0){$period=($p.respawnPeriodSeconds/60).ToString([Globalization.CultureInfo]::InvariantCulture)};$inc=@($p.includedLabels|ForEach-Object name) -join ', ';$exc=@($p.excludedLabels|ForEach-Object name) -join ', ';$mode=if($p.requireAllIncludedLabels){'Все'}else{'Любая'};if($withSummary){$lines.Add("| $($p.faction) | $(Pos $p.worldPositionMeters) | $period | $inc | $mode | $exc |")}else{$lines.Add("| $($p.name) | $($p.faction) | $(Pos $p.worldPositionMeters) | $loc | $period | $inc | $mode | $exc |")}};$lines.Add('');$lines.Add('[Полные поля и источники](../SpawnPoints.json).');$lines -join "`n"}
 $modeExplanation='**Режим** задаёт проверку включённых меток (m_bRequireAllIncludedLabels): **«Любая»** — достаточно хотя бы одной из перечисленных меток; **«Все»** — нужны все перечисленные метки одновременно. При пустом списке включённых меток этот фильтр не ограничивает выбор. Исключённые метки применяются в обоих режимах. Это фильтр допустимой техники, не режим повторного появления.'
-function ModeTables($rows,$name,$compact){
+function ModeTables($rows,$name,$compact,$groupByFaction=$false){
  $parts=[Collections.Generic.List[string]]::new()
  foreach($all in @($false,$true)){
   $subset=@($rows|Where-Object {$_.requireAllIncludedLabels -eq $all});$label=if($all){'Все'}else{'Любая'}
   if(!$subset.Count){continue};$parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
 
+  if($groupByFaction){
+   foreach($faction in @('CIV','FIA','US','USSR')){
+    $members=@($subset|Where-Object faction -ceq $faction);if(!$members.Count){continue}
+    $parts.Add("#### $faction — $($members.Count)");$parts.Add('')
+    $raw=RawPage $members $name $true
+    $table=[regex]::Match($raw,'(?s)\| Фракция \| Координаты.*?(?=\r?\n\r?\n\[Полные)').Value;Assert ([bool]$table) 'Missing faction table'
+    foreach($line in $table -split '\r?\n'){$cells=$line.Split('|');Assert ($cells.Count -eq 8) 'Unexpected columns';$parts.Add('|'+(($cells[@(2,3,4,6)]) -join '|')+'|')}
+    $parts.Add('')
+   }
+   continue
+  }
   $raw=RawPage $subset $name $compact
   $pattern=if($compact){'(?s)\| Фракция \| Координаты.*?(?=\r?\n\r?\n\[Полные)'}else{'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)'}
   $table=[regex]::Match($raw,$pattern).Value;Assert ([bool]$table) 'Missing mode table';$parts.Add($table);$parts.Add('')
@@ -79,10 +90,10 @@ function FactionLocationTables($rows,$name,$hidePeriod=$false){
  }
  $parts -join "`n"
 }
-function Page($rows,$name,$withSummary=$false){
+function Page($rows,$name,$withSummary=$false,$groupByFaction=$false){
  $raw=RawPage $rows $name $withSummary
  $pattern=if($withSummary){'(?s)\| Фракция \| Координаты.*?(?=\r?\n\r?\n\[Полные)'}else{'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)'}
- $replacement=$modeExplanation+"`n`n"+(ModeTables $rows $name $withSummary)
+ $replacement=$modeExplanation+"`n`n"+(ModeTables $rows $name $withSummary $groupByFaction)
  [regex]::Replace($raw,$pattern,[Text.RegularExpressions.MatchEvaluator]{param($m)$replacement})
 }
 foreach($g in $records|Group-Object faction){
@@ -93,7 +104,7 @@ foreach($g in $records|Group-Object faction){
 function LocationStem($name){$s=[regex]::Replace($name,'[^\p{L}\p{Nd}_-]+','-').Trim('-');if(!$s){$s='Unnamed'};if($s -match '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$'){$s='Location-'+$s};return $s}
 $locationRows=@();$groups=@($records|Group-Object {if($_.location -and $_.location.category -eq 'checkpoints'){'all-checkpoints'}elseif($_.location){$_.location.id}else{'unassigned'}}|Sort-Object Name);$stemCounts=@{}
 foreach($group in $groups){$label='Без локации';if($group.Group[0].location){$label=$group.Group[0].location.name};if($group.Name -eq 'all-checkpoints'){$label='Блокпосты'};$stem=LocationStem $label;if(!$stemCounts.ContainsKey($stem)){$stemCounts[$stem]=0};$stemCounts[$stem]++}
-foreach($g in $groups){$name='Без локации';$category='unassigned';if($g.Group[0].location){$name=$g.Group[0].location.name;$category=$g.Group[0].location.category};if($g.Name -eq 'all-checkpoints'){$name='Блокпосты'};$stem=LocationStem $name;if($stemCounts[$stem] -gt 1){$sha=[Security.Cryptography.SHA256]::Create();try{$suffix=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($g.Name)))).Replace('-','').Substring(0,8).ToLowerInvariant()}finally{$sha.Dispose()};$stem+='-'+$suffix};$file=$stem+'.md';$locationRows+=[pscustomobject]@{name=$name;category=$category;file=$file;count=$g.Count}; $page=Page $g.Group $name $true;$page=(@($page -split '\r?\n'|ForEach-Object {$cells=$_.Split('|');if($_.StartsWith('|') -and $cells.Count -eq 8){'|'+(($cells[@(1,2,3,4,6)]) -join '|')+'|'}else{$_}}) -join "`n");if($g.Name -eq 'all-checkpoints'){$page=$page.Replace('## Точки','Блокпостами считаются точки машин в пределах 50 м по X/Z от ближайшего префаба Barricade или Checkpoint. Это географическая привязка; отдельные объекты и кандидаты сохранены в JSON.'+"`n`n"+'## Точки')};Save "Vehicles/Locations/$file" $page}
+foreach($g in $groups){$name='Без локации';$category='unassigned';if($g.Group[0].location){$name=$g.Group[0].location.name;$category=$g.Group[0].location.category};if($g.Name -eq 'all-checkpoints'){$name='Блокпосты'};$stem=LocationStem $name;if($stemCounts[$stem] -gt 1){$sha=[Security.Cryptography.SHA256]::Create();try{$suffix=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($g.Name)))).Replace('-','').Substring(0,8).ToLowerInvariant()}finally{$sha.Dispose()};$stem+='-'+$suffix};$file=$stem+'.md';$locationRows+=[pscustomobject]@{name=$name;category=$category;file=$file;count=$g.Count}; $page=Page $g.Group $name $true ($g.Name -eq 'all-checkpoints');$page=(@($page -split '\r?\n'|ForEach-Object {$cells=$_.Split('|');if($_.StartsWith('|') -and $cells.Count -eq 8){'|'+(($cells[@(1,2,3,4,6)]) -join '|')+'|'}else{$_}}) -join "`n");if($g.Name -eq 'all-checkpoints'){$page=$page.Replace('## Точки','Блокпостами считаются точки машин в пределах 50 м по X/Z от ближайшего префаба Barricade или Checkpoint. Это географическая привязка; отдельные объекты и кандидаты сохранены в JSON.'+"`n`n"+'## Точки')};Save "Vehicles/Locations/$file" $page}
 
 foreach($category in $categories.Keys){$rows=@($locationRows|Where-Object category -ceq $category|Sort-Object name,file);if(!$rows.Count){continue};$total=($rows|Measure-Object count -Sum).Sum;$summary.Add('');$summary.Add("### $($categories[$category])");$summary.Add('');$summary.Add('| Локация | Точек |');$summary.Add('| --- | ---: |');foreach($row in $rows){$summary.Add("| [$($row.name)](Locations/$($row.file)) | $($row.count) |")};$summary.Add("| **Всего** | **$total** |")}
 $summary.Add('');$summary.Add('## Откуда данные и как работает появление');$summary.Add('');$summary.Add('Позиция — worldPosition сущности с SCR_AmbientVehicleSpawnPointComponent; фракция — SCR_FactionAffiliationComponent → faction affiliation. Время — m_iRespawnPeriod, секунды / 60; 0 отключает повторное появление. Фильтры — m_aIncludedEditableEntityLabels, m_aExcludedEditableEntityLabels и m_bRequireAllIncludedLabels. Имена меток прочитаны из EEditableEntityLabel установленной игры 1.8.0.13.');$summary.Add('');$summary.Add('В Update компонент получает VEHICLE-каталог фракции, вызывает GetFullFilteredEntityListWithLabels и выбирает случайный элемент. Таймер повторного появления не означает гарантированный спавн строго каждые 10 минут: система учитывает состояние машины, близость игроков, флаг SpawnVehicles и доступное место. SpawnVehicle дополнительно проверяет свободную позицию. Фактический спавн здесь не измерялся.');$summary.Add('');$summary.Add('[Канонические данные](SpawnPoints.json).');Save 'Vehicles/Summary.md' ($summary -join "`n")
