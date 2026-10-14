@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0066')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0067')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -41,24 +41,31 @@ function ModeTables($rows,$name,$compact){
  }
  $parts -join "`n"
 }
+
+$categories=[ordered]@{control_points='Контрольные точки';harbors='Доки';supply_depots='Склады припасов';starting_bases='Стартовые базы';settlements='Города и деревни';other='Другое';unassigned='Без локации'}
 function FactionLocationTables($rows,$name,$hidePeriod=$false){
  $parts=[Collections.Generic.List[string]]::new()
  foreach($all in @($false,$true)){
   $subset=@($rows|Where-Object {$_.requireAllIncludedLabels -eq $all});$label=if($all){'Все'}else{'Любая'}
   $parts.Add("### Режим «$label» — $($subset.Count)");$parts.Add('')
   if(!$subset.Count){$parts.Add('Таких точек нет.');$parts.Add('');continue}
-  $groups=@($subset|Group-Object {if($_.location){$_.location.id}else{'unassigned'}}|Sort-Object @{Expression={$_.Name -eq 'unassigned'}},@{Expression={if($_.Group[0].location){$_.Group[0].location.name}else{'Без локации'}}},Name)
+  foreach($category in $categories.Keys){
+   $categoryRows=@($subset|Where-Object {if($category -eq 'unassigned'){!$_.location}else{$_.location -and $_.location.category -eq $category}})
+   if(!$categoryRows.Count){continue}
+   $parts.Add("#### $($categories[$category]) — $($categoryRows.Count)");$parts.Add('')
+   $groups=@($categoryRows|Group-Object {if($_.location){$_.location.id}else{'unassigned'}}|Sort-Object @{Expression={if($_.Group[0].location){$_.Group[0].location.name}else{'Без локации'}}},Name)
   foreach($group in $groups){
    $loc='Без локации';if($group.Group[0].location){$loc=$group.Group[0].location.name}
-   $parts.Add("#### $loc — $($group.Count)");$parts.Add('')
+   $parts.Add("##### $loc — $($group.Count)");$parts.Add('')
    $raw=RawPage $group.Group $name $false
    $table=[regex]::Match($raw,'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)').Value;Assert ([bool]$table) 'Missing faction table'
    foreach($line in $table -split '\r?\n'){
     if(!$line.StartsWith('|')){continue}
     $cells=$line.Split('|');Assert ($cells.Count -eq 10) 'Unexpected faction columns'
-    if($hidePeriod){$parts.Add('|'+(($cells[@(3,4,6,7,8)]) -join '|')+'|')}else{$parts.Add('|'+(($cells[3..8]) -join '|')+'|')}
+    if($hidePeriod){$parts.Add('|'+(($cells[@(3,6,8)]) -join '|')+'|')}else{$parts.Add('|'+(($cells[@(3,5,6,8)]) -join '|')+'|')}
    }
    $parts.Add('')
+  }
   }
  }
  $parts -join "`n"
@@ -78,7 +85,7 @@ function LocationStem($name){$s=[regex]::Replace($name,'[^\p{L}\p{Nd}_-]+','-').
 $locationRows=@();$groups=@($records|Group-Object {if($_.location){$_.location.id}else{'unassigned'}}|Sort-Object Name);$stemCounts=@{}
 foreach($group in $groups){$label='Без локации';if($group.Group[0].location){$label=$group.Group[0].location.name};$stem=LocationStem $label;if(!$stemCounts.ContainsKey($stem)){$stemCounts[$stem]=0};$stemCounts[$stem]++}
 foreach($g in $groups){$name='Без локации';$category='unassigned';if($g.Group[0].location){$name=$g.Group[0].location.name;$category=$g.Group[0].location.category};$stem=LocationStem $name;if($stemCounts[$stem] -gt 1){$sha=[Security.Cryptography.SHA256]::Create();try{$suffix=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($g.Name)))).Replace('-','').Substring(0,8).ToLowerInvariant()}finally{$sha.Dispose()};$stem+='-'+$suffix};$file=$stem+'.md';$locationRows+=[pscustomobject]@{name=$name;category=$category;file=$file;count=$g.Count};Save "Vehicles/Locations/$file" (Page $g.Group $name $true)}
-$categories=[ordered]@{control_points='Контрольные точки';harbors='Доки';supply_depots='Склады припасов';starting_bases='Стартовые базы';settlements='Города и деревни';other='Другое';unassigned='Без локации'}
+
 foreach($category in $categories.Keys){$rows=@($locationRows|Where-Object category -ceq $category|Sort-Object name,file);if(!$rows.Count){continue};$total=($rows|Measure-Object count -Sum).Sum;$summary.Add('');$summary.Add("### $($categories[$category])");$summary.Add('');$summary.Add("Всего точек: **$total**.");$summary.Add('');$summary.Add('| Локация | Точек |');$summary.Add('| --- | ---: |');foreach($row in $rows){$summary.Add("| [$($row.name)](Locations/$($row.file)) | $($row.count) |")}}
 $summary.Add('');$summary.Add('## Откуда данные и как работает появление');$summary.Add('');$summary.Add('Позиция — worldPosition сущности с SCR_AmbientVehicleSpawnPointComponent; фракция — SCR_FactionAffiliationComponent → faction affiliation. Время — m_iRespawnPeriod, секунды / 60; 0 отключает повторное появление. Фильтры — m_aIncludedEditableEntityLabels, m_aExcludedEditableEntityLabels и m_bRequireAllIncludedLabels. Имена меток прочитаны из EEditableEntityLabel установленной игры 1.8.0.13.');$summary.Add('');$summary.Add('В Update компонент получает VEHICLE-каталог фракции, вызывает GetFullFilteredEntityListWithLabels и выбирает случайный элемент. Таймер повторного появления не означает гарантированный спавн строго каждые 10 минут: система учитывает состояние машины, близость игроков, флаг SpawnVehicles и доступное место. SpawnVehicle дополнительно проверяет свободную позицию. Фактический спавн здесь не измерялся.');$summary.Add('');$summary.Add('[Канонические данные](SpawnPoints.json).');Save 'Vehicles/Summary.md' ($summary -join "`n")
 Json 'world.json' ([ordered]@{schemaVersion=3;snapshotId=$snapshot;revisionId=$RevisionId;gameVersion=$d.gameVersion;worldPath=$d.worldPath;normalizerVersion='ambient-vehicles-0.1';status='partial';sourceCapturedAtUTC=$d.generatedAtUTC})

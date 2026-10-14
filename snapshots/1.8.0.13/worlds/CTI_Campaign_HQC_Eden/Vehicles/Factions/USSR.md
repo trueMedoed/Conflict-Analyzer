@@ -12,30 +12,34 @@
 
 ### Режим «Любая» — 5
 
-#### Île-aux-Saules — 2
+#### Контрольные точки — 3
 
-| Координаты X Y Z, м | Локация | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | --- |
-| 2879.007 6.641 2137.980 | Île-aux-Saules | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| 2821.330 6.511 2120.629 | Île-aux-Saules | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+##### Île-aux-Saules — 2
 
-#### Military Base Levie — 1
+| Координаты X Y Z, м | Включённые метки | Исключённые метки |
+| --- | --- | --- |
+| 2879.007 6.641 2137.980 | VEHICLE_HELICOPTER | TRAIT_ARMED |
+| 2821.330 6.511 2120.629 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
-| Координаты X Y Z, м | Локация | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | --- |
-| 7574.480 166.689 4247.317 | Military Base Levie | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+##### Military Base Levie — 1
 
-#### MilitaryHospital — 1
+| Координаты X Y Z, м | Включённые метки | Исключённые метки |
+| --- | --- | --- |
+| 7574.480 166.689 4247.317 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
-| Координаты X Y Z, м | Локация | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | --- |
-| 3912.589 15.344 8439.267 | MilitaryHospital | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+#### Доки — 2
 
-#### StPierre — 1
+##### MilitaryHospital — 1
 
-| Координаты X Y Z, м | Локация | Включённые метки | Режим | Исключённые метки |
-| --- | --- | --- | --- | --- |
-| 10147.514 2.531 1513.373 | StPierre | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
+| Координаты X Y Z, м | Включённые метки | Исключённые метки |
+| --- | --- | --- |
+| 3912.589 15.344 8439.267 | VEHICLE_HELICOPTER | TRAIT_ARMED |
+
+##### StPierre — 1
+
+| Координаты X Y Z, м | Включённые метки | Исключённые метки |
+| --- | --- | --- |
+| 10147.514 2.531 1513.373 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
 ### Режим «Все» — 0
 
@@ -46,4 +50,4 @@
 
 Таких точек нет.
 
-[Полные поля и источники](../../revisions/r0066/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).

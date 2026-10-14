@@ -42,4 +42,4 @@
 | FIA | 10061.161 2.801 1577.973 | Нет | TRAIT_AMPHIBIOUS | Все | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0066/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0067/Vehicles/SpawnPoints.json).
