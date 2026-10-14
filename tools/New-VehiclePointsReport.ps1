@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0065')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0066')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -41,7 +41,7 @@ function ModeTables($rows,$name,$compact){
  }
  $parts -join "`n"
 }
-function FactionLocationTables($rows,$name){
+function FactionLocationTables($rows,$name,$hidePeriod=$false){
  $parts=[Collections.Generic.List[string]]::new()
  foreach($all in @($false,$true)){
   $subset=@($rows|Where-Object {$_.requireAllIncludedLabels -eq $all});$label=if($all){'Все'}else{'Любая'}
@@ -56,7 +56,7 @@ function FactionLocationTables($rows,$name){
    foreach($line in $table -split '\r?\n'){
     if(!$line.StartsWith('|')){continue}
     $cells=$line.Split('|');Assert ($cells.Count -eq 10) 'Unexpected faction columns'
-    $parts.Add('|'+(($cells[3..8]) -join '|')+'|')
+    if($hidePeriod){$parts.Add('|'+(($cells[@(3,4,6,7,8)]) -join '|')+'|')}else{$parts.Add('|'+(($cells[3..8]) -join '|')+'|')}
    }
    $parts.Add('')
   }
@@ -71,7 +71,7 @@ function Page($rows,$name,$withSummary=$false){
 }
 foreach($g in $records|Group-Object faction){
  $lines=[Collections.Generic.List[string]]::new();$lines.Add("# $($g.Name)");$lines.Add('');$lines.Add('[Сводка](../Summary.md)');$lines.Add('');$lines.Add("Всего точек: **$($g.Count)**.");$lines.Add('');$lines.Add('> **Для проверки:** в начале показаны точки с m_iRespawnPeriod = 0 — повторное появление отключено. Это может быть намеренной настройкой; само по себе значение не доказывает ошибку.');$lines.Add('')
- $lines.Add($modeExplanation);$lines.Add('');foreach($repeat in @($false,$true)){$rows=@($g.Group|Where-Object {($_.respawnPeriodSeconds -gt 0) -eq $repeat});$title=if($repeat){'С повторным появлением'}else{'Без повторного появления'};$lines.Add("## $title — $($rows.Count)");$lines.Add('');if($rows.Count){$lines.Add((FactionLocationTables $rows $g.Name))}else{$lines.Add('Таких точек нет.')};$lines.Add('')}
+ $lines.Add($modeExplanation);$lines.Add('');foreach($repeat in @($false,$true)){$rows=@($g.Group|Where-Object {($_.respawnPeriodSeconds -gt 0) -eq $repeat});$periods=@($rows|ForEach-Object respawnPeriodSeconds|Sort-Object -Unique);$hidePeriod=!$repeat -or $periods.Count -eq 1;$title=if($repeat){'С повторным появлением'}else{'Без повторного появления'};if($repeat -and $periods.Count -eq 1){$minutes=([double]$periods[0]/60).ToString('0.###',[Globalization.CultureInfo]::InvariantCulture);$title+=' (раз в '+$minutes+' минут)'};$lines.Add("## $title — $($rows.Count)");$lines.Add('');if($rows.Count){$lines.Add((FactionLocationTables $rows $g.Name $hidePeriod))}else{$lines.Add('Таких точек нет.')};$lines.Add('')}
  $lines.Add('[Полные поля и источники](../SpawnPoints.json).');Save "Vehicles/Factions/$($g.Name).md" ($lines -join "`n")
 }
 function LocationStem($name){$s=[regex]::Replace($name,'[^\p{L}\p{Nd}_-]+','-').Trim('-');if(!$s){$s='Unnamed'};if($s -match '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$'){$s='Location-'+$s};return $s}
