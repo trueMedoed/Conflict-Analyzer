@@ -258,47 +258,17 @@
 
 #### Блокпосты — 7
 
-##### Barricade_M_US_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
-| 8821.812 95.364 2779.583 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Barricade_M_USSR_01 — 1
+Блокпостами считаем точки появления машин в пределах 50 м по X/Z от ближайшего префаба, содержащего Barricade или Checkpoint в имени файла. При совпадении расстояний выбирается ID. Это географическая привязка, не подтверждение принадлежности машины объекту; прежние локации и кандидаты сохранены в JSON.
 
 | Координаты X Y Z, м | Включённые метки | Исключённые метки |
 | --- | --- | --- |
 | 3798.834 115.226 4938.368 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Barricade_M_USSR_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
-| 8197.688 221.081 2238.273 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Checkpoint_M_USSR_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
 | 7176.652 138.483 2438.584 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Checkpoint_S_US_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
-| 4422.263 63.161 4962.017 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Checkpoint_S_US_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
-| 6352.604 5.728 9643.333 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-
-##### Checkpoint_S_US_01 — 1
-
-| Координаты X Y Z, м | Включённые метки | Исключённые метки |
-| --- | --- | --- |
 | 7248.583 136.872 2202.720 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| 8197.688 221.081 2238.273 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| 8821.812 95.364 2779.583 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| 6352.604 5.728 9643.333 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| 4422.263 63.161 4962.017 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 #### Другое — 4
 
@@ -344,4 +314,4 @@
 | 7791.031 157.821 4596.518 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 
-[Полные поля и источники](../../revisions/r0070/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0071/Vehicles/SpawnPoints.json).

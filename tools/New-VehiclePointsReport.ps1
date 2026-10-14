@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0070')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0071')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -58,9 +58,13 @@ function FactionLocationTables($rows,$name,$hidePeriod=$false){
    if(!$categoryRows.Count){continue}
    $parts.Add("#### $($categories[$category]) — $($categoryRows.Count)");$parts.Add('')
    $groups=@($categoryRows|Group-Object {if($_.location){$_.location.id}else{'unassigned'}}|Sort-Object @{Expression={if($_.Group[0].location){$_.Group[0].location.name}else{'Без локации'}}},Name)
+   if($category -eq 'checkpoints'){
+    $parts.Add('Блокпостами считаем точки появления машин в пределах 50 м по X/Z от ближайшего префаба, содержащего Barricade или Checkpoint в имени файла. При совпадении расстояний выбирается ID. Это географическая привязка, не подтверждение принадлежности машины объекту; прежние локации и кандидаты сохранены в JSON.');$parts.Add('')
+    $groups=@([pscustomobject]@{Group=$categoryRows;Count=$categoryRows.Count})
+   }
   foreach($group in $groups){
    $loc='Без локации';if($group.Group[0].location){$loc=$group.Group[0].location.name}
-   $parts.Add("##### $loc — $($group.Count)");$parts.Add('')
+   if($category -ne 'checkpoints'){$parts.Add("##### $loc — $($group.Count)");$parts.Add('')}
    $raw=RawPage $group.Group $name $false
    $table=[regex]::Match($raw,'(?s)\| Точка \|.*?(?=\r?\n\r?\n\[Полные)').Value;Assert ([bool]$table) 'Missing faction table'
    foreach($line in $table -split '\r?\n'){
