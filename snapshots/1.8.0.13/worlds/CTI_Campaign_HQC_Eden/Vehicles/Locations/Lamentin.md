@@ -4,11 +4,12 @@
 
 ## Summary
 
-Всего точек: **4**. Это количество позиций появления, не фактически созданных машин.
+Указано количество позиций появления, не фактически созданных машин.
 
 | Фракция | Точек появления |
 | --- | ---: |
 | CIV | 4 |
+| **Всего** | **4** |
 
 ## Точки
 
@@ -24,4 +25,4 @@
 | CIV | 1231.422 35.913 5997.295 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 
-[Полные поля и источники](../../revisions/r0076/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0077/Vehicles/SpawnPoints.json).
