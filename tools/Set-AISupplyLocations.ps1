@@ -1,5 +1,6 @@
 [CmdletBinding()]
 param([Parameter(Mandatory)][string]$SupplyRevisionPath,[Parameter(Mandatory)][string]$OutputDirectory)
+function FormatUnitRange($minimum,$maximum){if($minimum -eq $maximum){return (Num $minimum)};return ((Num $minimum)+'–'+(Num $maximum))}
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($ok,$s){if(!$ok){throw $s}}
 function Save($p,$s){New-Item (Split-Path $p) -ItemType Directory -Force | Out-Null;[IO.File]::WriteAllText($p,$s.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -62,10 +63,10 @@ foreach($category in @('control_points','harbors','supply_depots','settlements',
  foreach($group in $groups){
   $name='Без локации';$path='Ungrouped/Ungrouped.md';$position='';if($category -cne 'unassigned'){$t=$targets[$group.Name];$name=$t.name;$path=$t.path;$position=' — '+(Pos $t.worldPositionMeters)}
   $min=($group.Group | Measure-Object unitCountMin -Sum).Sum;$max=($group.Group | Measure-Object unitCountMax -Sum).Sum
-  $section.Add("| [$name](Locations/$path) | $($group.Count) | $(Num $min)–$(Num $max) |")
+  $section.Add("| [$name](Locations/$path) | $($group.Count) | $(FormatUnitRange $min $max) |")
   $counts+=[ordered]@{id=$group.Name;category=$category;name=$name;path="Locations/$path";pointCount=$group.Count}
   $page=[Collections.Generic.List[string]]::new();$page.Add("# $name$position");$page.Add('');$page.Add('[Группы ИИ — сводка](../../Summary.md)');$page.Add('');$page.Add('Географическое распределение по каталогу припасов. Расстояние считается до выбранного якоря (координаты указаны отдельно), который может отличаться от позиции в заголовке объединённой группы. Число бойцов условное, при одной группе на точку.');$page.Add('');$page.Add('| Точка | Выбор / тип | Бойцов | Координаты X Y Z, м | Якорь X Y Z, м | До якоря, м |');$page.Add('| --- | --- | ---: | --- | --- | ---: |')
-  foreach($record in $group.Group | Sort-Object id){$type=if($record.selectionMode -ceq 'random'){'Случайный тип'}else{$record.configuredType};$distance='—';$anchor='—';if($record.location){$distance=Num $record.location.distanceMeters;$anchor=Pos $record.location.distanceOriginPosition};$page.Add("| $($record.name) | $type | $(Num $record.unitCountMin)–$(Num $record.unitCountMax) | $(Pos $record.worldPositionMeters) | $anchor | $distance |")};$page.Add('');$page.Add('[Привязки, исходные точки и происхождение](../../Groups.json).');Save "$OutputDirectory/AI/Locations/$path" ($page -join "`n")
+  foreach($record in $group.Group | Sort-Object id){$type=if($record.selectionMode -ceq 'random'){'Случайный тип'}else{$record.configuredType};$distance='—';$anchor='—';if($record.location){$distance=Num $record.location.distanceMeters;$anchor=Pos $record.location.distanceOriginPosition};$page.Add("| $($record.name) | $type | $(FormatUnitRange $record.unitCountMin $record.unitCountMax) | $(Pos $record.worldPositionMeters) | $anchor | $distance |")};$page.Add('');$page.Add('[Привязки, исходные точки и происхождение](../../Groups.json).');Save "$OutputDirectory/AI/Locations/$path" ($page -join "`n")
  }
  $section.Add('')
 }
