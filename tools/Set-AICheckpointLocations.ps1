@@ -26,7 +26,7 @@ foreach($point in $unassigned){
 $assigned=@($unassigned | Where-Object location);$remaining=@($unassigned | Where-Object {!$_.location})
 $ai | Add-Member -NotePropertyName checkpointLocationEvidence -NotePropertyValue ([ordered]@{diagnosticsSha256=(Get-FileHash $DiagnosticsPath).Hash;sourceCapturedAtUTC=$diag.generatedAtUTC;selector='prefab_filename_Checkpoint*.et';radiusMeters=$RadiusMeters;distanceMetric='XZ';scope='only_points_without_supply_location';selection='nearest_then_source_id';ownershipEstablished=$false;inputPointIds=@($unassigned.id);assignedPointCount=$assigned.Count;remainingUnassignedPointCount=$remaining.Count;checkpoints=$checkpoints})
 $ai.matchingRule+='; fallback_unassigned_only_nearest_Checkpoint_within_'+(Num $RadiusMeters)+'m_XZ'
-$ai.normalizerVersion='ambient-ai-groups-0.3'
+$ai.normalizerVersion='ambient-ai-groups-0.4'
 Save "$OutputDirectory/AI/Groups.json" ($ai | ConvertTo-Json -Depth 70)
 function WritePage($records,$name,$path,$position){
  $page=[Collections.Generic.List[string]]::new();$title=$name;if($position){$title+=' — '+(Pos $position)}

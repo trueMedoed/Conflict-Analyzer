@@ -1,6 +1,6 @@
 # Группы ИИ — сводка
 
-Мир CTI_Campaign_HQC_Eden, игра **1.8.0.13**, ревизия **r0052**. Первый раздел: фоновые патрули FIA.
+Мир CTI_Campaign_HQC_Eden, игра **1.8.0.13**, ревизия **r0053**. Первый раздел: фоновые патрули FIA.
 
 Точек: **299**; фиксированный тип: **288**; случайный тип: **11**; вариантов каталога: **9**.
 
@@ -27,9 +27,9 @@
 
 «Всего бойцов» — суммарная численность по всем точкам локации при создании одной группы на каждой точке. Диапазон учитывает случайный выбор состава. Это не число одновременно активных бойцов в игре.
 
-Названия, категории и объединения взяты из справочника припасов. Сначала склады (200 м от маркера), затем контрольные точки, доки, кандидаты HQ, города и другие локации (350 м по X/Z). Внутри первого подходящего этапа выбирается ближайший якорь; при равенстве — ID. Для объединённых локаций сохранены исходные подписи и позиции. Каталог включает допустимые локации без припасов; в таблицах показаны только группы с точками ИИ.
+Названия, категории и объединения взяты из справочника припасов. Сначала подтверждённый предок CampaignRemnantsSupplyDepot без ограничения расстояния. Для остальных — склады (200 м от маркера), затем контрольные точки, доки, кандидаты HQ, города и другие локации (350 м по X/Z). Внутри первого подходящего этапа выбирается ближайший якорь; при равенстве — ID. Для объединённых локаций сохранены исходные подписи и позиции. Каталог включает допустимые локации без припасов; в таблицах показаны только группы с точками ИИ.
 
-Каждая точка учитывается один раз. Это географическое распределение, не source-родство, игровое подчинение базе или проверка ResourceGrid. Расстояние в подробной таблице — до выбранного якоря; все кандидаты и прежняя привязка сохранены в JSON.
+Каждая точка учитывается один раз. Родство подтверждается только для явно сохранённой цепочки предков склада. Остальное — географическое распределение, не игровое подчинение базе или проверка ResourceGrid. Расстояние в подробной таблице — до выбранного якоря; все кандидаты и прежняя привязка сохранены в JSON.
 
 ### Контрольные точки
 
@@ -69,27 +69,27 @@
 
 | Локация | Точек | Всего бойцов |
 | --- | ---: | ---: |
-| [Склад - 4814.289 53.445 5819.508](Locations/SupplyDepots/Склад---4814-289-53-445-5819-508.md) | 1 | 5 |
-| [Склад - 6912.457 57.718 4482.109](Locations/SupplyDepots/Склад---6912-457-57-718-4482-109.md) | 1 | 5 |
+| [Склад - 4814.289 53.445 5819.508](Locations/SupplyDepots/Склад---4814-289-53-445-5819-508.md) | 2 | 6–12 |
+| [Склад - 6912.457 57.718 4482.109](Locations/SupplyDepots/Склад---6912-457-57-718-4482-109.md) | 2 | 6–12 |
 | [Durras](Locations/SupplyDepots/Durras.md) | 2 | 6–12 |
-| [farm](Locations/SupplyDepots/farm.md) | 3 | 9 |
-| [Gorey](Locations/SupplyDepots/Gorey.md) | 3 | 12 |
-| [industrial compound](Locations/SupplyDepots/industrial-compound.md) | 1 | 5 |
+| [farm](Locations/SupplyDepots/farm.md) | 4 | 10–16 |
+| [Gorey](Locations/SupplyDepots/Gorey.md) | 4 | 13–19 |
+| [industrial compound](Locations/SupplyDepots/industrial-compound.md) | 2 | 6–12 |
 | [military site](Locations/SupplyDepots/military-site.md) | 3 | 13 |
-| [Régina](Locations/SupplyDepots/Regina.md) | 4 | 11 |
-| [sawmill](Locations/SupplyDepots/sawmill.md) | 2 | 7 |
+| [Régina](Locations/SupplyDepots/Regina.md) | 5 | 12–18 |
+| [sawmill](Locations/SupplyDepots/sawmill.md) | 3 | 8–14 |
 
 ### Города
 
 | Локация | Точек | Всего бойцов |
 | --- | ---: | ---: |
-| [Bénac](Locations/Settlements/Benac-b8dca6e1.md) | 2 | 5–11 |
+| [Bénac](Locations/Settlements/Benac-b8dca6e1.md) | 1 | 4 |
 | [Chotain](Locations/Settlements/Chotain-a6cceded.md) | 1 | 5 |
 | [Durras](Locations/Settlements/Durras-de1c79e3.md) | 2 | 4 |
 | [Entre-Deux](Locations/Settlements/Entre-Deux-28d66863.md) | 5 | 17 |
 | [Étoupe](Locations/Settlements/Etoupe-0f5ee0da.md) | 2 | 9 |
 | [Figari](Locations/Settlements/Figari-b14f1a07.md) | 3 | 14 |
-| [Gorey](Locations/Settlements/Gorey-e918a2fb.md) | 2 | 5–11 |
+| [Gorey](Locations/Settlements/Gorey-e918a2fb.md) | 1 | 4 |
 | [Gravette](Locations/Settlements/Gravette-9807aaa0.md) | 1 | 5 |
 | [La Valette](Locations/Settlements/La-Valette-78832316.md) | 1 | 1 |
 | [Laruns](Locations/Settlements/Laruns-a95ff7dd.md) | 1 | 5 |
@@ -114,7 +114,7 @@
 | [farm](Locations/Other/farm-1b13b783.md) | 1 | 1–7 |
 | [farm](Locations/Other/farm-bb70859b.md) | 1 | 5 |
 | [GALLOW'S HILL](Locations/Other/GALLOW-S-HILL-08a1f1ec.md) | 1 | 4 |
-| [HEDGEHOG HILL](Locations/Other/HEDGEHOG-HILL-8576b4dd.md) | 2 | 6–12 |
+| [HEDGEHOG HILL](Locations/Other/HEDGEHOG-HILL-8576b4dd.md) | 1 | 5 |
 | [Huntsman's Heath](Locations/Other/Huntsman-s-Heath-ad26d22f.md) | 1 | 2 |
 | [industrial compound](Locations/Other/industrial-compound-07672585.md) | 1 | 4 |
 | [Lacan's Head](Locations/Other/Lacan-s-Head-8343b4b9.md) | 1 | 1 |
@@ -142,7 +142,7 @@
 
 | Локация | Точек | Всего бойцов |
 | --- | ---: | ---: |
-| [Без локации](Locations/Ungrouped/Ungrouped.md) | 36 | 114–138 |
+| [Без локации](Locations/Ungrouped/Ungrouped.md) | 32 | 110 |
 
 ## Выбор и активация
 
@@ -150,6 +150,6 @@
 
 Для текущего снимка все точки включены, m_iRespawnPeriod=0 означает отсутствие автоматического респавна по таймеру (единица поля — секунды). Это не запрещает отдельную логику смены фракции / повторной активации. Дистанции активации и удаления сохранены для каждой точки в JSON.
 
-[Данные, состав вариантов и происхождение](../revisions/r0052/AI/Groups.json).
+[Данные, состав вариантов и происхождение](../revisions/r0053/AI/Groups.json).
 
-Вооружение каждого варианта приведено на странице типа: сумма по группе и оружие каждого бойца. [Оружейные слоты и происхождение](../revisions/r0052/AI/Weapons.json).
+Вооружение каждого варианта приведено на странице типа: сумма по группе и оружие каждого бойца. [Оружейные слоты и происхождение](../revisions/r0053/AI/Weapons.json).

@@ -24,9 +24,9 @@ Prefab: `{908BF313909635F2}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_ReconT
 
 Вооружение прочитано из унаследованных CharacterWeaponSlotComponent.WeaponTemplate; повторяющиеся бойцы учитываются отдельно. Тип гранаты — шаблон CharacterGrenadeSlotComponent, а не количество гранат. Боезапас, содержимое одежды и изменения после появления здесь не суммируются; это конфигурация префабов, не измеренный боевой состав.
 
-[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0052/AI/Weapons.json).
+[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0053/AI/Weapons.json).
 
-[Исходные ресурсы и значения](../../revisions/r0052/AI/Groups.json).
+[Исходные ресурсы и значения](../../revisions/r0053/AI/Groups.json).
 
 ## Медицинское снаряжение
 
@@ -39,7 +39,7 @@ Prefab: `{908BF313909635F2}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_ReconT
 | Character_FIA_RTO | 1 | 0 | 1 | 1 |
 | Character_FIA_Scout | 1 | 1 | 1 | 1 |
 
-[Исходные медицинские предметы и подсчёт](../../revisions/r0052/AI/Medical.json).
+[Исходные медицинские предметы и подсчёт](../../revisions/r0053/AI/Medical.json).
 
 ## Магазины, патроны и гранаты
 
@@ -64,4 +64,4 @@ Prefab: `{908BF313909635F2}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_ReconT
 | Character_FIA_RTO | 1 | 5 | 149 | 1 | 2 |
 | Character_FIA_Scout | 1 | 7 | 209 | 1 | 2 |
 
-[Измеренные предметы, магазины и расчёты](../../revisions/r0052/AI/Ammunition.json).
+[Измеренные предметы, магазины и расчёты](../../revisions/r0053/AI/Ammunition.json).

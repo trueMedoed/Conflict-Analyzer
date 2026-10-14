@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory)][string]$LocationsPath,
     [Parameter(Mandatory)][string]$SourceCodeDirectory,
     [Parameter(Mandatory)][string]$OutputDirectory,
-    [string]$RevisionId='r0052',
+    [string]$RevisionId='r0053',
     [string]$WeaponsLogPath,
     [string]$InventoryRuntimeLogPath,
     [string]$SupplyRevisionPath
@@ -85,6 +85,6 @@ if ($WeaponsLogPath) { & (Join-Path $PSScriptRoot 'Add-AIMedicalReport.ps1') -In
 
 if ($InventoryRuntimeLogPath) { & (Join-Path $PSScriptRoot 'Add-AIAmmunitionReport.ps1') -InventoryRuntimeLogPath $InventoryRuntimeLogPath -OutputDirectory $OutputDirectory }
 
-if ($SupplyRevisionPath) { & (Join-Path $PSScriptRoot 'Set-AISupplyLocations.ps1') -SupplyRevisionPath $SupplyRevisionPath -OutputDirectory $OutputDirectory }
+if ($SupplyRevisionPath) { & (Join-Path $PSScriptRoot 'Set-AISupplyLocations.ps1') -SupplyRevisionPath $SupplyRevisionPath -OutputDirectory $OutputDirectory -DiagnosticsPath $DiagnosticsPath }
 
 if ($SupplyRevisionPath) { & (Join-Path $PSScriptRoot 'Set-AICheckpointLocations.ps1') -DiagnosticsPath $DiagnosticsPath -OutputDirectory $OutputDirectory -RadiusMeters 50 }
