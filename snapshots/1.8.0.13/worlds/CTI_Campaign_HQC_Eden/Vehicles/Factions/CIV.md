@@ -2,6 +2,18 @@
 
 [Сводка](../Summary.md)
 
+Всего точек: **94**.
+
+> **Для проверки:** в начале показаны точки с m_iRespawnPeriod = 0 — повторное появление отключено. Это может быть намеренной настройкой; само по себе значение не доказывает ошибку.
+
+## Без повторного появления — 1
+
+| Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
+| --- | --- | --- | --- | ---: | --- | --- | --- |
+| Vehicle_020000000000006FD | CIV | 9233.368 61.429 2084.510 | Vernon | Нет | TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+
+## С повторным появлением — 93
+
 | Точка | Фракция | Координаты X Y Z, м | Локация | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
 | --- | --- | --- | --- | ---: | --- | --- | --- |
 | Vehicle_020000000000006BE | CIV | 4926.187 36.156 9125.690 | Tyrone | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
@@ -67,7 +79,6 @@
 | Vehicle_020000000000006FA | CIV | 8862.330 92.797 2620.671 | Durras | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_020000000000006FB | CIV | 9003.124 83.202 2205.075 | Vernon | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_020000000000006FC | CIV | 9188.388 65.085 2135.471 | Vernon | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| Vehicle_020000000000006FD | CIV | 9233.368 61.429 2084.510 | Vernon | Нет | TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_020000000000006FE | CIV | 5705.269 219.234 7083.847 | Entre-Deux | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_020000000000006FF | CIV | 5771.187 212.067 7010.947 | Entre-Deux | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_02000000000000700 | CIV | 5876.303 213.994 7050.699 | Entre-Deux | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
@@ -99,4 +110,4 @@
 | Vehicle_0200000000000071A | CIV | 4331.194 81.269 4395.952 | Без локации | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_0200000000000071B | CIV | 7791.031 157.821 4596.518 | Без локации | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
-[Полные поля и источники](../../revisions/r0061/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0062/Vehicles/SpawnPoints.json).

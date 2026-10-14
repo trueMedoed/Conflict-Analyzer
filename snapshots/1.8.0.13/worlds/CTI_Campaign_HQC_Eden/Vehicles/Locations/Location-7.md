@@ -17,4 +17,4 @@
 | USSR | 2879.007 6.641 2137.980 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 | USSR | 2821.330 6.511 2120.629 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0061/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0062/Vehicles/SpawnPoints.json).

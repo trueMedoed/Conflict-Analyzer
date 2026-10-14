@@ -32,4 +32,4 @@
 | FIA | 9891.486 2.531 1508.695 | Нет | TRAIT_REPAIRING | Любая | TRAIT_ARMED |
 | FIA | 10135.220 2.489 1541.396 | Нет |  | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0061/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0062/Vehicles/SpawnPoints.json).

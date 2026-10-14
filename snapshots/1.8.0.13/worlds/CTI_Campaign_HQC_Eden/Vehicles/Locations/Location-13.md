@@ -23,4 +23,4 @@
 | US | 4940.065 2.261 3885.688 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
 | FIA | 4936.062 2.156 3903.763 | Нет |  | Любая | TRAIT_ARMED |
 
-[Полные поля и источники](../../revisions/r0061/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0062/Vehicles/SpawnPoints.json).
