@@ -23,9 +23,9 @@ Prefab: `{0C9C86FCE951AF19}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_LoneWo
 
 Вооружение прочитано из унаследованных CharacterWeaponSlotComponent.WeaponTemplate; повторяющиеся бойцы учитываются отдельно. Тип гранаты — шаблон CharacterGrenadeSlotComponent, а не количество гранат. Боезапас, содержимое одежды и изменения после появления здесь не суммируются; это конфигурация префабов, не измеренный боевой состав.
 
-[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0051/AI/Weapons.json).
+[Оружейные слоты, начальный оружейный инвентарь и происхождение](../../revisions/r0052/AI/Weapons.json).
 
-[Исходные ресурсы и значения](../../revisions/r0051/AI/Groups.json).
+[Исходные ресурсы и значения](../../revisions/r0052/AI/Groups.json).
 
 ## Медицинское снаряжение
 
@@ -37,7 +37,7 @@ Prefab: `{0C9C86FCE951AF19}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_LoneWo
 | --- | ---: | ---: | ---: | ---: |
 | Character_FIA_Rebel_Sharpshooter | 1 | 1 | 1 | 1 |
 
-[Исходные медицинские предметы и подсчёт](../../revisions/r0051/AI/Medical.json).
+[Исходные медицинские предметы и подсчёт](../../revisions/r0052/AI/Medical.json).
 
 ## Магазины, патроны и гранаты
 
@@ -64,4 +64,4 @@ Prefab: `{0C9C86FCE951AF19}Prefabs/Groups/INDFOR/AmbientPatrols/Group_FIA_LoneWo
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Character_FIA_Rebel_Sharpshooter | 1 | 8 | 73 | 1 | 2 |
 
-[Измеренные предметы, магазины и расчёты](../../revisions/r0051/AI/Ammunition.json).
+[Измеренные предметы, магазины и расчёты](../../revisions/r0052/AI/Ammunition.json).
