@@ -17,11 +17,11 @@
 
 ### Режим «Любая» — 3
 
-| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
-| --- | --- | ---: | --- | --- | --- |
-| CIV | 4926.187 36.156 9125.690 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| CIV | 4955.641 37.196 9085.498 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| FIA | 5033.653 43.993 8971.769 | Нет |  | Любая | TRAIT_ARMED |
+| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
+| --- | --- | ---: | --- | --- |
+| CIV | 4926.187 36.156 9125.690 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| CIV | 4955.641 37.196 9085.498 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| FIA | 5033.653 43.993 8971.769 | Нет |  | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0075/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0076/Vehicles/SpawnPoints.json).

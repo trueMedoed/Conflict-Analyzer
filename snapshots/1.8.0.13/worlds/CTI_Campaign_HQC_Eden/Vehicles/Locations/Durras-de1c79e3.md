@@ -16,10 +16,10 @@
 
 ### Режим «Любая» — 2
 
-| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
-| --- | --- | ---: | --- | --- | --- |
-| CIV | 8705.245 114.096 3056.142 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| CIV | 8862.330 92.797 2620.671 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
+| --- | --- | ---: | --- | --- |
+| CIV | 8705.245 114.096 3056.142 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| CIV | 8862.330 92.797 2620.671 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 
-[Полные поля и источники](../../revisions/r0075/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0076/Vehicles/SpawnPoints.json).

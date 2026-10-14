@@ -18,12 +18,12 @@
 
 ### Режим «Любая» — 4
 
-| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Режим | Исключённые метки |
-| --- | --- | ---: | --- | --- | --- |
-| CIV | 4931.644 28.568 11666.677 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| CIV | 4941.960 28.594 11817.605 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| US | 4880.258 28.594 11914.118 | Нет | VEHICLE_HELICOPTER | Любая | TRAIT_ARMED |
-| FIA | 4905.063 28.594 11962.939 | Нет |  | Любая | TRAIT_ARMED |
+| Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
+| --- | --- | ---: | --- | --- |
+| CIV | 4931.644 28.568 11666.677 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| CIV | 4941.960 28.594 11817.605 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| US | 4880.258 28.594 11914.118 | Нет | VEHICLE_HELICOPTER | TRAIT_ARMED |
+| FIA | 4905.063 28.594 11962.939 | Нет |  | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0075/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0076/Vehicles/SpawnPoints.json).
