@@ -110,4 +110,4 @@
 | Vehicle_0200000000000071A | CIV | 4331.194 81.269 4395.952 | Без локации | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 | Vehicle_0200000000000071B | CIV | 7791.031 157.821 4596.518 | Без локации | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | Любая | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
-[Полные поля и источники](../../revisions/r0062/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0063/Vehicles/SpawnPoints.json).

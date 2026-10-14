@@ -22,13 +22,13 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [Calvary Hill](Locations/Location-4.md) | 1 |
-| [Île-aux-Saules](Locations/Location-7.md) | 2 |
-| [Military Base Levie](Locations/Location-1.md) | 3 |
-| [Montignac](Locations/Location-3.md) | 4 |
-| [Power Plant](Locations/Location-5.md) | 1 |
-| [Régina](Locations/Location-6.md) | 3 |
-| [Transformer Station](Locations/Location-2.md) | 7 |
+| [Calvary Hill](Locations/Calvary-Hill.md) | 1 |
+| [Île-aux-Saules](Locations/Île-aux-Saules.md) | 2 |
+| [Military Base Levie](Locations/Military-Base-Levie.md) | 3 |
+| [Montignac](Locations/Montignac.md) | 4 |
+| [Power Plant](Locations/Power-Plant.md) | 1 |
+| [Régina](Locations/Régina-7cba712f.md) | 3 |
+| [Transformer Station](Locations/Transformer-Station.md) | 7 |
 
 ### Доки
 
@@ -36,16 +36,16 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [EveronAirport](Locations/Location-10.md) | 5 |
-| [FishermansBay](Locations/Location-17.md) | 2 |
-| [Gravette](Locations/Location-8.md) | 2 |
-| [Kermovan](Locations/Location-9.md) | 3 |
-| [Lamentin](Locations/Location-14.md) | 6 |
-| [Meaux](Locations/Location-16.md) | 5 |
-| [MilitaryHospital](Locations/Location-15.md) | 2 |
-| [Morton](Locations/Location-13.md) | 6 |
-| [StPhillipe](Locations/Location-12.md) | 1 |
-| [StPierre](Locations/Location-11.md) | 15 |
+| [EveronAirport](Locations/EveronAirport.md) | 5 |
+| [FishermansBay](Locations/FishermansBay.md) | 2 |
+| [Gravette](Locations/Gravette-8ca16d84.md) | 2 |
+| [Kermovan](Locations/Kermovan.md) | 3 |
+| [Lamentin](Locations/Lamentin.md) | 6 |
+| [Meaux](Locations/Meaux.md) | 5 |
+| [MilitaryHospital](Locations/MilitaryHospital.md) | 2 |
+| [Morton](Locations/Morton.md) | 6 |
+| [StPhillipe](Locations/StPhillipe.md) | 1 |
+| [StPierre](Locations/StPierre.md) | 15 |
 
 ### Склады припасов
 
@@ -53,14 +53,14 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [Склад - 4814.289 53.445 5819.508](Locations/Location-47.md) | 1 |
-| [Склад - 6912.457 57.718 4482.109](Locations/Location-46.md) | 1 |
-| [Durras](Locations/Location-45.md) | 2 |
-| [farm](Locations/Location-48.md) | 1 |
-| [Gorey](Locations/Location-49.md) | 1 |
-| [industrial compound](Locations/Location-50.md) | 1 |
-| [Régina](Locations/Location-52.md) | 2 |
-| [sawmill](Locations/Location-51.md) | 2 |
+| [Склад - 4814.289 53.445 5819.508](Locations/Склад---4814-289-53-445-5819-508.md) | 1 |
+| [Склад - 6912.457 57.718 4482.109](Locations/Склад---6912-457-57-718-4482-109.md) | 1 |
+| [Durras](Locations/Durras-001dec38.md) | 2 |
+| [farm](Locations/farm.md) | 1 |
+| [Gorey](Locations/Gorey-6c1d3229.md) | 1 |
+| [industrial compound](Locations/industrial-compound-80f0ca11.md) | 1 |
+| [Régina](Locations/Régina-e90f1cea.md) | 2 |
+| [sawmill](Locations/sawmill-36739edc.md) | 2 |
 
 ### Стартовые базы
 
@@ -68,7 +68,7 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [StartingPos07](Locations/Location-44.md) | 2 |
+| [StartingPos07](Locations/StartingPos07.md) | 2 |
 
 ### Города и деревни
 
@@ -76,24 +76,24 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [Bénac](Locations/Location-34.md) | 2 |
-| [Camurac](Locations/Location-20.md) | 2 |
-| [Chotain](Locations/Location-26.md) | 3 |
-| [Durras](Locations/Location-39.md) | 4 |
-| [Entre-Deux](Locations/Location-36.md) | 6 |
-| [Étoupe](Locations/Location-41.md) | 3 |
-| [Figari](Locations/Location-28.md) | 5 |
-| [Gorey](Locations/Location-24.md) | 1 |
-| [Gravette](Locations/Location-18.md) | 2 |
-| [La Valette](Locations/Location-37.md) | 2 |
-| [Laruns](Locations/Location-23.md) | 4 |
-| [Le Moule](Locations/Location-29.md) | 3 |
-| [Levie](Locations/Location-22.md) | 4 |
-| [Richemont](Locations/Location-33.md) | 3 |
-| [Saint-Philippe](Locations/Location-30.md) | 2 |
-| [Tyrone](Locations/Location-35.md) | 4 |
-| [Vernon](Locations/Location-40.md) | 5 |
-| [Villeneuve](Locations/Location-31.md) | 3 |
+| [Bénac](Locations/Bénac.md) | 2 |
+| [Camurac](Locations/Camurac.md) | 2 |
+| [Chotain](Locations/Chotain.md) | 3 |
+| [Durras](Locations/Durras-de1c79e3.md) | 4 |
+| [Entre-Deux](Locations/Entre-Deux.md) | 6 |
+| [Étoupe](Locations/Étoupe.md) | 3 |
+| [Figari](Locations/Figari.md) | 5 |
+| [Gorey](Locations/Gorey-e918a2fb.md) | 1 |
+| [Gravette](Locations/Gravette-9807aaa0.md) | 2 |
+| [La Valette](Locations/La-Valette.md) | 2 |
+| [Laruns](Locations/Laruns.md) | 4 |
+| [Le Moule](Locations/Le-Moule.md) | 3 |
+| [Levie](Locations/Levie.md) | 4 |
+| [Richemont](Locations/Richemont.md) | 3 |
+| [Saint-Philippe](Locations/Saint-Philippe.md) | 2 |
+| [Tyrone](Locations/Tyrone.md) | 4 |
+| [Vernon](Locations/Vernon.md) | 5 |
+| [Villeneuve](Locations/Villeneuve.md) | 3 |
 
 ### Другое
 
@@ -101,14 +101,14 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [GALLOW'S HILL](Locations/Location-43.md) | 1 |
-| [industrial compound](Locations/Location-19.md) | 1 |
-| [LONG HILL](Locations/Location-21.md) | 1 |
-| [military site](Locations/Location-32.md) | 1 |
-| [Quarry](Locations/Location-25.md) | 1 |
-| [Saint-Pierre's Pass](Locations/Location-38.md) | 3 |
-| [sawmill](Locations/Location-27.md) | 1 |
-| [SIX BELLS](Locations/Location-42.md) | 2 |
+| [GALLOW'S HILL](Locations/GALLOW-S-HILL.md) | 1 |
+| [industrial compound](Locations/industrial-compound-07672585.md) | 1 |
+| [LONG HILL](Locations/LONG-HILL.md) | 1 |
+| [military site](Locations/military-site.md) | 1 |
+| [Quarry](Locations/Quarry.md) | 1 |
+| [Saint-Pierre's Pass](Locations/Saint-Pierre-s-Pass.md) | 3 |
+| [sawmill](Locations/sawmill-be6eb1e2.md) | 1 |
+| [SIX BELLS](Locations/SIX-BELLS.md) | 2 |
 
 ### Без локации
 
@@ -116,7 +116,7 @@
 
 | Локация | Точек |
 | --- | ---: |
-| [Без локации](Locations/Location-53.md) | 31 |
+| [Без локации](Locations/Без-локации.md) | 31 |
 
 ## Откуда данные и как работает появление
 
@@ -124,4 +124,4 @@
 
 В Update компонент получает VEHICLE-каталог фракции, вызывает GetFullFilteredEntityListWithLabels и выбирает случайный элемент. Таймер повторного появления не означает гарантированный спавн строго каждые 10 минут: система учитывает состояние машины, близость игроков, флаг SpawnVehicles и доступное место. SpawnVehicle дополнительно проверяет свободную позицию. Фактический спавн здесь не измерялся.
 
-[Канонические данные](../revisions/r0062/Vehicles/SpawnPoints.json).
+[Канонические данные](../revisions/r0063/Vehicles/SpawnPoints.json).
