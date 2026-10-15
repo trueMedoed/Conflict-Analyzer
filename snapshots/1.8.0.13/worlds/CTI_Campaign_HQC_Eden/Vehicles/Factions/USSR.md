@@ -44,4 +44,4 @@
 | 10147.514 2.531 1513.373 | VEHICLE_HELICOPTER | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0081/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../../revisions/r0082/Vehicles/SpawnPoints.json).

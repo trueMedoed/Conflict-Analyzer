@@ -8289,6 +8289,35 @@
         "worlds/CTI_Campaign_HQC_Eden/revisions/r0081/Vehicles/Locations/Vernon.md",
         "worlds/CTI_Campaign_HQC_Eden/revisions/r0081/Vehicles/Locations/Villeneuve.md"
       ]
+    },
+    {
+      "scenarioKey": "CTI_Campaign_HQC_Eden",
+      "snapshotId": "1.8.0.13/CTI_Campaign_HQC_Eden/r0082",
+      "revisionId": "r0082",
+      "schemaVersion": 3,
+      "status": "partial",
+      "normalizerVersion": "ambient-vehicles-0.2",
+      "world": "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/world.json",
+      "data": "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/data.json",
+      "scope": "ambient_vehicle_spawn_points",
+      "summary": "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Summary.md",
+      "reportData": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/SpawnPoints.json"
+      ],
+      "reports": [
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Summary.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Без-локации.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Блокпосты.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Города-и-деревни.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Доки.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Другое.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Контрольные-точки.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Categories/Склады-припасов.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Factions/CIV.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Factions/FIA.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Factions/US.md",
+        "worlds/CTI_Campaign_HQC_Eden/revisions/r0082/Vehicles/Factions/USSR.md"
+      ]
     }
   ],
   "warnings": [
