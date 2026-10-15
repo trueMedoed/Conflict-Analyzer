@@ -1,4 +1,4 @@
-# Île-aux-Saules
+# Camurac
 
 [Сводка](../Summary.md)
 
@@ -8,7 +8,8 @@
 
 | Фракция | Точек появления |
 | --- | ---: |
-| USSR | 2 |
+| CIV | 1 |
+| FIA | 1 |
 | **Всего** | **2** |
 
 ## Точки
@@ -19,8 +20,8 @@
 
 | Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
 | --- | --- | ---: | --- | --- |
-| USSR | 2879.007 6.641 2137.980 | Нет | VEHICLE_HELICOPTER | TRAIT_ARMED |
-| USSR | 2821.330 6.511 2120.629 | Нет | VEHICLE_HELICOPTER | TRAIT_ARMED |
+| CIV | 6695.853 9.725 3222.792 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| FIA | 6629.614 5.221 3141.217 | Нет |  | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0080/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../SpawnPoints.json).

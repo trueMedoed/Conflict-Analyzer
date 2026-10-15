@@ -1,4 +1,4 @@
-# Transformer Station
+# FishermansBay
 
 [Сводка](../Summary.md)
 
@@ -8,20 +8,20 @@
 
 | Фракция | Точек появления |
 | --- | ---: |
-| CIV | 3 |
-| **Всего** | **3** |
+| FIA | 1 |
+| US | 1 |
+| **Всего** | **2** |
 
 ## Точки
 
 **Режим** задаёт проверку включённых меток (m_bRequireAllIncludedLabels): **«Любая»** — достаточно хотя бы одной из перечисленных меток; **«Все»** — нужны все перечисленные метки одновременно. При пустом списке включённых меток этот фильтр не ограничивает выбор. Исключённые метки применяются в обоих режимах. Это фильтр допустимой техники, не режим повторного появления.
 
-### Режим «Любая» — 3
+### Режим «Любая» — 2
 
 | Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
 | --- | --- | ---: | --- | --- |
-| CIV | 5357.947 81.432 6288.309 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| CIV | 5474.444 95.604 6087.595 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
-| CIV | 5522.001 95.637 6023.845 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| US | 7532.248 2.429 6683.727 | Нет | VEHICLE_HELICOPTER | TRAIT_ARMED |
+| FIA | 7456.896 7.875 6715.484 | Нет |  | TRAIT_ARMED |
 
 
-[Полные поля и источники](../../revisions/r0080/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../SpawnPoints.json).

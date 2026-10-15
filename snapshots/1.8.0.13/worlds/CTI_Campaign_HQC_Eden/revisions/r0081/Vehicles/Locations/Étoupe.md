@@ -1,4 +1,4 @@
-# Régina
+# Étoupe
 
 [Сводка](../Summary.md)
 
@@ -8,18 +8,19 @@
 
 | Фракция | Точек появления |
 | --- | ---: |
-| CIV | 1 |
-| **Всего** | **1** |
+| CIV | 2 |
+| **Всего** | **2** |
 
 ## Точки
 
 **Режим** задаёт проверку включённых меток (m_bRequireAllIncludedLabels): **«Любая»** — достаточно хотя бы одной из перечисленных меток; **«Все»** — нужны все перечисленные метки одновременно. При пустом списке включённых меток этот фильтр не ограничивает выбор. Исключённые метки применяются в обоих режимах. Это фильтр допустимой техники, не режим повторного появления.
 
-### Режим «Любая» — 1
+### Режим «Любая» — 2
 
 | Фракция | Координаты X Y Z, м | Повторное появление, мин | Включённые метки | Исключённые метки |
 | --- | --- | ---: | --- | --- |
-| CIV | 7228.174 136.625 2321.684 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| CIV | 5346.197 16.855 10092.696 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
+| CIV | 5573.103 22.734 10061.277 | 10 | TRAIT_PASSENGERS_SMALL, TRAIT_PASSENGERS_LARGE | TRAIT_ARMED, VEHICLE_HELICOPTER, VEHICLE_AIRPLANE |
 
 
-[Полные поля и источники](../../revisions/r0080/Vehicles/SpawnPoints.json).
+[Полные поля и источники](../SpawnPoints.json).

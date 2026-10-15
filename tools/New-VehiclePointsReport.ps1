@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0080')
+param([Parameter(Mandatory)][string]$DiagnosticsPath,[Parameter(Mandatory)][string]$NativeLogPath,[Parameter(Mandatory)][string]$AILocationsPath,[Parameter(Mandatory)][string]$OutputDirectory,[string]$RevisionId='r0081')
 $ErrorActionPreference='Stop';Set-StrictMode -Version Latest
 function Assert($b,$s){if(!$b){throw $s}}
 function Save($p,$t){$p=Join-Path $OutputDirectory $p;New-Item (Split-Path $p) -ItemType Directory -Force|Out-Null;[IO.File]::WriteAllText($p,$t.TrimEnd()+"`n",[Text.UTF8Encoding]::new($false))}
@@ -104,7 +104,7 @@ foreach($g in $records|Group-Object faction){
 function LocationStem($name){$s=[regex]::Replace($name,'[^\p{L}\p{Nd}_-]+','-').Trim('-');if(!$s){$s='Unnamed'};if($s -match '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$'){$s='Location-'+$s};return $s}
 $locationRows=@();$groups=@($records|Group-Object {if($_.location -and $_.location.category -eq 'checkpoints'){'all-checkpoints'}elseif($_.location){$_.location.id}else{'unassigned'}}|Sort-Object Name);$stemCounts=@{}
 foreach($group in $groups){$label='Без локации';if($group.Group[0].location){$label=$group.Group[0].location.name};if($group.Name -eq 'all-checkpoints'){$label='Блокпосты'};$stem=LocationStem $label;if(!$stemCounts.ContainsKey($stem)){$stemCounts[$stem]=0};$stemCounts[$stem]++}
-foreach($g in $groups){$name='Без локации';$category='unassigned';if($g.Group[0].location){$name=$g.Group[0].location.name;$category=$g.Group[0].location.category};if($g.Name -eq 'all-checkpoints'){$name='Блокпосты'};$stem=LocationStem $name;if($stemCounts[$stem] -gt 1){$sha=[Security.Cryptography.SHA256]::Create();try{$suffix=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($g.Name)))).Replace('-','').Substring(0,8).ToLowerInvariant()}finally{$sha.Dispose()};$stem+='-'+$suffix};$file=$stem+'.md';$locationRows+=[pscustomobject]@{name=$name;category=$category;file=$file;count=$g.Count}; $page=Page $g.Group $name $true ($g.Name -eq 'all-checkpoints');$page=(@($page -split '\r?\n'|ForEach-Object {$cells=$_.Split('|');if($_.StartsWith('|') -and $cells.Count -eq 8){'|'+(($cells[@(1,2,3,4,6)]) -join '|')+'|'}else{$_}}) -join "`n");if($g.Name -eq 'all-checkpoints'){$page=$page.Replace('## Точки','Блокпостами считаются точки машин в пределах 50 м по X/Z от ближайшего префаба Barricade или Checkpoint. Это географическая привязка; отдельные объекты и кандидаты сохранены в JSON.'+"`n`n"+'## Точки')};Save "Vehicles/Locations/$file" $page}
+foreach($g in $groups){$name='Без локации';$category='unassigned';if($g.Group[0].location){$name=$g.Group[0].location.name;$category=$g.Group[0].location.category};if($g.Name -eq 'all-checkpoints'){$name='Блокпосты'};$stem=LocationStem $name;if($stemCounts[$stem] -gt 1){$sha=[Security.Cryptography.SHA256]::Create();try{$suffix=([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($g.Name)))).Replace('-','').Substring(0,8).ToLowerInvariant()}finally{$sha.Dispose()};$stem+='-'+$suffix};$file=$stem+'.md';$locationRows+=[pscustomobject]@{name=$name;category=$category;file=$file;count=$g.Count;records=$g.Group}; $page=Page $g.Group $name $true ($g.Name -eq 'all-checkpoints');$page=(@($page -split '\r?\n'|ForEach-Object {$cells=$_.Split('|');if($_.StartsWith('|') -and $cells.Count -eq 8){'|'+(($cells[@(1,2,3,4,6)]) -join '|')+'|'}else{$_}}) -join "`n");if($g.Name -eq 'all-checkpoints'){$page=$page.Replace('## Точки','Блокпостами считаются точки машин в пределах 50 м по X/Z от ближайшего префаба Barricade или Checkpoint. Это географическая привязка; отдельные объекты и кандидаты сохранены в JSON.'+"`n`n"+'## Точки')};if($category -ne 'control_points'){Save "Vehicles/Locations/$file" $page}}
 
 $summary.Add('| Категория | Точек |');$summary.Add('| --- | ---: |')
 foreach($category in $categories.Keys){
@@ -112,8 +112,19 @@ foreach($category in $categories.Keys){
  $total=($rows|Measure-Object count -Sum).Sum;$categoryFile=(LocationStem $categories[$category])+'.md'
  $summary.Add("| [$($categories[$category])](Categories/$categoryFile) | $total |")
  $page=[Collections.Generic.List[string]]::new();$page.Add("# $($categories[$category])");$page.Add('');$page.Add('[Сводка машин](../Summary.md)');$page.Add('');$page.Add('| Локация | Точек |');$page.Add('| --- | ---: |')
- foreach($row in $rows){$page.Add("| [$($row.name)](../Locations/$($row.file)) | $($row.count) |")}
- $page.Add("| **Всего** | **$total** |");Save "Vehicles/Categories/$categoryFile" ($page -join "`n")
+ foreach($row in $rows){if($category -eq 'control_points'){$page.Add("| $($row.name) | $($row.count) |")}else{$page.Add("| [$($row.name)](../Locations/$($row.file)) | $($row.count) |")}}
+ $page.Add("| **Всего** | **$total** |")
+ if($category -eq 'control_points'){
+  $page.Add('');$page.Add($modeExplanation);$page.Add('')
+  foreach($row in $rows){
+   $page.Add("## $($row.name) — $($row.count)");$page.Add('')
+   $tables=ModeTables $row.records $row.name $true
+   foreach($line in $tables -split '\r?\n'){$cells=$line.Split('|');if($line.StartsWith('|') -and $cells.Count -eq 8){$page.Add('|'+(($cells[@(1,2,3,4,6)]) -join '|')+'|')}else{$page.Add($line)}}
+   $page.Add('')
+  }
+  $page.Add('[Полные поля и источники](../SpawnPoints.json).')
+ }
+ Save "Vehicles/Categories/$categoryFile" ($page -join "`n")
 }
 $summary.Add("| **Всего** | **$($records.Count)** |")
 $summary.Add('');$summary.Add('## Откуда данные и как работает появление');$summary.Add('');$summary.Add('Позиция — worldPosition сущности с SCR_AmbientVehicleSpawnPointComponent; фракция — SCR_FactionAffiliationComponent → faction affiliation. Время — m_iRespawnPeriod, секунды / 60; 0 отключает повторное появление. Фильтры — m_aIncludedEditableEntityLabels, m_aExcludedEditableEntityLabels и m_bRequireAllIncludedLabels. Имена меток прочитаны из EEditableEntityLabel установленной игры 1.8.0.13.');$summary.Add('');$summary.Add('В Update компонент получает VEHICLE-каталог фракции, вызывает GetFullFilteredEntityListWithLabels и выбирает случайный элемент. Таймер повторного появления не означает гарантированный спавн строго каждые 10 минут: система учитывает состояние машины, близость игроков, флаг SpawnVehicles и доступное место. SpawnVehicle дополнительно проверяет свободную позицию. Фактический спавн здесь не измерялся.');$summary.Add('');$summary.Add('[Канонические данные](SpawnPoints.json).');Save 'Vehicles/Summary.md' ($summary -join "`n")
